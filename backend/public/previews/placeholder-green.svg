@@ -1,0 +1,14 @@
+<svg width="800" height="1200" viewBox="0 0 800 1200" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="g" x1="0" x2="0" y1="0" y2="1">
+      <stop offset="0%" stop-color="#c8f7c5"/>
+      <stop offset="100%" stop-color="#8bdca3"/>
+    </linearGradient>
+  </defs>
+  <rect x="0" y="0" width="800" height="1200" rx="32" fill="url(#g)"/>
+  <rect x="40" y="60" width="720" height="1080" rx="28" fill="none" stroke="#5fbf7f" stroke-width="6" stroke-dasharray="18 14" opacity="0.85"/>
+  <text x="400" y="620" text-anchor="middle" font-family="Quicksand, Arial, sans-serif" font-size="46" font-weight="800" fill="#1b4332">
+    Preview Placeholder
+  </text>
+</svg>
+

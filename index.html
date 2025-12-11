@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI Kid Print</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&family=Nunito:wght@400;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    
+    <!-- Preload PayPal SDK for faster payment modal loading -->
+    <script>
+      // Preload PayPal SDK when page loads
+      window.addEventListener('DOMContentLoaded', function() {
+        // Get PayPal config from environment (will be injected by Vite)
+        const paypalClientId = window.__PAYPAL_CLIENT_ID__;
+        const paypalCurrency = window.__PAYPAL_CURRENCY__ || 'USD';
+        
+        if (paypalClientId && paypalClientId !== 'undefined') {
+          const script = document.createElement('script');
+          script.id = 'paypal-sdk-preload';
+          // Force English locale for international users
+          script.src = `https://www.paypal.com/sdk/js?client-id=${paypalClientId}&currency=${paypalCurrency}&locale=en_US`;
+          script.async = true;
+          document.head.appendChild(script);
+        }
+      });
+    </script>
+    <style>
+      body {
+        font-family: 'Nunito', sans-serif;
+        background-color: #fcfbf7;
+        color: #1a1a1a;
+        /* Playful Dot Pattern Background */
+        background-image: radial-gradient(#e5e7eb 1.5px, transparent 1.5px);
+        background-size: 24px 24px;
+      }
+      h1, h2, h3, h4, h5, h6, .font-display {
+        font-family: 'Fredoka', sans-serif;
+      }
+      .font-mono {
+        font-family: 'JetBrains Mono', monospace;
+      }
+      
+      /* --- Custom Animations --- */
+
+      /* 1. Fade & Scale (Preview) */
+      @keyframes fadeScale {
+        0% { opacity: 0; transform: scale(0.95); }
+        100% { opacity: 1; transform: scale(1); }
+      }
+      .animate-fade-scale {
+        opacity: 0;
+        animation: fadeScale 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; /* Bouncier bezier */
+      }
+
+      /* 2. Floating (Continuous) */
+      @keyframes float {
+        0%, 100% { transform: translateY(0px); }
+        50% { transform: translateY(-12px); }
+      }
+      .animate-float {
+        animation: float 4s ease-in-out infinite;
+      }
+      .animate-float-delayed {
+        animation: float 4s ease-in-out infinite;
+        animation-delay: 2s;
+      }
+
+      /* 3. Wiggle (On Hover) */
+      @keyframes wiggle {
+        0%, 100% { transform: rotate(-3deg); }
+        50% { transform: rotate(3deg); }
+      }
+      .hover-wiggle:hover {
+        animation: wiggle 0.4s ease-in-out infinite;
+      }
+
+      /* 4. Pop In (Entrance) */
+      @keyframes popIn {
+        0% { opacity: 0; transform: scale(0.8) translateY(20px); }
+        100% { opacity: 1; transform: scale(1) translateY(0); }
+      }
+      .animate-pop-in {
+        animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; /* Bouncy entrance */
+      }
+
+      /* 5. Rotate Slow */
+      @keyframes rotateSlow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .animate-spin-slow {
+        animation: rotateSlow 12s linear infinite;
+      }
+
+      @media print {
+        .no-print { display: none !important; }
+        .print-only { display: block !important; }
+        body { 
+            background: white; 
+            background-image: none; 
+            -webkit-print-color-adjust: exact; 
+            print-color-adjust: exact;
+        }
+        @page { margin: 0; size: auto; }
+        .animate-fade-scale, .animate-pop-in, .animate-float {
+          opacity: 1 !important;
+          animation: none !important;
+          transform: none !important;
+        }
+      }
+      
+      /* Custom utilities for the Neo-Brutalist + Pop aesthetic */
+      .brutal-shadow {
+        box-shadow: 4px 4px 0px 0px #1a1a1a;
+      }
+      .brutal-shadow-sm {
+        box-shadow: 2px 2px 0px 0px #1a1a1a;
+      }
+      .brutal-shadow-lg {
+         box-shadow: 8px 8px 0px 0px #1a1a1a;
+      }
+      /* Hover lift effect with shadow adjustment */
+      .brutal-btn {
+        transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+      }
+      .brutal-btn:hover {
+        transform: translate(-2px, -4px);
+        box-shadow: 6px 8px 0px 0px #1a1a1a;
+      }
+      .brutal-btn:active {
+        transform: translate(2px, 2px);
+        box-shadow: 0px 0px 0px 0px #1a1a1a;
+      }
+    </style>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              paper: '#fcfbf7',
+              'duck-yellow': '#ffd60a', /* Slightly richer yellow */
+              'duck-blue': '#7bd3ea', 
+              'duck-green': '#a1e44d', /* Lighter, poppier green */
+              'duck-orange': '#ff9f1c',
+              'duck-pink': '#ff99c8', /* Added pink for variety */
+              brand: {
+                900: '#1a1a1a',
+              },
+            },
+            fontFamily: {
+              display: ['Fredoka', 'sans-serif'],
+              body: ['Nunito', 'sans-serif'],
+              mono: ['JetBrains Mono', 'monospace'],
+            },
+            boxShadow: {
+              'brutal': '4px 4px 0px 0px #1a1a1a',
+              'brutal-lg': '8px 8px 0px 0px #1a1a1a',
+              'brutal-sm': '2px 2px 0px 0px #1a1a1a',
+            }
+          }
+        }
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "react-router-dom": "https://aistudiocdn.com/react-router-dom@^7.9.6"
+  }
+}
+</script>
+</head>
+  <body class="bg-paper text-slate-900 antialiased selection:bg-duck-yellow selection:text-black">
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
