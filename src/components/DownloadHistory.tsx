@@ -97,22 +97,45 @@ const DownloadHistory: React.FC = () => {
     setError('');
 
     try {
-      // Fetch Weekly Packs and single download records in parallel
-      const [packsResponse, downloadRecords] = await Promise.all([
-        fetch(`${API_BASE_URL}/api/weekly-pack/user-packs/${currentUser.uid}`).then(r => r.json()),
-        getUserDownloadRecords(currentUser.uid)
-      ]);
-
-      if (packsResponse.success) {
-        setPacks(packsResponse.packs || []);
+      // Fetch Weekly Packs from backend (with timeout and error handling)
+      let packsData: WeeklyPack[] = [];
+      try {
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+        
+        const packsResponse = await fetch(
+          `${API_BASE_URL}/api/weekly-pack/user-packs/${currentUser.uid}`,
+          { signal: controller.signal }
+        ).then(r => r.json());
+        
+        clearTimeout(timeoutId);
+        
+        if (packsResponse.success) {
+          packsData = packsResponse.packs || [];
+        }
+      } catch (packErr) {
+        console.warn('Failed to fetch weekly packs from backend:', packErr);
+        // Continue without backend data
       }
+      
+      setPacks(packsData);
 
-      // Filter out records without packId (single downloads)
-      const singleDownloads = downloadRecords.filter(r => !r.packId);
-      setWorksheetRecords(singleDownloads);
+      // Fetch single download records from Firestore/local storage
+      try {
+        const downloadRecords = await getUserDownloadRecords(currentUser.uid);
+        // Filter out records with packId (those are pack downloads, not single worksheets)
+        const singleDownloads = downloadRecords.filter(r => !r.packId);
+        setWorksheetRecords(singleDownloads);
+      } catch (recordErr) {
+        console.warn('Failed to fetch download records:', recordErr);
+        setWorksheetRecords([]);
+      }
     } catch (err) {
       console.error('Failed to fetch history:', err);
-      setError('Failed to load history');
+      // Don't show error if we at least have some data
+      if (packs.length === 0 && worksheetRecords.length === 0) {
+        setError('Failed to load history');
+      }
     } finally {
       setLoading(false);
     }
