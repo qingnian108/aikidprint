@@ -8,8 +8,9 @@ import {
   query, 
   where, 
   getDocs,
+  deleteDoc,
   serverTimestamp,
-  Timestamp 
+  Timestamp
 } from 'firebase/firestore';
 
 // 类型定义
@@ -258,7 +259,7 @@ export const recordUsage = async (
 
     // 获取用户计划
     const userData = await getUserData(userId);
-    const limit = userData?.plan === 'Pro' ? 999999 : 1; // Pro无限制，Free每天1次
+    const limit = userData?.plan === 'Pro' ? 999999 : 3; // Pro无限制，Free每天3次
 
     if (!usageSnap.exists()) {
       // 今天第一次使用
@@ -297,7 +298,7 @@ export const checkDailyQuota = async (userId: string): Promise<{ canUse: boolean
 
     // 获取用户计划
     const userData = await getUserData(userId);
-    const limit = userData?.plan === 'Pro' ? 999999 : 1;
+    const limit = userData?.plan === 'Pro' ? 999999 : 3; // Pro无限制，Free每天3次
 
     if (!usageSnap.exists()) {
       // 今天还没使用过
@@ -325,7 +326,40 @@ export interface DownloadRecord {
   theme: string;
   pageCount: number;
   downloadedAt: Timestamp;
+  // 新增：用于重新生成
+  category?: string;
+  type?: string;
+  config?: Record<string, any>;
 }
+
+// 本地存储 key
+const LOCAL_DOWNLOADS_KEY = 'local_downloads';
+
+/**
+ * 获取本地下载记录
+ */
+const getLocalDownloads = (userId: string): { downloadId: string; timestamp: number }[] => {
+  try {
+    const data = localStorage.getItem(`${LOCAL_DOWNLOADS_KEY}_${userId}`);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+};
+
+/**
+ * 保存本地下载记录
+ */
+const saveLocalDownload = (userId: string, downloadId: string) => {
+  try {
+    const downloads = getLocalDownloads(userId);
+    downloads.push({ downloadId, timestamp: Date.now() });
+    localStorage.setItem(`${LOCAL_DOWNLOADS_KEY}_${userId}`, JSON.stringify(downloads));
+    console.log('💾 本地下载记录已保存');
+  } catch (e) {
+    console.error('本地存储失败:', e);
+  }
+};
 
 /**
  * 记录下载
@@ -335,10 +369,30 @@ export const recordDownload = async (
   childName: string,
   theme: string,
   pageCount: number,
-  packId?: string
+  packId?: string,
+  generatorInfo?: { category: string; type: string; config: Record<string, any> }
 ) => {
+  const downloadId = `dl_${userId}_${Date.now()}`;
+  const timestamp = Date.now();
+  
+  // 先保存到本地存储（确保即使 Firestore 失败也有记录）
+  saveLocalDownload(userId, downloadId);
+  
+  // 同时保存完整的下载详情到本地
+  saveLocalDownloadDetails(userId, {
+    downloadId,
+    userId,
+    packId: packId || undefined,
+    childName,
+    theme,
+    pageCount,
+    downloadedAt: timestamp,
+    category: generatorInfo?.category,
+    type: generatorInfo?.type,
+    config: generatorInfo?.config
+  });
+  
   try {
-    const downloadId = `dl_${userId}_${Date.now()}`;
     const downloadRef = doc(db, 'downloads', downloadId);
 
     await setDoc(downloadRef, {
@@ -348,14 +402,77 @@ export const recordDownload = async (
       childName,
       theme,
       pageCount,
-      downloadedAt: serverTimestamp()
+      downloadedAt: serverTimestamp(),
+      category: generatorInfo?.category || null,
+      type: generatorInfo?.type || null,
+      config: generatorInfo?.config || null
     });
 
     console.log('✅ 下载记录创建成功:', downloadId);
+    
+    // 清理旧的单张下载记录，只保留最近 10 条
+    if (!packId) {
+      await cleanupOldSingleWorksheets(userId);
+    }
+    
     return downloadId;
-  } catch (error) {
+  } catch (error: any) {
     console.error('❌ 创建下载记录失败:', error);
-    throw error;
+    console.error('错误代码:', error?.code);
+    console.error('错误消息:', error?.message);
+    // 不抛出错误，因为本地已经保存了
+    return downloadId;
+  }
+};
+
+/**
+ * 清理用户的旧单张下载记录，只保留最近 10 条
+ */
+const cleanupOldSingleWorksheets = async (userId: string) => {
+  try {
+    const downloadsRef = collection(db, 'downloads');
+    // 查询该用户所有没有 packId 的记录（单张下载）
+    const q = query(
+      downloadsRef,
+      where('userId', '==', userId),
+      where('packId', '==', null)
+    );
+    
+    const querySnapshot = await getDocs(q);
+    const records: { id: string; downloadedAt: any }[] = [];
+    
+    querySnapshot.forEach((doc) => {
+      records.push({
+        id: doc.id,
+        downloadedAt: doc.data().downloadedAt
+      });
+    });
+    
+    // 按时间排序（最新的在前）
+    records.sort((a, b) => {
+      const timeA = a.downloadedAt?.toDate?.()?.getTime() || 0;
+      const timeB = b.downloadedAt?.toDate?.()?.getTime() || 0;
+      return timeB - timeA;
+    });
+    
+    // 删除超过 10 条的旧记录
+    if (records.length > MAX_SINGLE_WORKSHEETS_PER_USER) {
+      const toDelete = records.slice(MAX_SINGLE_WORKSHEETS_PER_USER);
+      
+      for (const record of toDelete) {
+        try {
+          await deleteDoc(doc(db, 'downloads', record.id));
+          console.log('🗑️ 删除旧下载记录:', record.id);
+        } catch (e) {
+          console.error('删除记录失败:', e);
+        }
+      }
+      
+      console.log(`✅ 清理了 ${toDelete.length} 条旧的单张下载记录`);
+    }
+  } catch (error) {
+    console.error('❌ 清理旧记录失败:', error);
+    // 不抛出错误，清理失败不影响主流程
   }
 };
 
@@ -366,34 +483,134 @@ export const getUserDownloadStats = async (userId: string): Promise<{
   totalDownloads: number;
   thisWeekDownloads: number;
 }> => {
+  const now = new Date();
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(now.getDate() - now.getDay()); // 本周日
+  startOfWeek.setHours(0, 0, 0, 0);
+
+  // 先获取本地记录
+  const localDownloads = getLocalDownloads(userId);
+  let localTotal = localDownloads.length;
+  let localThisWeek = localDownloads.filter(d => d.timestamp >= startOfWeek.getTime()).length;
+
   try {
     const downloadsRef = collection(db, 'downloads');
     const q = query(downloadsRef, where('userId', '==', userId));
     const querySnapshot = await getDocs(q);
 
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay()); // 本周日
-    startOfWeek.setHours(0, 0, 0, 0);
-
-    let totalDownloads = 0;
-    let thisWeekDownloads = 0;
+    let firestoreTotal = 0;
+    let firestoreThisWeek = 0;
 
     querySnapshot.forEach((doc) => {
-      totalDownloads++;
+      firestoreTotal++;
       const data = doc.data();
       if (data.downloadedAt) {
         const downloadDate = data.downloadedAt.toDate();
         if (downloadDate >= startOfWeek) {
-          thisWeekDownloads++;
+          firestoreThisWeek++;
         }
       }
     });
 
+    console.log('📊 Firestore 统计:', { firestoreTotal, firestoreThisWeek });
+    console.log('📊 本地统计:', { localTotal, localThisWeek });
+
+    // 使用较大的值（Firestore 和本地的最大值）
+    const totalDownloads = Math.max(firestoreTotal, localTotal);
+    const thisWeekDownloads = Math.max(firestoreThisWeek, localThisWeek);
+
     return { totalDownloads, thisWeekDownloads };
+  } catch (error: any) {
+    console.error('❌ 获取 Firestore 下载统计失败:', error);
+    console.error('错误代码:', error?.code);
+    // 如果 Firestore 失败，返回本地统计
+    console.log('📊 使用本地统计:', { localTotal, localThisWeek });
+    return { totalDownloads: localTotal, thisWeekDownloads: localThisWeek };
+  }
+};
+
+/**
+ * 获取完整的本地下载记录（包含详细信息）
+ */
+const LOCAL_DOWNLOAD_DETAILS_KEY = 'local_download_details';
+
+const getLocalDownloadDetails = (userId: string): DownloadRecord[] => {
+  try {
+    const data = localStorage.getItem(`${LOCAL_DOWNLOAD_DETAILS_KEY}_${userId}`);
+    return data ? JSON.parse(data) : [];
+  } catch {
+    return [];
+  }
+};
+
+// 每个用户最多保留的 Single Worksheet 记录数量
+const MAX_SINGLE_WORKSHEETS_PER_USER = 10;
+
+/**
+ * 保存完整的本地下载记录
+ */
+const saveLocalDownloadDetails = (userId: string, record: Omit<DownloadRecord, 'downloadedAt'> & { downloadedAt: number }) => {
+  try {
+    const records = getLocalDownloadDetails(userId);
+    records.unshift(record as any);
+    // 只保留最近 10 条（不含 packId 的单张下载）
+    const singleWorksheets = records.filter(r => !r.packId);
+    const packDownloads = records.filter(r => r.packId);
+    const trimmedSingles = singleWorksheets.slice(0, MAX_SINGLE_WORKSHEETS_PER_USER);
+    const trimmed = [...trimmedSingles, ...packDownloads].sort((a, b) => {
+      const timeA = (a as any).downloadedAt || 0;
+      const timeB = (b as any).downloadedAt || 0;
+      return timeB - timeA;
+    });
+    localStorage.setItem(`${LOCAL_DOWNLOAD_DETAILS_KEY}_${userId}`, JSON.stringify(trimmed));
+    console.log('💾 本地下载详情已保存，单张记录数:', trimmedSingles.length);
+  } catch (e) {
+    console.error('本地存储失败:', e);
+  }
+};
+
+/**
+ * 获取用户所有下载记录（用于显示历史）
+ */
+export const getUserDownloadRecords = async (userId: string): Promise<DownloadRecord[]> => {
+  // 先获取本地记录
+  const localRecords = getLocalDownloadDetails(userId);
+  console.log('📊 本地下载记录:', localRecords.length);
+
+  try {
+    const downloadsRef = collection(db, 'downloads');
+    const q = query(downloadsRef, where('userId', '==', userId));
+    const querySnapshot = await getDocs(q);
+
+    const firestoreRecords: DownloadRecord[] = [];
+    querySnapshot.forEach((doc) => {
+      firestoreRecords.push(doc.data() as DownloadRecord);
+    });
+
+    console.log('📊 Firestore 下载记录:', firestoreRecords.length);
+
+    // 合并记录，去重（以 downloadId 为准）
+    const allRecords = [...firestoreRecords];
+    const existingIds = new Set(firestoreRecords.map(r => r.downloadId));
+    
+    for (const localRecord of localRecords) {
+      if (!existingIds.has(localRecord.downloadId)) {
+        allRecords.push(localRecord);
+      }
+    }
+
+    // 按时间倒序排列
+    allRecords.sort((a, b) => {
+      const timeA = a.downloadedAt?.toDate?.()?.getTime() || (a.downloadedAt as any) || 0;
+      const timeB = b.downloadedAt?.toDate?.()?.getTime() || (b.downloadedAt as any) || 0;
+      return timeB - timeA;
+    });
+
+    return allRecords;
   } catch (error) {
-    console.error('❌ 获取下载统计失败:', error);
-    return { totalDownloads: 0, thisWeekDownloads: 0 };
+    console.error('❌ 获取 Firestore 下载记录失败:', error);
+    // 如果 Firestore 失败，返回本地记录
+    return localRecords;
   }
 };
 
@@ -521,4 +738,190 @@ export const getDashboardStats = async (userId: string): Promise<{
     console.error('❌ 获取 Dashboard 统计失败:', error);
     return { totalDownloads: 0, thisWeekDownloads: 0, childrenCount: 0 };
   }
+};
+
+
+// ========== Weekly Delivery 设置管理 ==========
+
+export interface WeeklyDeliverySettings {
+  userId: string;
+  enabled: boolean;
+  deliveryMethod: 'email' | 'manual';
+  deliveryTime: string; // HH:mm 格式
+  timezone: string;
+  childName: string;
+  childAge: string;
+  theme: string;
+  email: string;
+  updatedAt: Timestamp;
+}
+
+/**
+ * 保存 Weekly Delivery 设置
+ */
+export const saveWeeklyDeliverySettings = async (
+  userId: string,
+  settings: Omit<WeeklyDeliverySettings, 'userId' | 'updatedAt'>
+) => {
+  try {
+    const settingsRef = doc(db, 'weeklyDeliverySettings', userId);
+    
+    await setDoc(settingsRef, {
+      userId,
+      ...settings,
+      updatedAt: serverTimestamp()
+    });
+
+    console.log('✅ Weekly Delivery 设置保存成功:', userId);
+    return true;
+  } catch (error) {
+    console.error('❌ 保存 Weekly Delivery 设置失败:', error);
+    throw error;
+  }
+};
+
+/**
+ * 获取 Weekly Delivery 设置
+ */
+export const getWeeklyDeliverySettings = async (userId: string): Promise<WeeklyDeliverySettings | null> => {
+  try {
+    const settingsRef = doc(db, 'weeklyDeliverySettings', userId);
+    const settingsSnap = await getDoc(settingsRef);
+
+    if (settingsSnap.exists()) {
+      return settingsSnap.data() as WeeklyDeliverySettings;
+    }
+    return null;
+  } catch (error) {
+    console.error('❌ 获取 Weekly Delivery 设置失败:', error);
+    return null;
+  }
+};
+
+/**
+ * 获取所有启用了 Weekly Delivery 的用户设置（用于后端定时任务）
+ */
+export const getAllEnabledWeeklyDeliverySettings = async (): Promise<WeeklyDeliverySettings[]> => {
+  try {
+    const settingsRef = collection(db, 'weeklyDeliverySettings');
+    const q = query(settingsRef, where('enabled', '==', true));
+    const querySnapshot = await getDocs(q);
+
+    const settings: WeeklyDeliverySettings[] = [];
+    querySnapshot.forEach((doc) => {
+      settings.push(doc.data() as WeeklyDeliverySettings);
+    });
+
+    return settings;
+  } catch (error) {
+    console.error('❌ 获取所有 Weekly Delivery 设置失败:', error);
+    return [];
+  }
+};
+
+
+// ========== Print Settings 管理 ==========
+
+export interface PrintSettings {
+  userId: string;
+  printMode: 'color' | 'eco';
+  paperSize: 'letter' | 'a4';
+  binderReady: boolean;
+  updatedAt: Timestamp;
+}
+
+// 本地存储 key
+const LOCAL_PRINT_SETTINGS_KEY = 'print_settings';
+
+/**
+ * 获取本地打印设置
+ */
+const getLocalPrintSettings = (): Partial<PrintSettings> | null => {
+  try {
+    const data = localStorage.getItem(LOCAL_PRINT_SETTINGS_KEY);
+    return data ? JSON.parse(data) : null;
+  } catch {
+    return null;
+  }
+};
+
+/**
+ * 保存本地打印设置
+ */
+const saveLocalPrintSettings = (settings: Partial<PrintSettings>) => {
+  try {
+    localStorage.setItem(LOCAL_PRINT_SETTINGS_KEY, JSON.stringify(settings));
+  } catch (e) {
+    console.error('本地存储失败:', e);
+  }
+};
+
+/**
+ * 保存 Print Settings
+ */
+export const savePrintSettings = async (
+  userId: string,
+  settings: Omit<PrintSettings, 'userId' | 'updatedAt'>
+) => {
+  // 先保存到本地
+  saveLocalPrintSettings({ ...settings, userId });
+  
+  try {
+    const settingsRef = doc(db, 'printSettings', userId);
+    
+    await setDoc(settingsRef, {
+      userId,
+      ...settings,
+      updatedAt: serverTimestamp()
+    });
+
+    console.log('✅ Print Settings 保存成功:', userId);
+    return true;
+  } catch (error) {
+    console.error('❌ 保存 Print Settings 失败:', error);
+    // 本地已保存，不抛出错误
+    return true;
+  }
+};
+
+/**
+ * 获取 Print Settings
+ */
+export const getPrintSettings = async (userId: string): Promise<PrintSettings | null> => {
+  // 先尝试从本地获取
+  const localSettings = getLocalPrintSettings();
+  
+  try {
+    const settingsRef = doc(db, 'printSettings', userId);
+    const settingsSnap = await getDoc(settingsRef);
+
+    if (settingsSnap.exists()) {
+      const firestoreSettings = settingsSnap.data() as PrintSettings;
+      // 同步到本地
+      saveLocalPrintSettings(firestoreSettings);
+      return firestoreSettings;
+    }
+    
+    // Firestore 没有，返回本地设置
+    if (localSettings) {
+      return localSettings as PrintSettings;
+    }
+    
+    return null;
+  } catch (error) {
+    console.error('❌ 获取 Print Settings 失败:', error);
+    // 返回本地设置
+    return localSettings as PrintSettings | null;
+  }
+};
+
+/**
+ * 获取默认打印设置
+ */
+export const getDefaultPrintSettings = (): Omit<PrintSettings, 'userId' | 'updatedAt'> => {
+  return {
+    printMode: 'color',
+    paperSize: 'letter',
+    binderReady: false
+  };
 };

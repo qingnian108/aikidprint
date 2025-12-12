@@ -19,15 +19,15 @@ const Pricing: React.FC = () => {
       period: '/forever',
       description: 'Good for testing the waters.',
       features: [
-        '1 Worksheet / day',
+        '3 Worksheets / day',
         'Standard Speed',
         'All Themes',
-        'Watermarked PDF'
+        'No Watermarks'
       ],
       notIncluded: [
-        'No Watermarks',
         'Save History',
         'Unlimited Gen',
+        'Weekly Pack',
         'Priority Support'
       ],
       buttonText: 'START CREATING',
@@ -43,7 +43,7 @@ const Pricing: React.FC = () => {
         'Unlimited Gen',
         'No Watermarks',
         'Save Favorites',
-        'Multi-page Bundles',
+        'Weekly Pack',
         'Fast Generation'
       ],
       notIncluded: [],
@@ -77,48 +77,52 @@ const Pricing: React.FC = () => {
         <p className="text-xl text-slate-600 font-mono">SIMPLE PLANS. NO HIDDEN FEES.</p>
       </div>
 
-      <div className="flex flex-col md:flex-row justify-center gap-12 items-start">
+      <div className="flex flex-col md:flex-row justify-center gap-8 items-center">
         {plans.map((plan) => (
           <div 
             key={plan.name} 
-            className={`flex-1 w-full max-w-md border-2 border-black p-8 shadow-brutal hover:shadow-brutal-lg transition-all ${plan.color} relative`}
+            className={`w-full border-2 border-black shadow-brutal hover:shadow-brutal-lg transition-all ${plan.color} relative ${
+              plan.primary 
+                ? 'max-w-lg p-10 scale-105 z-10' 
+                : 'max-w-sm p-6 opacity-90'
+            }`}
           >
             {plan.primary && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-black text-white border-2 border-white px-4 py-1 text-xs font-bold uppercase tracking-wide shadow-lg">
                     <Sparkles size={12} className="inline mr-1"/> Most Popular
                 </div>
             )}
-            <h3 className="text-3xl font-bold font-display mb-4 uppercase">{plan.name}</h3>
+            <h3 className={`font-bold font-display mb-4 uppercase ${plan.primary ? 'text-4xl' : 'text-2xl'}`}>{plan.name}</h3>
             <div className="flex items-baseline mb-4 border-b-2 border-black pb-4">
-              <span className="text-6xl font-bold tracking-tight">{plan.price}</span>
-              <span className="ml-2 text-lg font-mono text-slate-600">{plan.period}</span>
+              <span className={`font-bold tracking-tight ${plan.primary ? 'text-7xl' : 'text-5xl'}`}>{plan.price}</span>
+              <span className={`ml-2 font-mono text-slate-600 ${plan.primary ? 'text-xl' : 'text-base'}`}>{plan.period}</span>
             </div>
-            <p className="mb-8 font-mono text-sm text-slate-700 h-10">{plan.description}</p>
+            <p className={`mb-6 font-mono text-slate-700 ${plan.primary ? 'text-base' : 'text-sm'}`}>{plan.description}</p>
             
-            <ul className="space-y-4 mb-10">
+            <ul className={`mb-8 ${plan.primary ? 'space-y-4' : 'space-y-3'}`}>
               {plan.features.map((feat) => (
                 <li key={feat} className="flex items-center gap-3">
                   <div className="bg-black text-white p-0.5">
-                    <Check size={14} strokeWidth={3} />
+                    <Check size={plan.primary ? 16 : 12} strokeWidth={3} />
                   </div>
-                  <span className="text-sm font-bold uppercase">{feat}</span>
+                  <span className={`font-bold uppercase ${plan.primary ? 'text-base' : 'text-xs'}`}>{feat}</span>
                 </li>
               ))}
               {plan.notIncluded.map((feat) => (
                 <li key={feat} className="flex items-center gap-3 opacity-40">
                   <div className="border-2 border-black p-0.5">
-                    <X size={12} strokeWidth={3} />
+                    <X size={plan.primary ? 14 : 10} strokeWidth={3} />
                   </div>
-                  <span className="text-sm font-bold uppercase decoration-2 line-through">{feat}</span>
+                  <span className={`font-bold uppercase decoration-2 line-through ${plan.primary ? 'text-base' : 'text-xs'}`}>{feat}</span>
                 </li>
               ))}
             </ul>
 
             <button
-              className={`w-full py-4 border-2 border-black font-bold text-lg transition-all shadow-brutal-sm active:shadow-none active:translate-y-[2px] uppercase ${
+              className={`w-full border-2 border-black font-bold transition-all shadow-brutal-sm active:shadow-none active:translate-y-[2px] uppercase ${
                 plan.primary
-                  ? 'bg-duck-blue text-black hover:bg-blue-300'
-                  : 'bg-black text-white hover:bg-slate-800'
+                  ? 'py-5 text-xl bg-duck-blue text-black hover:bg-blue-300'
+                  : 'py-3 text-sm bg-black text-white hover:bg-slate-800'
               }`}
               onClick={() => {
                 if (plan.primary) {

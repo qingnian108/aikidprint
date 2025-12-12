@@ -4,10 +4,13 @@ import { getPageType, ConfigOption } from '../../constants/pageTypes';
 import { generateWorksheet } from '../../services/api';
 import { ArrowLeft, Sparkles, Download, RefreshCw, Printer } from 'lucide-react';
 import ErrorModal from '../../components/ErrorModal';
+import { useAuth } from '../../contexts/AuthContext';
+import { recordDownload, getPrintSettings, getDefaultPrintSettings } from '../../services/firestoreService';
 
 const GeneratorDetail: React.FC = () => {
     const { categoryId, typeId } = useParams<{ categoryId: string; typeId: string }>();
     const navigate = useNavigate();
+    const { currentUser } = useAuth();
 
     const pageType = getPageType(categoryId || '', typeId || '');
 
@@ -76,11 +79,29 @@ const GeneratorDetail: React.FC = () => {
         if (generatedImages.length === 0) return;
 
         try {
+            // 获取用户的打印设置
+            let printSettings = getDefaultPrintSettings();
+            if (currentUser) {
+                const userSettings = await getPrintSettings(currentUser.uid);
+                if (userSettings) {
+                    printSettings = userSettings;
+                }
+            }
+
+            // 根据纸张大小设置尺寸
+            const isLetter = printSettings.paperSize === 'letter';
+            const pageWidth = isLetter ? 215.9 : 210;
+            const pageHeight = isLetter ? 279.4 : 297;
+            
+            // Binder Ready: 左侧留出 25mm 用于打孔
+            const binderMargin = printSettings.binderReady ? 25 : 0;
+            const contentWidth = pageWidth - binderMargin;
+
             const { jsPDF } = await import('jspdf');
             const pdf = new jsPDF({
                 orientation: 'portrait',
                 unit: 'mm',
-                format: 'a4'
+                format: printSettings.paperSize === 'letter' ? 'letter' : 'a4'
             });
 
             for (let i = 0; i < generatedImages.length; i++) {
@@ -97,15 +118,47 @@ const GeneratorDetail: React.FC = () => {
                     img.src = generatedImages[i];
                 });
 
-                const pageWidth = 210;
-                const pageHeight = 297;
-                const imgWidth = pageWidth;
-                const imgHeight = (img.height * pageWidth) / img.width;
+                const imgRatio = img.width / img.height;
+                const pageRatio = contentWidth / pageHeight;
 
-                pdf.addImage(img, 'PNG', 0, 0, imgWidth, imgHeight);
+                let imgWidth: number, imgHeight: number, x: number, y: number;
+                if (imgRatio > pageRatio) {
+                    imgWidth = contentWidth;
+                    imgHeight = contentWidth / imgRatio;
+                    x = binderMargin;
+                    y = (pageHeight - imgHeight) / 2;
+                } else {
+                    imgHeight = pageHeight;
+                    imgWidth = pageHeight * imgRatio;
+                    x = binderMargin + (contentWidth - imgWidth) / 2;
+                    y = 0;
+                }
+
+                pdf.addImage(img, 'PNG', x, y, imgWidth, imgHeight);
             }
 
             pdf.save(`worksheet-${Date.now()}.pdf`);
+            
+            // 记录下载
+            if (currentUser) {
+                try {
+                    console.log('📝 Recording PDF download for user:', currentUser.uid);
+                    await recordDownload(
+                        currentUser.uid, 
+                        pageType?.title || 'worksheet', 
+                        config.theme || config.letter || 'default', 
+                        generatedImages.length,
+                        undefined,
+                        { category: categoryId!, type: typeId!, config }
+                    );
+                    console.log('✅ PDF download recorded successfully');
+                    window.dispatchEvent(new Event('downloadComplete'));
+                } catch (e) {
+                    console.error('❌ Failed to record PDF download:', e);
+                }
+            } else {
+                console.log('⚠️ No user logged in, skipping download record');
+            }
         } catch (error) {
             console.error('PDF generation failed:', error);
             setErrorModal({ open: true, message: 'PDF generation failed. Please try again.' });
@@ -129,8 +182,29 @@ const GeneratorDetail: React.FC = () => {
                 a.click();
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
+                
+                // 记录下载
+                if (currentUser) {
+                    try {
+                        console.log('📝 Recording PNG download for user:', currentUser.uid);
+                        await recordDownload(
+                            currentUser.uid, 
+                            pageType?.title || 'worksheet', 
+                            config.theme || config.letter || 'default', 
+                            1,
+                            undefined,
+                            { category: categoryId!, type: typeId!, config }
+                        );
+                        console.log('✅ PNG download recorded successfully');
+                        window.dispatchEvent(new Event('downloadComplete'));
+                    } catch (e) {
+                        console.error('❌ Failed to record PNG download:', e);
+                    }
+                } else {
+                    console.log('⚠️ No user logged in, skipping download record');
+                }
             } else {
-                // 澶氬紶鍥剧墖鎵撳寘鎴怹IP
+                // 多张图片打包成ZIP
                 const JSZip = (await import('jszip')).default;
                 const zip = new JSZip();
 
@@ -149,6 +223,27 @@ const GeneratorDetail: React.FC = () => {
                 a.click();
                 window.URL.revokeObjectURL(url);
                 document.body.removeChild(a);
+                
+                // 记录下载
+                if (currentUser) {
+                    try {
+                        console.log('📝 Recording ZIP download for user:', currentUser.uid);
+                        await recordDownload(
+                            currentUser.uid, 
+                            pageType?.title || 'worksheet', 
+                            config.theme || config.letter || 'default', 
+                            generatedImages.length,
+                            undefined,
+                            { category: categoryId!, type: typeId!, config }
+                        );
+                        console.log('✅ ZIP download recorded successfully');
+                        window.dispatchEvent(new Event('downloadComplete'));
+                    } catch (e) {
+                        console.error('❌ Failed to record ZIP download:', e);
+                    }
+                } else {
+                    console.log('⚠️ No user logged in, skipping download record');
+                }
             }
         } catch (error) {
             console.error('Download failed:', error);

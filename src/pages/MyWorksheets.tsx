@@ -1,6 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Download, Printer, Trash2, RefreshCw, Trash } from 'lucide-react';
 import DeleteConfirmModal from '../components/DeleteConfirmModal';
+import { useAuth } from '../contexts/AuthContext';
+import { recordDownload } from '../services/firestoreService';
+import { API_BASE_URL } from '../config/api';
 
 interface WorksheetHistory {
     id: string;
@@ -15,6 +18,7 @@ interface WorksheetHistory {
 }
 
 const MyWorksheets: React.FC = () => {
+    const { currentUser } = useAuth();
     const [history, setHistory] = useState<WorksheetHistory[]>([]);
     const [loading, setLoading] = useState(true);
     const [downloading, setDownloading] = useState<string | null>(null);
@@ -22,11 +26,11 @@ const MyWorksheets: React.FC = () => {
     const [itemToDelete, setItemToDelete] = useState<WorksheetHistory | null>(null);
     const [clearing, setClearing] = useState(false);
 
-    // 加载历史记录
+    // Load history
     const loadHistory = async () => {
         setLoading(true);
         try {
-            const response = await fetch('http://localhost:3000/api/worksheets/history?userId=guest');
+            const response = await fetch(`${API_BASE_URL}/api/worksheets/history?userId=guest`);
             const result = await response.json();
             if (result.success) {
                 setHistory(result.data);
@@ -56,6 +60,16 @@ const MyWorksheets: React.FC = () => {
             a.click();
             window.URL.revokeObjectURL(url);
             document.body.removeChild(a);
+            
+            // 记录下载
+            if (currentUser) {
+                try {
+                    await recordDownload(currentUser.uid, item.pageTypeName, item.categoryId, 1);
+                    window.dispatchEvent(new Event('downloadComplete'));
+                } catch (e) {
+                    console.error('Failed to record download:', e);
+                }
+            }
         } catch (error) {
             console.error('Download failed:', error);
             alert('Download failed');
@@ -90,6 +104,16 @@ const MyWorksheets: React.FC = () => {
 
             pdf.addImage(img, 'PNG', 0, 0, imgWidth, imgHeight);
             pdf.save(`${item.pageTypeName}-${Date.now()}.pdf`);
+            
+            // 记录下载
+            if (currentUser) {
+                try {
+                    await recordDownload(currentUser.uid, item.pageTypeName, item.categoryId, 1);
+                    window.dispatchEvent(new Event('downloadComplete'));
+                } catch (e) {
+                    console.error('Failed to record download:', e);
+                }
+            }
         } catch (error) {
             console.error('PDF generation failed:', error);
             alert('PDF generation failed');
@@ -104,12 +128,12 @@ const MyWorksheets: React.FC = () => {
         setDeleteModalOpen(true);
     };
 
-    // 确认删除
+    // Confirm delete
     const handleDeleteConfirm = async () => {
         if (!itemToDelete) return;
 
         try {
-            const response = await fetch(`http://localhost:3000/api/worksheets/history/${itemToDelete.id}`, {
+            const response = await fetch(`${API_BASE_URL}/api/worksheets/history/${itemToDelete.id}`, {
                 method: 'DELETE'
             });
             const result = await response.json();
@@ -293,7 +317,7 @@ const MyWorksheets: React.FC = () => {
                                     const ids = history.map(h => h.id);
                                     await Promise.all(
                                         ids.map(id =>
-                                            fetch(`http://localhost:3000/api/worksheets/history/${id}`, { method: 'DELETE' })
+                                            fetch(`${API_BASE_URL}/api/worksheets/history/${id}`, { method: 'DELETE' })
                                         )
                                     );
                                     setHistory([]);

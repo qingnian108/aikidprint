@@ -1,0 +1,107 @@
+{
+  "packId": "7u51hox1",
+  "childName": "sdswe",
+  "age": "3-4",
+  "theme": "space",
+  "weekNumber": 50,
+  "pages": [
+    {
+      "order": 1,
+      "type": "cover",
+      "title": "Cover Page",
+      "imageUrl": "/uploads/Cover/space/space_cover_03.png"
+    },
+    {
+      "order": 2,
+      "type": "write-my-name",
+      "title": "Write My Name",
+      "imageUrl": "/generated/worksheets/write-my-name-1765445758140.png"
+    },
+    {
+      "order": 3,
+      "type": "uppercase-tracing",
+      "title": "Uppercase J Tracing",
+      "imageUrl": "/generated/worksheets/uppercase-J-1765445758642.png"
+    },
+    {
+      "order": 4,
+      "type": "lowercase-tracing",
+      "title": "Lowercase j Tracing",
+      "imageUrl": "/generated/worksheets/lowercase-j-1765445758903.png"
+    },
+    {
+      "order": 5,
+      "type": "letter-recognition",
+      "title": "Find Letter J",
+      "imageUrl": "/generated/worksheets/letter-recognition-J-1765445759024.png"
+    },
+    {
+      "order": 6,
+      "type": "number-tracing",
+      "title": "Number Tracing",
+      "imageUrl": "/generated/worksheets/number-tracing-0-4-1765445759147.png"
+    },
+    {
+      "order": 7,
+      "type": "counting-objects",
+      "title": "Count and Write",
+      "imageUrl": "/generated/worksheets/count-write-space-1765445759325.png"
+    },
+    {
+      "order": 8,
+      "type": "maze",
+      "title": "Maze",
+      "imageUrl": "/generated/worksheets/maze-1765445759513.png"
+    },
+    {
+      "order": 9,
+      "type": "shadow-matching",
+      "title": "Shadow Matching",
+      "imageUrl": "/generated/worksheets/shadow-matching-space-1765445759606.png"
+    },
+    {
+      "order": 10,
+      "type": "sorting",
+      "title": "Sorting",
+      "imageUrl": "/generated/worksheets/sorting-1765445759747.png"
+    },
+    {
+      "order": 11,
+      "type": "pattern-sequencing",
+      "title": "Pattern Sequencing",
+      "imageUrl": "/generated/worksheets/pattern-sequencing-1765445759875.png"
+    },
+    {
+      "order": 12,
+      "type": "number-path",
+      "title": "Connect the Dots",
+      "imageUrl": "/generated/worksheets/connect-dots-space-1765445760237.png"
+    },
+    {
+      "order": 13,
+      "type": "trace-lines",
+      "title": "Trace Lines",
+      "imageUrl": "/generated/worksheets/trace-lines-1765445760396.png"
+    },
+    {
+      "order": 14,
+      "type": "shape-tracing",
+      "title": "Shape Tracing",
+      "imageUrl": "/generated/worksheets/shape-tracing-1765445760602.png"
+    },
+    {
+      "order": 15,
+      "type": "coloring-page",
+      "title": "Coloring Page",
+      "imageUrl": "/generated/worksheets/coloring-page-1765445760934.png"
+    },
+    {
+      "order": 16,
+      "type": "creative-prompt",
+      "title": "Creative Drawing",
+      "imageUrl": "/generated/worksheets/creative-prompt-1765445761046.png"
+    }
+  ],
+  "createdAt": "2025-12-11T09:36:01.192Z",
+  "createdBy": "RjXseDE8iBgw6IdgpnuA1FCTZLG3"
+}

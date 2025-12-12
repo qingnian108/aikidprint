@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import worksheetRoutes from './worksheets.js';
 import weeklyPackRoutes from './weeklyPack.js';
+import weeklyDeliveryRoutes from './weeklyDelivery.js';
 
 const router = Router();
 
@@ -14,5 +15,8 @@ router.use('/worksheets', worksheetRoutes);
 
 // Weekly pack routes
 router.use('/weekly-pack', weeklyPackRoutes);
+
+// Weekly delivery routes (cron job management)
+router.use('/weekly-delivery', weeklyDeliveryRoutes);
 
 export default router;

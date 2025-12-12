@@ -56,14 +56,14 @@ const PODOption: React.FC<PODOptionProps> = ({ childName = 'Your Child', weekNum
         </div>
 
         <button
-          onClick={() => setShowModal(true)}
-          className="brutal-btn bg-black text-white border-3 border-white px-12 py-5 rounded-2xl font-bold text-xl shadow-[6px_6px_0px_0px_rgba(255,255,255,1)]"
+          disabled
+          className="brutal-btn bg-slate-400 text-white border-3 border-slate-300 px-12 py-5 rounded-2xl font-bold text-xl cursor-not-allowed opacity-80"
         >
-          Order Printed Workbook →
+          🚧 Coming Soon
         </button>
 
         <p className="text-sm font-mono mt-4 text-slate-700">
-          Starting at $19.99 • Free shipping on orders over $50
+          Print-on-demand service launching soon!
         </p>
       </motion.div>
 

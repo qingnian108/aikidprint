@@ -29,6 +29,9 @@ if (!fs.existsSync(PACKS_DIR)) {
   fs.mkdirSync(PACKS_DIR, { recursive: true });
 }
 
+// 每个用户最多保留的 pack 数量
+const MAX_PACKS_PER_USER = 10;
+
 // 生成唯一 packId
 function generatePackId(): string {
   const chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
@@ -37,6 +40,72 @@ function generatePackId(): string {
     result += chars.charAt(Math.floor(Math.random() * chars.length));
   }
   return result;
+}
+
+// 清理用户的旧 packs，只保留最近 MAX_PACKS_PER_USER 个
+function cleanupUserPacks(userId: string): void {
+  if (!userId) return;
+  
+  try {
+    const files = fs.readdirSync(PACKS_DIR).filter(f => f.endsWith('.json'));
+    const userPacks: Array<{ file: string; createdAt: string; pages: Array<{ imageUrl: string }> }> = [];
+
+    // 收集该用户的所有 packs
+    for (const file of files) {
+      try {
+        const filePath = path.join(PACKS_DIR, file);
+        const packData = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+        
+        if (packData.createdBy === userId) {
+          userPacks.push({
+            file,
+            createdAt: packData.createdAt,
+            pages: packData.pages || []
+          });
+        }
+      } catch (e) {
+        // 忽略读取错误
+      }
+    }
+
+    // 如果超过限制，删除最旧的
+    if (userPacks.length > MAX_PACKS_PER_USER) {
+      // 按创建时间排序（最新的在前）
+      userPacks.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      
+      // 删除超出限制的旧 packs
+      const packsToDelete = userPacks.slice(MAX_PACKS_PER_USER);
+      
+      for (const pack of packsToDelete) {
+        try {
+          // 删除 pack JSON 文件
+          const packFilePath = path.join(PACKS_DIR, pack.file);
+          fs.unlinkSync(packFilePath);
+          console.log(`[WeeklyPack] Deleted old pack: ${pack.file}`);
+          
+          // 删除关联的图片文件
+          for (const page of pack.pages) {
+            if (page.imageUrl) {
+              // 图片 URL 格式: /uploads/generated/xxx.png
+              const imagePath = page.imageUrl.replace(/^\//, '');
+              const fullImagePath = path.join(__dirname, '../../public', imagePath);
+              
+              if (fs.existsSync(fullImagePath)) {
+                fs.unlinkSync(fullImagePath);
+                console.log(`[WeeklyPack] Deleted image: ${imagePath}`);
+              }
+            }
+          }
+        } catch (e) {
+          console.error(`[WeeklyPack] Error deleting pack ${pack.file}:`, e);
+        }
+      }
+      
+      console.log(`[WeeklyPack] Cleaned up ${packsToDelete.length} old packs for user ${userId}`);
+    }
+  } catch (error) {
+    console.error('[WeeklyPack] Error during cleanup:', error);
+  }
 }
 
 // Pack 数据接口
@@ -54,6 +123,7 @@ interface PackData {
   }>;
   createdAt: string;
   createdBy?: string;
+  source?: 'manual' | 'auto'; // manual = 用户手动生成, auto = 定时任务自动推送
 }
 
 /**
@@ -405,7 +475,7 @@ router.post('/generate-pages', async (req, res) => {
  */
 router.post('/save', async (req, res) => {
   try {
-    const { childName, age, theme, weekNumber, pages, userId } = req.body;
+    const { childName, age, theme, weekNumber, pages, userId, source } = req.body;
 
     if (!childName || !age || !theme || !pages) {
       return res.status(400).json({
@@ -422,7 +492,8 @@ router.post('/save', async (req, res) => {
       weekNumber: weekNumber || getCurrentWeekNumber(),
       pages,
       createdAt: new Date().toISOString(),
-      createdBy: userId
+      createdBy: userId,
+      source: source || 'manual' // 默认为手动生成
     };
 
     // 保存到文件
@@ -430,6 +501,11 @@ router.post('/save', async (req, res) => {
     fs.writeFileSync(filePath, JSON.stringify(packData, null, 2));
 
     console.log(`[WeeklyPack] Saved pack ${packId} for ${childName}`);
+
+    // 清理该用户的旧 packs，只保留最近 10 个
+    if (userId) {
+      cleanupUserPacks(userId);
+    }
 
     res.json({
       success: true,
@@ -625,5 +701,53 @@ function getCurrentWeekNumber(): number {
   const days = Math.floor((now.getTime() - startOfYear.getTime()) / (24 * 60 * 60 * 1000));
   return Math.ceil((days + startOfYear.getDay() + 1) / 7);
 }
+
+/**
+ * GET /api/weekly-pack/user-packs/:userId
+ * Get all packs for a specific user
+ */
+router.get('/user-packs/:userId', async (req, res) => {
+  try {
+    const { userId } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({
+        error: 'Missing userId'
+      });
+    }
+
+    // 读取所有 pack 文件
+    const files = fs.readdirSync(PACKS_DIR).filter(f => f.endsWith('.json'));
+    const userPacks: PackData[] = [];
+
+    for (const file of files) {
+      try {
+        const filePath = path.join(PACKS_DIR, file);
+        const packData = JSON.parse(fs.readFileSync(filePath, 'utf-8')) as PackData;
+        
+        // 只返回该用户的 packs
+        if (packData.createdBy === userId) {
+          userPacks.push(packData);
+        }
+      } catch (e) {
+        console.error(`Error reading pack file ${file}:`, e);
+      }
+    }
+
+    // 按创建时间倒序排列
+    userPacks.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+
+    res.json({
+      success: true,
+      packs: userPacks
+    });
+  } catch (error) {
+    console.error('Error getting user packs:', error);
+    res.status(500).json({
+      error: 'Failed to get user packs',
+      message: error instanceof Error ? error.message : 'Unknown error'
+    });
+  }
+});
 
 export default router;

@@ -2,49 +2,87 @@ import React, { useState, useEffect } from 'react';
 import { Crown, Sparkles, TrendingUp } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import ChildProfiles from '../components/ChildProfiles';
 import WeeklyDeliverySettings from '../components/WeeklyDeliverySettings';
 import DownloadHistory from '../components/DownloadHistory';
 import PrintSettings from '../components/PrintSettings';
+import PODOption from '../components/PODOption';
 import { useAuth } from '../contexts/AuthContext';
-import { getUserData, getDashboardStats } from '../services/firestoreService';
+import { getUserData, getUserDownloadStats } from '../services/firestoreService';
 
 const DashboardNew: React.FC = () => {
   const { currentUser } = useAuth();
-  const [activeTab, setActiveTab] = useState<'profiles' | 'delivery' | 'history' | 'settings'>('profiles');
+  const [activeTab, setActiveTab] = useState<'delivery' | 'history' | 'settings'>('history');
   const [userPlan, setUserPlan] = useState<'Free' | 'Pro'>('Free');
   const [stats, setStats] = useState({
     totalDownloads: 0,
-    thisWeekDownloads: 0,
-    childrenCount: 0
+    thisWeekDownloads: 0
   });
 
   // 获取用户订阅计划和统计数据
-  useEffect(() => {
-    const fetchUserData = async () => {
-      if (currentUser) {
-        try {
-          // 获取用户计划
-          const userData = await getUserData(currentUser.uid);
-          if (userData) {
-            setUserPlan(userData.plan);
-          }
-          
-          // 获取统计数据
-          const dashboardStats = await getDashboardStats(currentUser.uid);
-          setStats(dashboardStats);
-        } catch (error) {
-          console.error('获取用户数据失败:', error);
+  const fetchStats = async () => {
+    if (currentUser) {
+      console.log('🔄 Fetching stats for user:', currentUser.uid);
+      try {
+        // 获取用户计划
+        const userData = await getUserData(currentUser.uid);
+        if (userData) {
+          setUserPlan(userData.plan);
         }
+        
+        // 获取下载统计数据
+        const downloadStats = await getUserDownloadStats(currentUser.uid);
+        console.log('📊 Dashboard stats received:', downloadStats);
+        setStats(downloadStats);
+      } catch (error) {
+        console.error('获取用户数据失败:', error);
+      }
+    } else {
+      console.log('⚠️ No current user, skipping stats fetch');
+    }
+  };
+
+  useEffect(() => {
+    console.log('🚀 Dashboard mounted, currentUser:', currentUser?.uid);
+    fetchStats();
+    
+    // 监听下载事件，实时更新统计
+    const handleDownloadComplete = () => {
+      console.log('📥 Download complete event received, refreshing stats in 500ms...');
+      // 延迟一点再获取，确保本地存储写入完成
+      setTimeout(() => {
+        fetchStats();
+      }, 500);
+    };
+    window.addEventListener('downloadComplete', handleDownloadComplete);
+    
+    // 监听 storage 变化（跨标签页同步）
+    const handleStorageChange = (e: StorageEvent) => {
+      if (e.key && e.key.startsWith('local_downloads_')) {
+        console.log('💾 Storage change detected, refreshing stats...');
+        fetchStats();
       }
     };
-    fetchUserData();
+    window.addEventListener('storage', handleStorageChange);
+    
+    // 页面可见性变化时刷新（用户从其他标签页切换回来）
+    const handleVisibilityChange = () => {
+      if (document.visibilityState === 'visible') {
+        console.log('👁️ Page became visible, refreshing stats...');
+        fetchStats();
+      }
+    };
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+    
+    return () => {
+      window.removeEventListener('downloadComplete', handleDownloadComplete);
+      window.removeEventListener('storage', handleStorageChange);
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+    };
   }, [currentUser]);
 
   const tabs = [
-    { id: 'profiles', label: 'Child Profiles', icon: '👶' },
-    { id: 'delivery', label: 'Weekly Delivery', icon: '📅' },
     { id: 'history', label: 'Download History', icon: '📥' },
+    { id: 'delivery', label: 'Weekly Delivery', icon: '📅' },
     { id: 'settings', label: 'Print Settings', icon: '🖨️' }
   ];
 
@@ -91,17 +129,16 @@ const DashboardNew: React.FC = () => {
           </div>
         </motion.div>
 
-        {/* Stats Cards */}
+        {/* Stats Cards - 只显示下载统计，均匀分布 */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12"
+          className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12"
         >
           {[
             { label: 'Total Downloads', value: stats.totalDownloads.toString(), icon: '📥', color: 'bg-duck-blue' },
-            { label: 'This Week', value: stats.thisWeekDownloads.toString(), icon: '📅', color: 'bg-duck-green' },
-            { label: 'Children', value: stats.childrenCount.toString(), icon: '👶', color: 'bg-duck-pink' }
+            { label: 'This Week', value: stats.thisWeekDownloads.toString(), icon: '📅', color: 'bg-duck-green' }
           ].map((stat, index) => (
             <motion.div
               key={stat.label}
@@ -155,10 +192,19 @@ const DashboardNew: React.FC = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          {activeTab === 'profiles' && <ChildProfiles />}
-          {activeTab === 'delivery' && <WeeklyDeliverySettings />}
           {activeTab === 'history' && <DownloadHistory />}
+          {activeTab === 'delivery' && <WeeklyDeliverySettings />}
           {activeTab === 'settings' && <PrintSettings />}
+        </motion.div>
+
+        {/* POD Option - Print on Demand */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+          className="mt-8"
+        >
+          <PODOption />
         </motion.div>
 
         {/* Pro Upgrade Banner (for free users) */}

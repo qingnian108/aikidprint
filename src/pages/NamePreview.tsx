@@ -5,14 +5,17 @@ import confetti from 'canvas-confetti';
 import { jsPDF } from 'jspdf';
 import { generateWorksheet } from '../services/api';
 import { useAuth } from '../contexts/AuthContext';
+import ConfirmModal from '../components/ConfirmModal';
+import { recordDownload } from '../services/firestoreService';
+import { getAssetUrl } from '../config/api';
 
 const THEMES = [
-  { id: 'dinosaur', name: 'Dinosaurs', image: 'http://localhost:3000/uploads/assets/A_main_assets/dinosaur/color/main/dinosaur_000_color.png', color: '#a1e44d' },
-  { id: 'space', name: 'Space', image: 'http://localhost:3000/uploads/assets/A_main_assets/space/color/main/space_000_color.png', color: '#7bd3ea' },
-  { id: 'vehicles', name: 'Cars', image: 'http://localhost:3000/uploads/assets/A_main_assets/vehicles/color/main/vehicles_000_color.png', color: '#ff9f1c' },
-  { id: 'unicorn', name: 'Unicorn', image: 'http://localhost:3000/uploads/assets/A_main_assets/unicorn/color/main/unicorn_000_color.png', color: '#ff99c8' },
-  { id: 'ocean', name: 'Ocean', image: 'http://localhost:3000/uploads/assets/A_main_assets/ocean/color/main/ocean_000_color.png', color: '#7bd3ea' },
-  { id: 'safari', name: 'Safari', image: 'http://localhost:3000/uploads/assets/A_main_assets/safari/color/main/safari_000_color.png', color: '#ffd60a' }
+  { id: 'dinosaur', name: 'Dinosaurs', image: getAssetUrl('/uploads/assets/A_main_assets/dinosaur/color/main/dinosaur_000_color.png'), color: '#a1e44d' },
+  { id: 'space', name: 'Space', image: getAssetUrl('/uploads/assets/A_main_assets/space/color/main/space_000_color.png'), color: '#7bd3ea' },
+  { id: 'vehicles', name: 'Cars', image: getAssetUrl('/uploads/assets/A_main_assets/vehicles/color/main/vehicles_000_color.png'), color: '#ff9f1c' },
+  { id: 'unicorn', name: 'Unicorn', image: getAssetUrl('/uploads/assets/A_main_assets/unicorn/color/main/unicorn_000_color.png'), color: '#ff99c8' },
+  { id: 'ocean', name: 'Ocean', image: getAssetUrl('/uploads/assets/A_main_assets/ocean/color/main/ocean_000_color.png'), color: '#7bd3ea' },
+  { id: 'safari', name: 'Safari', image: getAssetUrl('/uploads/assets/A_main_assets/safari/color/main/safari_000_color.png'), color: '#ffd60a' }
 ];
 
 const NamePreview: React.FC = () => {
@@ -24,6 +27,7 @@ const NamePreview: React.FC = () => {
   const [isGenerating, setIsGenerating] = useState(true);
   const [generatedImageUrl, setGeneratedImageUrl] = useState<string>('');
   const [error, setError] = useState<string>('');
+  const [showLoginModal, setShowLoginModal] = useState(false);
 
   const decodedName = name ? decodeURIComponent(name) : 'Child';
   const capitalizedName = decodedName.charAt(0).toUpperCase() + decodedName.slice(1).toLowerCase();
@@ -71,6 +75,12 @@ const NamePreview: React.FC = () => {
 
   const handleDownloadFree = async () => {
     if (!generatedImageUrl || isDownloading) return;
+
+    // 检查用户是否登录
+    if (!currentUser) {
+      setShowLoginModal(true);
+      return;
+    }
 
     setIsDownloading(true);
 
@@ -120,6 +130,24 @@ const NamePreview: React.FC = () => {
 
       // 下载 PDF
       pdf.save(`${capitalizedName}-write-my-name.pdf`);
+
+      // 记录下载到 Firestore
+      try {
+        console.log('📝 Recording download for user:', currentUser.uid);
+        await recordDownload(
+          currentUser.uid,
+          capitalizedName,
+          selectedTheme.id,
+          1 // 单页下载
+        );
+        console.log('✅ Download recorded successfully');
+        // 触发下载完成事件，通知 Dashboard 更新
+        window.dispatchEvent(new Event('downloadComplete'));
+        console.log('📢 downloadComplete event dispatched');
+      } catch (recordErr) {
+        console.error('❌ Failed to record download:', recordErr);
+        // 不影响下载成功
+      }
 
       // Show success message
       confetti({
@@ -295,6 +323,22 @@ const NamePreview: React.FC = () => {
       </div>
 
 
+      {/* Login Required Modal */}
+      <ConfirmModal
+        open={showLoginModal}
+        title="Login Required"
+        message="Please log in or create an account to download your free PDF. It only takes a few seconds!"
+        confirmText="Go to Login"
+        cancelText="Cancel"
+        type="warning"
+        onConfirm={() => {
+          setShowLoginModal(false);
+          // 保存当前页面URL，登录后跳转回来
+          sessionStorage.setItem('redirectAfterLogin', window.location.pathname);
+          navigate('/login');
+        }}
+        onCancel={() => setShowLoginModal(false)}
+      />
     </div>
   );
 };

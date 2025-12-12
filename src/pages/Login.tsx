@@ -20,9 +20,14 @@ const Login: React.FC = () => {
       setLoading(true);
       await googleSignIn();
       
-      // 检查是否有待恢复的 pack
+      // 检查是否有待恢复的页面
+      const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
       const pendingPackId = sessionStorage.getItem('pendingPackId');
-      if (pendingPackId) {
+      
+      if (redirectUrl) {
+        sessionStorage.removeItem('redirectAfterLogin');
+        navigate(redirectUrl);
+      } else if (pendingPackId) {
         navigate(`/weekly-pack/preview/${pendingPackId}`);
       } else if (isSignUp) {
         navigate('/weekly-pack');
@@ -50,9 +55,14 @@ const Login: React.FC = () => {
         await emailSignIn(email, password);
       }
       
-      // 检查是否有待恢复的 pack
+      // 检查是否有待恢复的页面
+      const redirectUrl = sessionStorage.getItem('redirectAfterLogin');
       const pendingPackId = sessionStorage.getItem('pendingPackId');
-      if (pendingPackId) {
+      
+      if (redirectUrl) {
+        sessionStorage.removeItem('redirectAfterLogin');
+        navigate(redirectUrl);
+      } else if (pendingPackId) {
         navigate(`/weekly-pack/preview/${pendingPackId}`);
       } else if (isSignUp) {
         navigate('/weekly-pack');

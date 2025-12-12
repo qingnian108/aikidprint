@@ -59,19 +59,19 @@ const CategoryPage: React.FC = () => {
                                 className={`group bg-gradient-to-br ${cardStyle} border-2 rounded-3xl overflow-hidden shadow-brutal hover:shadow-brutal-lg hover:-translate-y-1 transition-all duration-300 animate-pop-in flex flex-col relative`}
                                 style={{ animationDelay: `${index * 0.05}s` }}
                             >
-                                {/* Preview Image Area */}
-                                <div className="aspect-[4/3] relative overflow-hidden flex items-center justify-center p-8">
+                                {/* Preview Image Area - 竖版比例 */}
+                                <div className="aspect-[3/4] relative overflow-hidden flex items-center justify-center p-4">
                                     {/* Decorative Pattern Background */}
                                     <div className="absolute inset-0 opacity-10"
                                         style={{ backgroundImage: 'radial-gradient(circle, currentColor 1px, transparent 1px)', backgroundSize: '12px 12px' }}>
                                     </div>
 
                                     {/* Image Container (Paper Look) */}
-                                    <div className="relative w-full h-full shadow-sm group-hover:shadow-xl group-hover:scale-105 transition-all duration-500 rounded-2xl overflow-hidden bg-white border-4 border-white transform rotate-1 group-hover:rotate-0">
+                                    <div className="relative w-full h-full shadow-sm group-hover:shadow-xl group-hover:scale-105 transition-all duration-500 rounded-xl overflow-hidden bg-white border-2 border-gray-200 transform rotate-1 group-hover:rotate-0">
                                         <img
                                             src={pageType.previewImage}
                                             alt={pageType.title}
-                                            className="w-full h-full object-cover"
+                                            className="w-full h-full object-contain bg-white"
                                         />
                                     </div>
 

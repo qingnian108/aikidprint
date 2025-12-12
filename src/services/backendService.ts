@@ -1,9 +1,11 @@
 /**
- * 后端 API 服务
- * 用于调用本地后端生成工作表
+ * Backend API Service
+ * Used to call local backend for worksheet generation
  */
 
-const BACKEND_URL = 'http://localhost:3000/api';
+import { API_BASE_URL } from '../config/api';
+
+const BACKEND_URL = `${API_BASE_URL}/api`;
 
 export interface WorksheetConfig {
   categoryId: 'literacy' | 'math' | 'art';

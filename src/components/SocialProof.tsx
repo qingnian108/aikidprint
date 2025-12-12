@@ -5,19 +5,19 @@ import { Star, Heart } from 'lucide-react';
 const SocialProof: React.FC = () => {
   const testimonials = [
     {
-      image: 'https://images.unsplash.com/photo-1514090458221-65bb69cf63e6?w=400&h=300&fit=crop',
+      image: 'https://images.unsplash.com/photo-1489710437720-ebb67ec84dd2?w=400&h=300&fit=crop',
       name: 'Emma & Lily',
       quote: 'My daughter loves seeing her name on every page!',
       rating: 5
     },
     {
-      image: 'https://images.unsplash.com/photo-1596464716127-f2a82984de30?w=400&h=300&fit=crop',
+      image: 'https://images.unsplash.com/photo-1544776193-352d25ca82cd?w=400&h=300&fit=crop',
       name: 'Marcus & Noah',
       quote: 'Finally, worksheets that keep him engaged for more than 5 minutes.',
       rating: 5
     },
     {
-      image: 'https://images.unsplash.com/photo-1542810634-71277d95dcbb?w=400&h=300&fit=crop',
+      image: 'https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=400&h=300&fit=crop',
       name: 'Sarah & twins',
       quote: 'The weekly packs save me hours of prep time!',
       rating: 5

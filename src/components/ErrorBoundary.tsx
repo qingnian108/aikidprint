@@ -12,16 +12,8 @@ interface State {
 }
 
 class ErrorBoundary extends Component<Props, State> {
-  public readonly props: Props;
-  public state: State;
-  public setState: <K extends keyof State>(
-    state: ((prevState: Readonly<State>, props: Readonly<Props>) => (Pick<State, K> | State | null)) | (Pick<State, K> | State | null),
-    callback?: () => void
-  ) => void;
-
   constructor(props: Props) {
     super(props);
-    this.props = props;
     this.state = {
       hasError: false,
       error: null,

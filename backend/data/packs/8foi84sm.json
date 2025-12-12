@@ -1,0 +1,17 @@
+{
+  "packId": "8foi84sm",
+  "childName": "iki",
+  "age": "2-3",
+  "theme": "dinosaur",
+  "weekNumber": 50,
+  "pages": [
+    {
+      "order": 1,
+      "type": "cover",
+      "title": "Cover Page",
+      "imageUrl": "/uploads/Cover/dinosaur/dinosaur_cover_18.png"
+    }
+  ],
+  "createdAt": "2025-12-11T09:11:18.286Z",
+  "createdBy": "RjXseDE8iBgw6IdgpnuA1FCTZLG3"
+}

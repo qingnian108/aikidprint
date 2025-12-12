@@ -6,7 +6,7 @@ import { generateWorksheetContent } from '../services/geminiService';
 import WorksheetRenderer from '../components/WorksheetRenderer';
 import { useAuth } from '../contexts/AuthContext';
 import QuotaModal from '../components/QuotaModal';
-import { checkDailyQuota, recordUsage, getUserData } from '../services/firestoreService';
+import { checkDailyQuota, recordUsage, getUserData, recordDownload } from '../services/firestoreService';
 import html2canvas from 'html2canvas';
 import { jsPDF } from 'jspdf';
 
@@ -110,13 +110,23 @@ const Generator: React.FC = () => {
       }
 
       pdf.save('ai-kid-print.pdf');
+      
+      // 记录下载
+      if (currentUser) {
+        try {
+          await recordDownload(currentUser.uid, 'worksheet', config.theme || 'default', pageElements.length);
+          window.dispatchEvent(new Event('downloadComplete'));
+        } catch (e) {
+          console.error('Failed to record download:', e);
+        }
+      }
     } catch (e) {
       console.error('PDF export failed', e);
       setError('Failed to export PDF. Please try again.');
     } finally {
       setExporting(false);
     }
-  }, []);
+  }, [currentUser, config.theme]);
 
   // Input Form Component
   const InputForm = () => (

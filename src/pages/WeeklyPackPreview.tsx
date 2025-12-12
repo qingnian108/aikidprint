@@ -4,14 +4,16 @@ import { Download, Loader, Package, Star, Share2, Check, ArrowLeft } from 'lucid
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserData, recordDownload } from '../services/firestoreService';
+import PODOption from '../components/PODOption';
+import { API_BASE_URL, getAssetUrl } from '../config/api';
 
 const THEMES = [
-  { id: 'dinosaur', name: 'Dinosaurs', image: 'http://localhost:3000/uploads/assets/A_main_assets/dinosaur/color/main/dinosaur_000_color.png', color: '#a1e44d' },
-  { id: 'space', name: 'Space', image: 'http://localhost:3000/uploads/assets/A_main_assets/space/color/main/space_000_color.png', color: '#7bd3ea' },
-  { id: 'vehicles', name: 'Cars', image: 'http://localhost:3000/uploads/assets/A_main_assets/vehicles/color/main/vehicles_000_color.png', color: '#ff9f1c' },
-  { id: 'unicorn', name: 'Unicorn', image: 'http://localhost:3000/uploads/assets/A_main_assets/unicorn/color/main/unicorn_000_color.png', color: '#ff99c8' },
-  { id: 'ocean', name: 'Ocean', image: 'http://localhost:3000/uploads/assets/A_main_assets/ocean/color/main/ocean_000_color.png', color: '#7bd3ea' },
-  { id: 'safari', name: 'Safari', image: 'http://localhost:3000/uploads/assets/A_main_assets/safari/color/main/safari_000_color.png', color: '#ffd60a' }
+  { id: 'dinosaur', name: 'Dinosaurs', image: getAssetUrl('/uploads/assets/A_main_assets/dinosaur/color/main/dinosaur_000_color.png'), color: '#a1e44d' },
+  { id: 'space', name: 'Space', image: getAssetUrl('/uploads/assets/A_main_assets/space/color/main/space_000_color.png'), color: '#7bd3ea' },
+  { id: 'vehicles', name: 'Cars', image: getAssetUrl('/uploads/assets/A_main_assets/vehicles/color/main/vehicles_000_color.png'), color: '#ff9f1c' },
+  { id: 'unicorn', name: 'Unicorn', image: getAssetUrl('/uploads/assets/A_main_assets/unicorn/color/main/unicorn_000_color.png'), color: '#ff99c8' },
+  { id: 'ocean', name: 'Ocean', image: getAssetUrl('/uploads/assets/A_main_assets/ocean/color/main/ocean_000_color.png'), color: '#7bd3ea' },
+  { id: 'safari', name: 'Safari', image: getAssetUrl('/uploads/assets/A_main_assets/safari/color/main/safari_000_color.png'), color: '#ffd60a' }
 ];
 
 interface GeneratedPage {
@@ -70,16 +72,14 @@ const WeeklyPackPreview: React.FC = () => {
       }
 
       try {
-        const response = await fetch(`http://localhost:3000/api/weekly-pack/pack/${packId}`);
+        const response = await fetch(`${API_BASE_URL}/api/weekly-pack/pack/${packId}`);
         const data = await response.json();
 
         if (data.success && data.pack) {
-          // 添加完整的图片 URL
+          // Add full image URLs
           const pagesWithFullUrl = data.pack.pages.map((page: GeneratedPage) => ({
             ...page,
-            imageUrl: page.imageUrl.startsWith('http') 
-              ? page.imageUrl 
-              : `http://localhost:3000${page.imageUrl}`
+            imageUrl: getAssetUrl(page.imageUrl)
           }));
           setPackData({ ...data.pack, pages: pagesWithFullUrl });
         } else {
@@ -308,7 +308,7 @@ const WeeklyPackPreview: React.FC = () => {
                       const imgRatio = img.width / img.height;
                       const pageRatio = pageWidth / pageHeight;
                       
-                      let imgWidth, imgHeight, x, y;
+                      let imgWidth: number, imgHeight: number, x: number, y: number;
                       if (imgRatio > pageRatio) {
                         imgWidth = pageWidth;
                         imgHeight = pageWidth / imgRatio;
@@ -335,6 +335,8 @@ const WeeklyPackPreview: React.FC = () => {
                         packData.pages.length,
                         packId
                       );
+                      // 触发下载完成事件，通知 Dashboard 更新
+                      window.dispatchEvent(new CustomEvent('downloadComplete'));
                     } catch (recordError) {
                       console.error('记录下载失败:', recordError);
                       // 不显示错误，因为 PDF 已经下载成功
@@ -374,6 +376,11 @@ const WeeklyPackPreview: React.FC = () => {
                 : 'Upgrade to Pro to download • $4.99/month'}
           </p>
         </motion.div>
+
+        {/* POD Option - Print on Demand */}
+        <div className="mt-8">
+          <PODOption childName={packData.childName} weekNumber={packData.weekNumber} />
+        </div>
       </div>
     </div>
   );

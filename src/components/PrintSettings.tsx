@@ -1,17 +1,86 @@
-import React, { useState } from 'react';
-import { Printer, Droplet, FileText, Check } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Printer, Droplet, FileText, Check, Loader } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
+import { 
+  savePrintSettings, 
+  getPrintSettings, 
+  getDefaultPrintSettings 
+} from '../services/firestoreService';
 
 const PrintSettings: React.FC = () => {
+  const { currentUser } = useAuth();
   const [printMode, setPrintMode] = useState<'color' | 'eco'>('color');
   const [paperSize, setPaperSize] = useState<'letter' | 'a4'>('letter');
   const [binderReady, setBinderReady] = useState(false);
+  
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [saved, setSaved] = useState(false);
 
-  const handleSave = () => {
-    console.log('Saving print settings:', { printMode, paperSize, binderReady });
-    // Implement save logic
-    alert('Print settings saved!');
+  // 加载用户设置
+  useEffect(() => {
+    const loadSettings = async () => {
+      if (!currentUser) {
+        // 未登录时使用默认设置
+        const defaults = getDefaultPrintSettings();
+        setPrintMode(defaults.printMode);
+        setPaperSize(defaults.paperSize);
+        setBinderReady(defaults.binderReady);
+        setLoading(false);
+        return;
+      }
+
+      try {
+        const settings = await getPrintSettings(currentUser.uid);
+        if (settings) {
+          setPrintMode(settings.printMode);
+          setPaperSize(settings.paperSize);
+          setBinderReady(settings.binderReady);
+        }
+      } catch (error) {
+        console.error('加载设置失败:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadSettings();
+  }, [currentUser]);
+
+  const handleSave = async () => {
+    if (!currentUser) {
+      alert('Please login to save settings');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await savePrintSettings(currentUser.uid, {
+        printMode,
+        paperSize,
+        binderReady
+      });
+      setSaved(true);
+      setTimeout(() => setSaved(false), 2000);
+    } catch (error) {
+      console.error('保存失败:', error);
+      alert('Failed to save settings. Please try again.');
+    } finally {
+      setSaving(false);
+    }
   };
+
+  if (loading) {
+    return (
+      <div className="bg-white border-4 border-black rounded-2xl shadow-brutal p-8">
+        <div className="flex items-center justify-center py-12">
+          <Loader className="w-8 h-8 animate-spin text-duck-blue" />
+          <span className="ml-3 font-mono text-slate-600">Loading settings...</span>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="bg-white border-4 border-black rounded-2xl shadow-brutal p-8">
@@ -180,11 +249,32 @@ const PrintSettings: React.FC = () => {
         {/* Save Button */}
         <button
           onClick={handleSave}
-          className="w-full brutal-btn bg-duck-green text-black border-3 border-black px-6 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2"
+          disabled={saving || !currentUser}
+          className="w-full brutal-btn bg-duck-green text-black border-3 border-black px-6 py-4 rounded-xl font-bold text-lg flex items-center justify-center gap-2 disabled:opacity-50"
         >
-          <Check size={24} />
-          Save Print Settings
+          {saving ? (
+            <>
+              <Loader size={24} className="animate-spin" />
+              Saving...
+            </>
+          ) : saved ? (
+            <>
+              <Check size={24} />
+              Saved!
+            </>
+          ) : (
+            <>
+              <Check size={24} />
+              Save Print Settings
+            </>
+          )}
         </button>
+
+        {!currentUser && (
+          <p className="text-center text-sm text-slate-500 font-mono">
+            Please login to save your settings
+          </p>
+        )}
       </div>
     </div>
   );

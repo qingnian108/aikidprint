@@ -1,0 +1,102 @@
+{
+  "packId": "wgxk2fz0",
+  "childName": "ssdsasasd",
+  "age": "2-3",
+  "theme": "vehicles",
+  "weekNumber": 50,
+  "pages": [
+    {
+      "order": 1,
+      "type": "cover",
+      "title": "Cover Page",
+      "imageUrl": "/uploads/Cover/vehicles/vehicles_cover_07.png"
+    },
+    {
+      "order": 2,
+      "type": "write-my-name",
+      "title": "Write My Name",
+      "imageUrl": "/generated/worksheets/write-my-name-1765530788524.png"
+    },
+    {
+      "order": 3,
+      "type": "uppercase-tracing",
+      "title": "Uppercase E Tracing",
+      "imageUrl": "/generated/worksheets/uppercase-E-1765530788704.png"
+    },
+    {
+      "order": 4,
+      "type": "letter-recognition",
+      "title": "Find Letter E",
+      "imageUrl": "/generated/worksheets/letter-recognition-E-1765530788867.png"
+    },
+    {
+      "order": 5,
+      "type": "number-tracing",
+      "title": "Number Tracing",
+      "imageUrl": "/generated/worksheets/number-tracing-0-4-1765530789016.png"
+    },
+    {
+      "order": 6,
+      "type": "counting-objects",
+      "title": "Count and Write",
+      "imageUrl": "/generated/worksheets/count-write-vehicles-1765530789153.png"
+    },
+    {
+      "order": 7,
+      "type": "maze",
+      "title": "Maze",
+      "imageUrl": "/generated/worksheets/maze-1765530789371.png"
+    },
+    {
+      "order": 8,
+      "type": "shadow-matching",
+      "title": "Shadow Matching",
+      "imageUrl": "/generated/worksheets/shadow-matching-vehicles-1765530789496.png"
+    },
+    {
+      "order": 9,
+      "type": "sorting",
+      "title": "Sorting",
+      "imageUrl": "/generated/worksheets/sorting-1765530789640.png"
+    },
+    {
+      "order": 10,
+      "type": "pattern-sequencing",
+      "title": "Pattern Sequencing",
+      "imageUrl": "/generated/worksheets/pattern-sequencing-1765530789760.png"
+    },
+    {
+      "order": 11,
+      "type": "number-path",
+      "title": "Connect the Dots",
+      "imageUrl": "/generated/worksheets/connect-dots-vehicles-1765530790110.png"
+    },
+    {
+      "order": 12,
+      "type": "trace-lines",
+      "title": "Trace Lines",
+      "imageUrl": "/generated/worksheets/trace-lines-1765530790263.png"
+    },
+    {
+      "order": 13,
+      "type": "shape-tracing",
+      "title": "Shape Tracing",
+      "imageUrl": "/generated/worksheets/shape-tracing-1765530790407.png"
+    },
+    {
+      "order": 14,
+      "type": "coloring-page",
+      "title": "Coloring Page",
+      "imageUrl": "/generated/worksheets/coloring-page-1765530790576.png"
+    },
+    {
+      "order": 15,
+      "type": "creative-prompt",
+      "title": "Creative Drawing",
+      "imageUrl": "/generated/worksheets/creative-prompt-1765530790685.png"
+    }
+  ],
+  "createdAt": "2025-12-12T09:13:10.834Z",
+  "createdBy": "7o7zbjOrfOVLyWK5rGILVtJfA093",
+  "source": "manual"
+}

@@ -4,6 +4,8 @@ import { Calendar, Download, Loader, Sparkles, Package, Star, Zap, Heart, Share2
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { getUserData, recordDownload } from '../services/firestoreService';
+import PODOption from '../components/PODOption';
+import { API_BASE_URL, getAssetUrl } from '../config/api';
 
 const AGES = [
   { value: '2-3', label: '2-3 years', icon: '👶' },
@@ -13,12 +15,12 @@ const AGES = [
 ];
 
 const THEMES = [
-  { id: 'dinosaur', name: 'Dinosaurs', image: 'http://localhost:3000/uploads/assets/A_main_assets/dinosaur/color/main/dinosaur_000_color.png', color: '#a1e44d' },
-  { id: 'space', name: 'Space', image: 'http://localhost:3000/uploads/assets/A_main_assets/space/color/main/space_000_color.png', color: '#7bd3ea' },
-  { id: 'vehicles', name: 'Cars', image: 'http://localhost:3000/uploads/assets/A_main_assets/vehicles/color/main/vehicles_000_color.png', color: '#ff9f1c' },
-  { id: 'unicorn', name: 'Unicorn', image: 'http://localhost:3000/uploads/assets/A_main_assets/unicorn/color/main/unicorn_000_color.png', color: '#ff99c8' },
-  { id: 'ocean', name: 'Ocean', image: 'http://localhost:3000/uploads/assets/A_main_assets/ocean/color/main/ocean_000_color.png', color: '#7bd3ea' },
-  { id: 'safari', name: 'Safari', image: 'http://localhost:3000/uploads/assets/A_main_assets/safari/color/main/safari_000_color.png', color: '#ffd60a' }
+  { id: 'dinosaur', name: 'Dinosaurs', image: getAssetUrl('/uploads/assets/A_main_assets/dinosaur/color/main/dinosaur_000_color.png'), color: '#a1e44d' },
+  { id: 'space', name: 'Space', image: getAssetUrl('/uploads/assets/A_main_assets/space/color/main/space_000_color.png'), color: '#7bd3ea' },
+  { id: 'vehicles', name: 'Cars', image: getAssetUrl('/uploads/assets/A_main_assets/vehicles/color/main/vehicles_000_color.png'), color: '#ff9f1c' },
+  { id: 'unicorn', name: 'Unicorn', image: getAssetUrl('/uploads/assets/A_main_assets/unicorn/color/main/unicorn_000_color.png'), color: '#ff99c8' },
+  { id: 'ocean', name: 'Ocean', image: getAssetUrl('/uploads/assets/A_main_assets/ocean/color/main/ocean_000_color.png'), color: '#7bd3ea' },
+  { id: 'safari', name: 'Safari', image: getAssetUrl('/uploads/assets/A_main_assets/safari/color/main/safari_000_color.png'), color: '#ffd60a' }
 ];
 
 // 浮动装饰元素
@@ -103,8 +105,8 @@ const WeeklyPack: React.FC = () => {
     setError('');
 
     try {
-      // 调用后端 API 生成每周作业包
-      const response = await fetch('http://localhost:3000/api/weekly-pack/generate-pages', {
+      // Call backend API to generate weekly pack
+      const response = await fetch(`${API_BASE_URL}/api/weekly-pack/generate-pages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -123,20 +125,18 @@ const WeeklyPack: React.FC = () => {
       const data = await response.json();
       
       if (data.success && data.pages) {
-        // 添加完整的图片 URL
+        // Add full image URLs
         const pagesWithFullUrl = data.pages.map((page: GeneratedPage) => ({
           ...page,
-          imageUrl: page.imageUrl.startsWith('http') 
-            ? page.imageUrl 
-            : `http://localhost:3000${page.imageUrl}`
+          imageUrl: getAssetUrl(page.imageUrl)
         }));
         
         setGeneratedPages(pagesWithFullUrl);
         setShowPreview(true);
 
-        // 自动保存 pack 以获取分享链接
+        // Auto-save pack to get share link
         try {
-          const saveResponse = await fetch('http://localhost:3000/api/weekly-pack/save', {
+          const saveResponse = await fetch(`${API_BASE_URL}/api/weekly-pack/save`, {
             method: 'POST',
             headers: {
               'Content-Type': 'application/json',
@@ -464,6 +464,8 @@ const WeeklyPack: React.FC = () => {
                           generatedPages.length,
                           packId
                         );
+                        // 触发下载完成事件，通知 Dashboard 更新
+                        window.dispatchEvent(new Event('downloadComplete'));
                       } catch (recordError) {
                         console.error('记录下载失败:', recordError);
                         // 不显示错误，因为 PDF 已经下载成功
@@ -506,6 +508,11 @@ const WeeklyPack: React.FC = () => {
                   : 'Upgrade to Pro to download • $4.99/month'}
             </p>
           </motion.div>
+
+          {/* POD Option - Print on Demand */}
+          <div className="mt-8">
+            <PODOption childName={childName} weekNumber={currentWeek} />
+          </div>
         </div>
       </div>
     );
