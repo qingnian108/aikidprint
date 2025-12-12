@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Printer, Droplet, FileText, Check, Loader } from 'lucide-react';
-import { motion } from 'framer-motion';
+import { Printer, FileText, Check, Loader } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { 
   savePrintSettings, 
@@ -10,7 +9,6 @@ import {
 
 const PrintSettings: React.FC = () => {
   const { currentUser } = useAuth();
-  const [printMode, setPrintMode] = useState<'color' | 'eco'>('color');
   const [paperSize, setPaperSize] = useState<'letter' | 'a4'>('letter');
   const [binderReady, setBinderReady] = useState(false);
   
@@ -24,7 +22,6 @@ const PrintSettings: React.FC = () => {
       if (!currentUser) {
         // 未登录时使用默认设置
         const defaults = getDefaultPrintSettings();
-        setPrintMode(defaults.printMode);
         setPaperSize(defaults.paperSize);
         setBinderReady(defaults.binderReady);
         setLoading(false);
@@ -34,7 +31,6 @@ const PrintSettings: React.FC = () => {
       try {
         const settings = await getPrintSettings(currentUser.uid);
         if (settings) {
-          setPrintMode(settings.printMode);
           setPaperSize(settings.paperSize);
           setBinderReady(settings.binderReady);
         }
@@ -57,7 +53,7 @@ const PrintSettings: React.FC = () => {
     setSaving(true);
     try {
       await savePrintSettings(currentUser.uid, {
-        printMode,
+        printMode: 'color', // 默认使用 color，保持接口兼容
         paperSize,
         binderReady
       });
@@ -97,64 +93,6 @@ const PrintSettings: React.FC = () => {
       </div>
 
       <div className="space-y-6">
-        {/* Print Mode */}
-        <div>
-          <label className="block text-lg font-bold mb-3">Print Mode</label>
-          <div className="grid grid-cols-2 gap-4">
-            <button
-              onClick={() => setPrintMode('color')}
-              className={`p-6 border-3 border-black rounded-xl transition-all ${
-                printMode === 'color'
-                  ? 'bg-duck-yellow shadow-brutal scale-105'
-                  : 'bg-white hover:bg-slate-50'
-              }`}
-            >
-              <div className="text-4xl mb-3">🎨</div>
-              <div className="font-bold text-lg mb-1">Color Mode</div>
-              <div className="text-sm text-slate-600 font-mono">
-                Full color printing
-              </div>
-              <div className="mt-3 text-xs font-mono text-slate-500">
-                Best for: Coloring pages, visual learning
-              </div>
-            </button>
-
-            <button
-              onClick={() => setPrintMode('eco')}
-              className={`p-6 border-3 border-black rounded-xl transition-all ${
-                printMode === 'eco'
-                  ? 'bg-duck-green shadow-brutal scale-105'
-                  : 'bg-white hover:bg-slate-50'
-              }`}
-            >
-              <div className="flex items-center justify-center gap-2 text-4xl mb-3">
-                ♻️
-                <Droplet size={32} />
-              </div>
-              <div className="font-bold text-lg mb-1">Eco Mode</div>
-              <div className="text-sm text-slate-600 font-mono">
-                Black & white, save ink
-              </div>
-              <div className="mt-3 text-xs font-mono text-slate-500">
-                Best for: Practice sheets, daily use
-              </div>
-            </button>
-          </div>
-
-          {printMode === 'eco' && (
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-4 bg-duck-green/20 border-2 border-duck-green rounded-xl p-4 flex items-start gap-3"
-            >
-              <Check className="flex-shrink-0 mt-0.5" size={20} />
-              <div className="text-sm font-mono">
-                <strong>Eco Mode saves up to 60% ink!</strong> Perfect for daily worksheets and practice pages.
-              </div>
-            </motion.div>
-          )}
-        </div>
-
         {/* Paper Size */}
         <div>
           <label className="block text-lg font-bold mb-3 flex items-center gap-2">
@@ -225,12 +163,6 @@ const PrintSettings: React.FC = () => {
             Current Settings Summary
           </h3>
           <div className="space-y-2 text-sm font-mono">
-            <div className="flex justify-between">
-              <span className="text-slate-600">Print Mode:</span>
-              <span className="font-bold">
-                {printMode === 'color' ? '🎨 Color' : '♻️ Eco (B&W)'}
-              </span>
-            </div>
             <div className="flex justify-between">
               <span className="text-slate-600">Paper Size:</span>
               <span className="font-bold">

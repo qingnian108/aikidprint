@@ -1,107 +1,108 @@
 {
-  "packId": "y1toygch",
-  "childName": "koko",
+  "packId": "rfr2nd68",
+  "childName": "sd",
   "age": "3-4",
-  "theme": "space",
+  "theme": "dinosaur",
   "weekNumber": 50,
   "pages": [
     {
       "order": 1,
       "type": "cover",
       "title": "Cover Page",
-      "imageUrl": "/uploads/Cover/space/space_cover_04.png"
+      "imageUrl": "/uploads/Cover/dinosaur/dinosaur_cover_06.png"
     },
     {
       "order": 2,
       "type": "write-my-name",
       "title": "Write My Name",
-      "imageUrl": "/generated/worksheets/write-my-name-1765453018638.png"
+      "imageUrl": "/generated/worksheets/write-my-name-1765542094733.png"
     },
     {
       "order": 3,
       "type": "uppercase-tracing",
       "title": "Uppercase J Tracing",
-      "imageUrl": "/generated/worksheets/uppercase-J-1765453018801.png"
+      "imageUrl": "/generated/worksheets/uppercase-J-1765542095206.png"
     },
     {
       "order": 4,
       "type": "lowercase-tracing",
       "title": "Lowercase j Tracing",
-      "imageUrl": "/generated/worksheets/lowercase-j-1765453018941.png"
+      "imageUrl": "/generated/worksheets/lowercase-j-1765542095406.png"
     },
     {
       "order": 5,
       "type": "letter-recognition",
       "title": "Find Letter J",
-      "imageUrl": "/generated/worksheets/letter-recognition-J-1765453019079.png"
+      "imageUrl": "/generated/worksheets/letter-recognition-J-1765542095597.png"
     },
     {
       "order": 6,
       "type": "number-tracing",
       "title": "Number Tracing",
-      "imageUrl": "/generated/worksheets/number-tracing-0-4-1765453019212.png"
+      "imageUrl": "/generated/worksheets/number-tracing-0-4-1765542095744.png"
     },
     {
       "order": 7,
       "type": "counting-objects",
       "title": "Count and Write",
-      "imageUrl": "/generated/worksheets/count-write-space-1765453019331.png"
+      "imageUrl": "/generated/worksheets/count-write-dinosaur-1765542095916.png"
     },
     {
       "order": 8,
       "type": "maze",
       "title": "Maze",
-      "imageUrl": "/generated/worksheets/maze-1765453019535.png"
+      "imageUrl": "/generated/worksheets/maze-1765542096111.png"
     },
     {
       "order": 9,
       "type": "shadow-matching",
       "title": "Shadow Matching",
-      "imageUrl": "/generated/worksheets/shadow-matching-space-1765453019640.png"
+      "imageUrl": "/generated/worksheets/shadow-matching-dinosaur-1765542096214.png"
     },
     {
       "order": 10,
       "type": "sorting",
       "title": "Sorting",
-      "imageUrl": "/generated/worksheets/sorting-1765453019780.png"
+      "imageUrl": "/generated/worksheets/sorting-1765542096365.png"
     },
     {
       "order": 11,
       "type": "pattern-sequencing",
       "title": "Pattern Sequencing",
-      "imageUrl": "/generated/worksheets/pattern-sequencing-1765453019907.png"
+      "imageUrl": "/generated/worksheets/pattern-sequencing-1765542096490.png"
     },
     {
       "order": 12,
       "type": "number-path",
       "title": "Connect the Dots",
-      "imageUrl": "/generated/worksheets/connect-dots-space-1765453020235.png"
+      "imageUrl": "/generated/worksheets/connect-dots-dinosaur-1765542096838.png"
     },
     {
       "order": 13,
       "type": "trace-lines",
       "title": "Trace Lines",
-      "imageUrl": "/generated/worksheets/trace-lines-1765453020384.png"
+      "imageUrl": "/generated/worksheets/trace-lines-1765542096996.png"
     },
     {
       "order": 14,
       "type": "shape-tracing",
       "title": "Shape Tracing",
-      "imageUrl": "/generated/worksheets/shape-tracing-1765453020519.png"
+      "imageUrl": "/generated/worksheets/shape-tracing-1765542097214.png"
     },
     {
       "order": 15,
       "type": "coloring-page",
       "title": "Coloring Page",
-      "imageUrl": "/generated/worksheets/coloring-page-1765453020665.png"
+      "imageUrl": "/generated/worksheets/coloring-page-1765542097556.png"
     },
     {
       "order": 16,
       "type": "creative-prompt",
       "title": "Creative Drawing",
-      "imageUrl": "/generated/worksheets/creative-prompt-1765453020791.png"
+      "imageUrl": "/generated/worksheets/creative-prompt-1765542097680.png"
     }
   ],
-  "createdAt": "2025-12-11T11:37:00.946Z",
-  "createdBy": "7o7zbjOrfOVLyWK5rGILVtJfA093"
+  "createdAt": "2025-12-12T12:21:37.833Z",
+  "createdBy": "7o7zbjOrfOVLyWK5rGILVtJfA093",
+  "source": "manual"
 }

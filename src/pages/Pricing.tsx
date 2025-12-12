@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Check, X, Sparkles } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import PayPalModal from '../components/PayPalModal';
 import ConfirmModal from '../components/ConfirmModal';
 import SuccessModal from '../components/SuccessModal';
@@ -71,21 +72,39 @@ const Pricing: React.FC = () => {
   };
 
   return (
-    <div className="py-20 px-4 max-w-7xl mx-auto">
-      <div className="text-center mb-16">
+    <motion.div 
+      className="py-20 px-4 max-w-7xl mx-auto"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.6, ease: "easeOut" }}
+    >
+      <motion.div 
+        className="text-center mb-16"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.7, delay: 0.1, ease: [0.25, 0.46, 0.45, 0.94] }}
+      >
         <h1 className="text-5xl md:text-6xl font-display font-bold text-black mb-6 uppercase">Pricing</h1>
         <p className="text-xl text-slate-600 font-mono">SIMPLE PLANS. NO HIDDEN FEES.</p>
-      </div>
+      </motion.div>
 
       <div className="flex flex-col md:flex-row justify-center gap-8 items-center">
-        {plans.map((plan) => (
-          <div 
+        {plans.map((plan, index) => (
+          <motion.div 
             key={plan.name} 
             className={`w-full border-2 border-black shadow-brutal hover:shadow-brutal-lg transition-all ${plan.color} relative ${
               plan.primary 
                 ? 'max-w-lg p-10 scale-105 z-10' 
                 : 'max-w-sm p-6 opacity-90'
             }`}
+            initial={{ opacity: 0, y: 40, scale: 0.95 }}
+            animate={{ opacity: 1, y: 0, scale: plan.primary ? 1.05 : 1 }}
+            transition={{ 
+              duration: 0.6, 
+              delay: 0.2 + index * 0.12,
+              ease: [0.25, 0.46, 0.45, 0.94]
+            }}
+            whileHover={{ y: -5, transition: { duration: 0.25, ease: "easeOut" } }}
           >
             {plan.primary && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2 bg-black text-white border-2 border-white px-4 py-1 text-xs font-bold uppercase tracking-wide shadow-lg">
@@ -135,7 +154,7 @@ const Pricing: React.FC = () => {
             >
               {plan.buttonText}
             </button>
-          </div>
+          </motion.div>
         ))}
       </div>
       <PayPalModal
@@ -223,7 +242,7 @@ const Pricing: React.FC = () => {
           }
         }}
       />
-    </div>
+    </motion.div>
   );
 };
 

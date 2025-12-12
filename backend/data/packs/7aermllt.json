@@ -1,0 +1,108 @@
+{
+  "packId": "7aermllt",
+  "childName": "kiki",
+  "age": "4-5",
+  "theme": "vehicles",
+  "weekNumber": 50,
+  "pages": [
+    {
+      "order": 1,
+      "type": "cover",
+      "title": "Cover Page",
+      "imageUrl": "/uploads/Cover/vehicles/vehicles_cover_02.png"
+    },
+    {
+      "order": 2,
+      "type": "write-my-name",
+      "title": "Write My Name",
+      "imageUrl": "/generated/worksheets/write-my-name-1765542237084.png"
+    },
+    {
+      "order": 3,
+      "type": "uppercase-tracing",
+      "title": "Uppercase K Tracing",
+      "imageUrl": "/generated/worksheets/uppercase-K-1765542237262.png"
+    },
+    {
+      "order": 4,
+      "type": "lowercase-tracing",
+      "title": "Lowercase k Tracing",
+      "imageUrl": "/generated/worksheets/lowercase-k-1765542237420.png"
+    },
+    {
+      "order": 5,
+      "type": "letter-recognition",
+      "title": "Find Letter K",
+      "imageUrl": "/generated/worksheets/letter-recognition-K-1765542237576.png"
+    },
+    {
+      "order": 6,
+      "type": "number-tracing",
+      "title": "Number Tracing",
+      "imageUrl": "/generated/worksheets/number-tracing-0-4-1765542237713.png"
+    },
+    {
+      "order": 7,
+      "type": "counting-objects",
+      "title": "Count and Write",
+      "imageUrl": "/generated/worksheets/count-write-vehicles-1765542237854.png"
+    },
+    {
+      "order": 8,
+      "type": "maze",
+      "title": "Maze",
+      "imageUrl": "/generated/worksheets/maze-1765542238063.png"
+    },
+    {
+      "order": 9,
+      "type": "shadow-matching",
+      "title": "Shadow Matching",
+      "imageUrl": "/generated/worksheets/shadow-matching-vehicles-1765542238189.png"
+    },
+    {
+      "order": 10,
+      "type": "sorting",
+      "title": "Sorting",
+      "imageUrl": "/generated/worksheets/sorting-1765542238323.png"
+    },
+    {
+      "order": 11,
+      "type": "pattern-sequencing",
+      "title": "Pattern Sequencing",
+      "imageUrl": "/generated/worksheets/pattern-sequencing-1765542238450.png"
+    },
+    {
+      "order": 12,
+      "type": "number-path",
+      "title": "Connect the Dots",
+      "imageUrl": "/generated/worksheets/connect-dots-vehicles-1765542238786.png"
+    },
+    {
+      "order": 13,
+      "type": "trace-lines",
+      "title": "Trace Lines",
+      "imageUrl": "/generated/worksheets/trace-lines-1765542238927.png"
+    },
+    {
+      "order": 14,
+      "type": "shape-tracing",
+      "title": "Shape Tracing",
+      "imageUrl": "/generated/worksheets/shape-tracing-1765542239059.png"
+    },
+    {
+      "order": 15,
+      "type": "coloring-page",
+      "title": "Coloring Page",
+      "imageUrl": "/generated/worksheets/coloring-page-1765542239206.png"
+    },
+    {
+      "order": 16,
+      "type": "creative-prompt",
+      "title": "Creative Drawing",
+      "imageUrl": "/generated/worksheets/creative-prompt-1765542239322.png"
+    }
+  ],
+  "createdAt": "2025-12-12T12:23:59.472Z",
+  "createdBy": "7o7zbjOrfOVLyWK5rGILVtJfA093",
+  "source": "manual"
+}

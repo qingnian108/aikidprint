@@ -14,7 +14,7 @@ const Layout: React.FC = () => {
     { name: 'Home', path: '/' },
     { name: 'Weekly Pack', path: '/weekly-pack' },
     { name: 'Worksheets', path: '/generator' },
-    { name: 'Library', path: '/library' },
+    // { name: 'Library', path: '/library' }, // TODO: 暂时隐藏，页面内容未完成
     { name: 'Pricing', path: '/pricing' },
     { name: 'Account', path: currentUser ? '/dashboard' : '/login' },
   ];
@@ -30,16 +30,18 @@ const Layout: React.FC = () => {
 
   return (
     <div className="min-h-screen flex flex-col font-body overflow-x-hidden">
-      {/* Top Banner */}
-      <div className="bg-duck-yellow py-2 px-4 text-center text-xs md:text-sm font-bold border-b-2 border-black no-print relative overflow-hidden">
-         <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')]"></div>
-        <Link to="/generator" className="hover:underline flex items-center justify-center gap-2 relative z-10 hover:scale-105 transition-transform">
-          CREATE PERSONALIZED WORKSHEETS IN SECONDS <ArrowRight size={14} />
-        </Link>
-      </div>
+      {/* Fixed Header Container - Banner + Navigation */}
+      <header className="fixed top-0 left-0 right-0 z-50 no-print">
+        {/* Top Banner */}
+        <div className="bg-duck-yellow py-2 px-4 text-center text-xs md:text-sm font-bold border-b-2 border-black relative overflow-hidden">
+           <div className="absolute inset-0 opacity-10 bg-[url('https://www.transparenttextures.com/patterns/diagmonds-light.png')]"></div>
+          <Link to="/generator" className="hover:underline flex items-center justify-center gap-2 relative z-10 hover:scale-105 transition-transform">
+            CREATE PERSONALIZED WORKSHEETS IN SECONDS <ArrowRight size={14} />
+          </Link>
+        </div>
 
-      {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-paper/95 backdrop-blur-md border-b-2 border-black no-print transition-all duration-300">
+        {/* Navigation */}
+        <nav className="bg-paper/95 backdrop-blur-md border-b-2 border-black transition-all duration-300">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20 items-center">
             {/* Logo */}
@@ -147,6 +149,10 @@ const Layout: React.FC = () => {
           </div>
         )}
       </nav>
+      </header>
+
+      {/* Spacer for fixed header (banner ~40px + nav ~80px = ~120px) */}
+      <div className="h-[120px] md:h-[112px]"></div>
 
       {/* Main Content */}
       <main className="flex-grow relative">

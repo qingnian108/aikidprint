@@ -345,7 +345,7 @@ const WeeklyPack: React.FC = () => {
             <div className="grid md:grid-cols-3 gap-4 mb-8">
               {[
                 { icon: '🎨', title: 'Color Version', desc: 'Full color printing', bg: 'bg-duck-yellow/20' },
-                { icon: '♻️', title: 'Eco Mode', desc: 'Save ink (B&W)', bg: 'bg-duck-blue/20' },
+                { icon: '✨', title: 'High Quality', desc: 'Print-ready 300 DPI', bg: 'bg-duck-blue/20' },
                 { icon: '📎', title: 'Binder Ready', desc: '3-hole punch margins', bg: 'bg-duck-green/20' }
               ].map((option, i) => (
                 <motion.div 

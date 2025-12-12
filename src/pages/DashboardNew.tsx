@@ -1,18 +1,20 @@
 import React, { useState, useEffect } from 'react';
-import { Crown, Sparkles, TrendingUp } from 'lucide-react';
+import { Crown, Sparkles, TrendingUp, Calendar } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { format } from 'date-fns';
 import WeeklyDeliverySettings from '../components/WeeklyDeliverySettings';
 import DownloadHistory from '../components/DownloadHistory';
 import PrintSettings from '../components/PrintSettings';
 import PODOption from '../components/PODOption';
 import { useAuth } from '../contexts/AuthContext';
-import { getUserData, getUserDownloadStats } from '../services/firestoreService';
+import { getUserData, getUserDownloadStats, getUserSubscription } from '../services/firestoreService';
 
 const DashboardNew: React.FC = () => {
   const { currentUser } = useAuth();
   const [activeTab, setActiveTab] = useState<'delivery' | 'history' | 'settings'>('history');
   const [userPlan, setUserPlan] = useState<'Free' | 'Pro'>('Free');
+  const [subscriptionEndDate, setSubscriptionEndDate] = useState<Date | null>(null);
   const [stats, setStats] = useState({
     totalDownloads: 0,
     thisWeekDownloads: 0
@@ -27,6 +29,31 @@ const DashboardNew: React.FC = () => {
         const userData = await getUserData(currentUser.uid);
         if (userData) {
           setUserPlan(userData.plan);
+        }
+        
+        // 获取订阅到期时间
+        try {
+          const subscription = await getUserSubscription(currentUser.uid);
+          console.log('📅 Subscription data:', subscription);
+          if (subscription && subscription.endDate) {
+            // endDate 可能是 Firestore Timestamp 或 Date
+            const endDateValue = subscription.endDate as any;
+            const endDate = endDateValue.toDate ? endDateValue.toDate() : new Date(endDateValue);
+            setSubscriptionEndDate(endDate);
+          } else if (userData?.plan === 'Pro') {
+            // Pro 用户但没有订阅记录，设置一个默认的到期时间（30天后）
+            const defaultEndDate = new Date();
+            defaultEndDate.setDate(defaultEndDate.getDate() + 30);
+            setSubscriptionEndDate(defaultEndDate);
+          }
+        } catch (subError) {
+          console.warn('获取订阅信息失败:', subError);
+          // 如果是 Pro 用户，显示默认到期时间
+          if (userData?.plan === 'Pro') {
+            const defaultEndDate = new Date();
+            defaultEndDate.setDate(defaultEndDate.getDate() + 30);
+            setSubscriptionEndDate(defaultEndDate);
+          }
         }
         
         // 获取下载统计数据
@@ -101,9 +128,19 @@ const DashboardNew: React.FC = () => {
                 Dashboard
               </h1>
               {userPlan === 'Pro' && (
-                <div className="flex items-center gap-2 bg-gradient-to-r from-duck-yellow to-duck-orange border-2 border-black px-4 py-2 rounded-full inline-flex">
-                  <Crown size={20} className="fill-current" />
-                  <span className="font-bold text-sm">PRO MEMBER</span>
+                <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-2 bg-gradient-to-r from-duck-yellow to-duck-orange border-2 border-black px-4 py-2 rounded-full">
+                    <Crown size={20} className="fill-current" />
+                    <span className="font-bold text-sm">PRO MEMBER</span>
+                  </div>
+                  {subscriptionEndDate && (
+                    <div className="flex items-center gap-2 bg-white border-2 border-black px-3 py-2 rounded-full text-sm">
+                      <Calendar size={14} className="text-slate-500" />
+                      <span className="font-mono text-slate-600">
+                        Expires: {format(subscriptionEndDate, 'MMM d, yyyy')}
+                      </span>
+                    </div>
+                  )}
                 </div>
               )}
             </div>

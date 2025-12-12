@@ -52,9 +52,9 @@
   },
   "uploads-letter-A-default": {
     "usedImages": [
-      "/uploads/bigpng/Apple.png",
       "/uploads/bigpng/Airplane.png",
-      "/uploads/bigpng/Ant.png"
+      "/uploads/bigpng/Ant.png",
+      "/uploads/bigpng/Apple.png"
     ],
     "allImages": [
       "/uploads/bigpng/Airplane.png",
@@ -2740,14 +2740,26 @@
   },
   "uploads-letter-J-default": {
     "usedImages": [
-      "/uploads/bigpng/Juice.png",
       "/uploads/bigpng/Jellyfish.png",
-      "/uploads/bigpng/Jam.png"
+      "/uploads/bigpng/Jam.png",
+      "/uploads/bigpng/Juice.png"
     ],
     "allImages": [
       "/uploads/bigpng/Jam.png",
       "/uploads/bigpng/Jellyfish.png",
       "/uploads/bigpng/Juice.png"
+    ]
+  },
+  "uploads-letter-K-default": {
+    "usedImages": [
+      "/uploads/bigpng/Koala.png",
+      "/uploads/bigpng/Key.png",
+      "/uploads/bigpng/Kite.png"
+    ],
+    "allImages": [
+      "/uploads/bigpng/Key.png",
+      "/uploads/bigpng/Kite.png",
+      "/uploads/bigpng/Koala.png"
     ]
   }
 }

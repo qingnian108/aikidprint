@@ -1,0 +1,108 @@
+{
+  "packId": "4vaji4h5",
+  "childName": "olol",
+  "age": "3-4",
+  "theme": "dinosaur",
+  "weekNumber": 50,
+  "pages": [
+    {
+      "order": 1,
+      "type": "cover",
+      "title": "Cover Page",
+      "imageUrl": "/uploads/Cover/dinosaur/dinosaur_cover_12.png"
+    },
+    {
+      "order": 2,
+      "type": "write-my-name",
+      "title": "Write My Name",
+      "imageUrl": "/generated/worksheets/write-my-name-1765538957870.png"
+    },
+    {
+      "order": 3,
+      "type": "uppercase-tracing",
+      "title": "Uppercase J Tracing",
+      "imageUrl": "/generated/worksheets/uppercase-J-1765538958412.png"
+    },
+    {
+      "order": 4,
+      "type": "lowercase-tracing",
+      "title": "Lowercase j Tracing",
+      "imageUrl": "/generated/worksheets/lowercase-j-1765538958646.png"
+    },
+    {
+      "order": 5,
+      "type": "letter-recognition",
+      "title": "Find Letter J",
+      "imageUrl": "/generated/worksheets/letter-recognition-J-1765538958785.png"
+    },
+    {
+      "order": 6,
+      "type": "number-tracing",
+      "title": "Number Tracing",
+      "imageUrl": "/generated/worksheets/number-tracing-0-4-1765538958949.png"
+    },
+    {
+      "order": 7,
+      "type": "counting-objects",
+      "title": "Count and Write",
+      "imageUrl": "/generated/worksheets/count-write-dinosaur-1765538959161.png"
+    },
+    {
+      "order": 8,
+      "type": "maze",
+      "title": "Maze",
+      "imageUrl": "/generated/worksheets/maze-1765538959364.png"
+    },
+    {
+      "order": 9,
+      "type": "shadow-matching",
+      "title": "Shadow Matching",
+      "imageUrl": "/generated/worksheets/shadow-matching-dinosaur-1765538959477.png"
+    },
+    {
+      "order": 10,
+      "type": "sorting",
+      "title": "Sorting",
+      "imageUrl": "/generated/worksheets/sorting-1765538959616.png"
+    },
+    {
+      "order": 11,
+      "type": "pattern-sequencing",
+      "title": "Pattern Sequencing",
+      "imageUrl": "/generated/worksheets/pattern-sequencing-1765538959741.png"
+    },
+    {
+      "order": 12,
+      "type": "number-path",
+      "title": "Connect the Dots",
+      "imageUrl": "/generated/worksheets/connect-dots-dinosaur-1765538960096.png"
+    },
+    {
+      "order": 13,
+      "type": "trace-lines",
+      "title": "Trace Lines",
+      "imageUrl": "/generated/worksheets/trace-lines-1765538960243.png"
+    },
+    {
+      "order": 14,
+      "type": "shape-tracing",
+      "title": "Shape Tracing",
+      "imageUrl": "/generated/worksheets/shape-tracing-1765538960442.png"
+    },
+    {
+      "order": 15,
+      "type": "coloring-page",
+      "title": "Coloring Page",
+      "imageUrl": "/generated/worksheets/coloring-page-1765538960761.png"
+    },
+    {
+      "order": 16,
+      "type": "creative-prompt",
+      "title": "Creative Drawing",
+      "imageUrl": "/generated/worksheets/creative-prompt-1765538960880.png"
+    }
+  ],
+  "createdAt": "2025-12-12T11:29:21.017Z",
+  "createdBy": "7o7zbjOrfOVLyWK5rGILVtJfA093",
+  "source": "manual"
+}

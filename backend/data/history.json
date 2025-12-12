@@ -1,6 +1,253 @@
 [
   {
     "userId": "guest",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "creative-prompt",
+    "pageTypeName": "Creative Prompt",
+    "imageUrl": "http://localhost:3000/generated/worksheets/creative-prompt-1765539251928.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\creative-prompt-1765539251928.png",
+    "config": {
+      "promptType": "blank_sign",
+      "theme": "dinosaur"
+    },
+    "id": "1765539252088-3prl8xopm",
+    "createdAt": "2025-12-12T11:34:12.088Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "coloring-page",
+    "pageTypeName": "Coloring Page",
+    "imageUrl": "http://localhost:3000/generated/worksheets/coloring-page-1765539250763.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\coloring-page-1765539250763.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765539250915-w6edgg6sk",
+    "createdAt": "2025-12-12T11:34:10.915Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "fine-motor",
+    "categoryName": "fine-motor",
+    "pageTypeId": "shape-tracing",
+    "pageTypeName": "Shape Tracing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shape-tracing-1765539249432.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-tracing-1765539249432.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765539249754-0wvx6hlom",
+    "createdAt": "2025-12-12T11:34:09.754Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "fine-motor",
+    "categoryName": "fine-motor",
+    "pageTypeId": "trace-lines",
+    "pageTypeName": "Trace Lines",
+    "imageUrl": "http://localhost:3000/generated/worksheets/trace-lines-1765539248205.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\trace-lines-1765539248205.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765539248422-7zn710x35",
+    "createdAt": "2025-12-12T11:34:08.422Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "logic",
+    "categoryName": "logic",
+    "pageTypeId": "pattern-sequencing",
+    "pageTypeName": "Pattern Sequencing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/pattern-sequencing-1765539247058.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\pattern-sequencing-1765539247058.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765539247189-pscpgg6d1",
+    "createdAt": "2025-12-12T11:34:07.189Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "logic",
+    "categoryName": "logic",
+    "pageTypeId": "pattern-compare",
+    "pageTypeName": "Pattern Compare",
+    "imageUrl": "http://localhost:3000/generated/worksheets/pattern-compare-1765539245739.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\pattern-compare-1765539245739.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765539246040-2xw2whkr9",
+    "createdAt": "2025-12-12T11:34:06.040Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "logic",
+    "categoryName": "logic",
+    "pageTypeId": "sorting",
+    "pageTypeName": "Sorting",
+    "imageUrl": "http://localhost:3000/generated/worksheets/sorting-1765539181061.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\sorting-1765539181061.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765539181196-ipwoiwq0c",
+    "createdAt": "2025-12-12T11:33:01.196Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "logic",
+    "categoryName": "logic",
+    "pageTypeId": "shadow-matching",
+    "pageTypeName": "Shadow Matching",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shadow-matching-dinosaur-1765539179908.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shadow-matching-dinosaur-1765539179908.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765539180045-5tcewin2i",
+    "createdAt": "2025-12-12T11:33:00.045Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "logic",
+    "categoryName": "logic",
+    "pageTypeId": "maze",
+    "pageTypeName": "Maze",
+    "imageUrl": "http://localhost:3000/generated/worksheets/maze-1765539178775.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\maze-1765539178775.png",
+    "config": {
+      "theme": "dinosaur",
+      "difficulty": "medium"
+    },
+    "id": "1765539178898-4b4suqabn",
+    "createdAt": "2025-12-12T11:32:58.898Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "math",
+    "categoryName": "Numbers & Math",
+    "pageTypeId": "number-path",
+    "pageTypeName": "Number Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/connect-dots-dinosaur-1765539177575.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\connect-dots-dinosaur-1765539177575.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765539177716-e6kobk7pj",
+    "createdAt": "2025-12-12T11:32:57.716Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "math",
+    "categoryName": "Numbers & Math",
+    "pageTypeId": "counting-objects",
+    "pageTypeName": "Count and Write",
+    "imageUrl": "http://localhost:3000/generated/worksheets/count-write-dinosaur-1765539176195.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\count-write-dinosaur-1765539176195.png",
+    "config": {
+      "theme": "dinosaur",
+      "difficulty": "medium"
+    },
+    "id": "1765539176333-mmb96btf1",
+    "createdAt": "2025-12-12T11:32:56.333Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "math",
+    "categoryName": "Numbers & Math",
+    "pageTypeId": "number-tracing",
+    "pageTypeName": "Number Tracing 0–4",
+    "imageUrl": "http://localhost:3000/generated/worksheets/number-tracing-0-4-1765539174982.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\number-tracing-0-4-1765539174982.png",
+    "config": {
+      "range": "0-4",
+      "theme": "dinosaur"
+    },
+    "id": "1765539175178-92yts13qt",
+    "createdAt": "2025-12-12T11:32:55.178Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "write-my-name",
+    "pageTypeName": "Write My Name",
+    "imageUrl": "http://localhost:3000/generated/worksheets/write-my-name-1765539173821.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\write-my-name-1765539173821.png",
+    "config": {
+      "name": "LEO",
+      "theme": "dinosaur"
+    },
+    "id": "1765539173970-lovcvjvfp",
+    "createdAt": "2025-12-12T11:32:53.970Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "letter-recognition",
+    "pageTypeName": "Find the Letter A",
+    "imageUrl": "http://localhost:3000/generated/worksheets/letter-recognition-A-1765539172658.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\letter-recognition-A-1765539172658.png",
+    "config": {
+      "letter": "A",
+      "difficulty": "easy",
+      "theme": "dinosaur"
+    },
+    "id": "1765539172807-lyemik61k",
+    "createdAt": "2025-12-12T11:32:52.807Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "lowercase-tracing",
+    "pageTypeName": "Lowercase a Tracing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/lowercase-a-1765539171506.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\lowercase-a-1765539171506.png",
+    "config": {
+      "letter": "a",
+      "theme": "dinosaur"
+    },
+    "id": "1765539171645-o8tae8ulo",
+    "createdAt": "2025-12-12T11:32:51.645Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "uppercase-tracing",
+    "pageTypeName": "Uppercase A Tracing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765539170250.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765539170250.png",
+    "config": {
+      "letter": "A",
+      "theme": "dinosaur"
+    },
+    "id": "1765539170488-nhgxbl780",
+    "createdAt": "2025-12-12T11:32:50.488Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "math",
+    "categoryName": "Numbers & Math",
+    "pageTypeId": "number-path",
+    "pageTypeName": "Number Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/connect-dots-dinosaur-1765538947663.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\connect-dots-dinosaur-1765538947663.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765538948074-bowg8e8j8",
+    "createdAt": "2025-12-12T11:29:08.074Z"
+  },
+  {
+    "userId": "guest",
     "categoryId": "literacy",
     "categoryName": "Letters & Literacy",
     "pageTypeId": "uppercase-tracing",
@@ -42,260 +289,5 @@
     },
     "id": "1765536399005-e1ae9nr4w",
     "createdAt": "2025-12-12T10:46:39.005Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase G Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-G-1765529978081.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-G-1765529978081.png",
-    "config": {
-      "letter": "G",
-      "theme": "dinosaur"
-    },
-    "id": "1765529978261-rz1yv5pbg",
-    "createdAt": "2025-12-12T08:59:38.261Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase G Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-G-1765529977359.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-G-1765529977359.png",
-    "config": {
-      "letter": "G",
-      "theme": "dinosaur"
-    },
-    "id": "1765529977507-rlyk32g1x",
-    "createdAt": "2025-12-12T08:59:37.507Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765529975997.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765529975997.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765529976138-ti50mpzdu",
-    "createdAt": "2025-12-12T08:59:36.138Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765529975397.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765529975397.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765529975538-u92h98c1k",
-    "createdAt": "2025-12-12T08:59:35.538Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765529974934.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765529974934.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765529975097-yqfb2gtdz",
-    "createdAt": "2025-12-12T08:59:35.097Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765529974446.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765529974446.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765529974599-9sb8d9fkz",
-    "createdAt": "2025-12-12T08:59:34.599Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765529973926.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765529973926.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765529974072-wbfctma85",
-    "createdAt": "2025-12-12T08:59:34.072Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765529973424.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765529973424.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765529973564-xlkmwd7e5",
-    "createdAt": "2025-12-12T08:59:33.564Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765529972880.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765529972880.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765529973036-kfqfr3n5w",
-    "createdAt": "2025-12-12T08:59:33.036Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765529972354.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765529972354.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765529972506-1s7andu5z",
-    "createdAt": "2025-12-12T08:59:32.506Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765529971737.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765529971737.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765529971882-80i4xh519",
-    "createdAt": "2025-12-12T08:59:31.882Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765529970918.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765529970918.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765529971129-kszivihd5",
-    "createdAt": "2025-12-12T08:59:31.129Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765529967956.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765529967956.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765529968115-fe67b5klk",
-    "createdAt": "2025-12-12T08:59:28.115Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765529964646.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765529964646.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765529964799-ssn870leq",
-    "createdAt": "2025-12-12T08:59:24.799Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765529963067.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765529963067.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765529963233-axwqukyq5",
-    "createdAt": "2025-12-12T08:59:23.233Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765529960369.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765529960369.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765529960516-23nlef1mf",
-    "createdAt": "2025-12-12T08:59:20.516Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765529958339.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765529958339.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765529958842-vued0zsiy",
-    "createdAt": "2025-12-12T08:59:18.842Z"
   }
 ]
