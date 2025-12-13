@@ -23,8 +23,8 @@ const GeneratorHome: React.FC = () => {
                     </p>
                 </div>
 
-                {/* Categories Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                {/* Categories Grid - 2x2 layout */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl mx-auto">
                     {CATEGORIES.map((category, index) => {
                         const Icon = category.icon;
                         // Define rich, vibrant gradients for each category
@@ -32,8 +32,7 @@ const GeneratorHome: React.FC = () => {
                             literacy: 'from-amber-300 via-orange-300 to-yellow-400',
                             math: 'from-emerald-300 via-teal-300 to-green-400',
                             logic: 'from-cyan-300 via-blue-300 to-indigo-400',
-                            'fine-motor': 'from-purple-300 via-fuchsia-300 to-pink-400',
-                            creativity: 'from-rose-300 via-pink-300 to-orange-300'
+                            creativity: 'from-rose-300 via-pink-300 to-fuchsia-300'
                         };
                         const gradient = gradients[category.id] || 'from-gray-200 to-gray-300';
 

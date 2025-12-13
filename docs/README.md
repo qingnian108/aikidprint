@@ -1,383 +1,260 @@
-<div align="center">
-
 # 🎨 AI Kid Print
 
-**AI-Powered Educational Worksheet Generator for Kids**
+**AI-Powered Educational Worksheet Generator for Kids (Ages 3-8)**
 
-</div>
+面向 3-8 岁儿童的 AI 驱动教育工作表生成器。创建个性化的读写、数学、逻辑思维和创意活动学习材料，支持多种主题。
 
 ---
 
-
-
-面向 3-8 岁儿童的 AI 驱动教育工作表生成器。创建个性化的读写、数学和创意活动学习材料，支持自定义主题。
-
-
-
 ## ✨ 功能特性
 
+### 📚 四大学习板块
 
+1. **Literacy Skills（读写能力）** 🟡
+   - Uppercase Letter Tracing - 大写字母描红
+   - Lowercase Letter Tracing - 小写字母描红
+   - Letter Recognition - 字母识别
+   - Write My Name - 名字练习
 
-### 📚 三大主要分类
+2. **Math Skills（数学能力）** 🟢
+   - Number Tracing - 数字描红
+   - Counting Objects - 数数练习
+   - Number Path - 数字连线（点对点）
 
-- **字母与读写** - 字母描摹、自然拼读、常见词汇和阅读理解
+3. **Logic & Thinking（逻辑与思维）** 🔵
+   - Maze - 迷宫
+   - Shadow Matching - 影子配对
+   - Sorting - 分类排序
+   - Pattern Compare - 图案比较
+   - Pattern Sequencing - 图案序列
 
-- **数字与数学** - 计数、数字识别、加法、减法和规律
-
-- **艺术与创造** - 涂色页面、绘画提示和创意活动
-
-
+4. **Creativity & Motor（创意与运笔）** 🟣
+   - Trace Lines - 线条描摹
+   - Shape Tracing - 形状描摹
+   - Coloring Page - 涂色页
+   - Creative Prompt - 创意绘画提示
 
 ### 🎯 核心功能
 
-- **分层导航** - 浏览分类 → 选择页面类型 → 配置并生成
+- **Weekly Pack** - 每周学习包，一键生成包含多种类型的综合练习册
+- **单页生成器** - 自定义选择分类和页面类型，配置参数后生成
+- **6 种主题** - Dinosaur、Space、Ocean、Unicorn、Vehicles、Safari
+- **PDF 导出** - 高质量 300 DPI 打印输出（Letter 纸张 8.5" × 11"）
+- **用户系统** - Firebase 认证（Google 和邮箱登录）
+- **订阅管理** - Free / Pro 计划，Pro 用户无限下载
+- **下载历史** - 记录用户的下载历史
+- **每周自动发送** - 定时任务自动发送 Weekly Pack 到用户邮箱
 
-- **可自定义参数** - 为每种工作表类型调整难度、主题和页数
-
-- **AI 驱动生成** - 使用 Google Gemini API 进行后端驱动的图像生成
-
-- **PDF 导出** - 下载并打印高质量工作表
-
-- **用户认证** - 使用 Firebase 安全登录（Google 和邮箱）
-
-- **配额管理** - 免费版提供 10 次生成，专业版无限制访问
-
-
+---
 
 ## 🏗️ 技术栈
 
-
-
-- **前端**: React 19, TypeScript, Vite
-
-- **样式**: Tailwind CSS
-
-- **AI**: Google Gemini API
-
-- **认证**: Firebase Auth
-
-- **PDF 生成**: jsPDF, html2canvas
-
-- **图标**: Lucide React
-
+### 前端
+- **框架**: React 19 + TypeScript
+- **构建工具**: Vite 6
+- **样式**: Tailwind CSS (Brutal Design 风格)
+- **动画**: Framer Motion
 - **路由**: React Router v7
-
-
-
-## 📋 前置要求
-
-
-
-- Node.js (v18 或更高版本)
-
-- Firebase 账户
-
-- Google Gemini API 密钥
-
-
-
-## 🚀 安装配置
-
-
-
-1. **克隆仓库**
-
-   ```bash
-
-   git clone <your-repo-url>
-
-   cd ai-kid-print
-
-   ```
-
-
-
-2. **安装依赖**
-
-   ```bash
-
-   npm install
-
-   ```
-
-
-
-3. **配置环境变量**
-
-   
-
-   复制 `.env.example` 到 `.env.local`：
-
-   ```bash
-
-   cp .env.example .env.local
-
-   ```
-
-
-
-   在 `.env.local` 中填写您的凭据：
-
-   ```env
-
-   # Firebase 配置
-
-   VITE_FIREBASE_API_KEY=your_firebase_api_key
-
-   VITE_FIREBASE_AUTH_DOMAIN=your_project_id.firebaseapp.com
-
-   VITE_FIREBASE_PROJECT_ID=your_project_id
-
-   VITE_FIREBASE_STORAGE_BUCKET=your_project_id.firebasestorage.app
-
-   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-
-   VITE_FIREBASE_APP_ID=your_app_id
-
-   VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
-
-
-
-   # Google Gemini API 密钥
-
-   VITE_GEMINI_API_KEY=your_gemini_api_key
-
-   ```
-
-
-
-4. **设置 Firebase**
-
-   - 在 [Firebase 控制台](https://console.firebase.google.com/) 创建一个 Firebase 项目
-
-   - 启用身份验证（Google 和邮箱/密码）
-
-   - 在 Firebase 身份验证设置中将您的域名添加到授权域名
-
-   - 将您的 Firebase 配置值复制到 `.env.local`
-
-
-
-5. **获取 Gemini API 密钥**
-
-   - 访问 [Google AI Studio](https://makersuite.google.com/app/apikey)
-
-   - 创建一个 API 密钥
-
-   - 将其作为 `VITE_GEMINI_API_KEY` 添加到 `.env.local`
-
-
-
-6. **运行开发服务器**
-
-   ```bash
-
-   npm run dev
-
-   ```
-
-
-
-   在浏览器中打开 [http://localhost:3000](http://localhost:3000)。
-
-
-
-## 🏗️ 生产构建
-
-
-
-```bash
-
-npm run build
-
-npm run preview
-
-```
-
-
+- **状态管理**: Zustand
+- **图标**: Lucide React
+- **PDF**: jsPDF + html2canvas
+
+### 后端
+- **运行时**: Node.js + Express
+- **语言**: TypeScript
+- **PDF 渲染**: Puppeteer
+- **图片处理**: Sharp
+- **定时任务**: node-cron
+- **邮件服务**: Nodemailer
+- **AI 图像**: Google Imagen API
+
+### 基础设施
+- **认证**: Firebase Auth
+- **数据库**: Firebase Firestore
+- **存储**: Firebase Storage
+
+---
 
 ## 📁 项目结构
 
-
-
 ```
-
 ai-kid-print/
-
-├── components/              # 可复用的 React 组件
-
-│   ├── Layout.tsx          # 带导航的主布局
-
-│   ├── WorksheetRenderer.tsx  # 工作表显示组件
-
-│   ├── ErrorBoundary.tsx   # 错误处理包装器
-
-│   ├── ProtectedRoute.tsx  # 认证路由守卫
-
-│   ├── QuotaModal.tsx      # 配额限制通知
-
-│   ├── ConfirmModal.tsx    # 确认对话框
-
-│   ├── SuccessModal.tsx    # 成功通知
-
-│   └── PayPalModal.tsx     # 支付集成
-
-├── pages/                   # 页面组件
-
-│   ├── Home.tsx            # 首页
-
-│   ├── Login.tsx           # 认证页面
-
-│   ├── Dashboard.tsx       # 用户仪表板
-
-│   ├── Pricing.tsx         # 定价和计划
-
-│   ├── FreeResources.tsx   # 免费资源页面
-
-│   ├── Generator.tsx       # 旧版生成器（已弃用）
-
-│   └── generator/          # 新生成器结构
-
-│       ├── GeneratorHome.tsx    # 分类选择
-
-│       ├── CategoryPage.tsx     # 页面类型列表
-
-│       └── GeneratorDetail.tsx  # 配置和生成
-
-├── contexts/               # React 上下文
-
-│   └── AuthContext.tsx    # 认证状态
-
-├── services/              # API 和外部服务
-
-│   ├── firebase.ts        # Firebase 配置
-
-│   ├── geminiService.ts   # AI 生成服务
-
-│   ├── mockApiService.ts  # 测试用模拟 API
-
-│   └── pdfService.ts      # PDF 生成工具
-
-├── constants/             # 应用常量
-
-│   └── generatorConfig.ts # 生成器分类和类型
-
-├── types.ts               # TypeScript 类型定义
-
-├── App.tsx               # 主应用组件和路由
-
-└── index.tsx             # 应用入口点
-
+├── src/                          # 前端源码
+│   ├── components/               # 可复用组件
+│   │   ├── Layout.tsx           # 主布局（固定头部导航）
+│   │   ├── PrintSettings.tsx    # 打印设置
+│   │   ├── WeeklyDeliverySettings.tsx  # 每周发送设置
+│   │   ├── DownloadHistory.tsx  # 下载历史
+│   │   └── ...
+│   ├── pages/                    # 页面组件
+│   │   ├── Home.tsx             # 首页
+│   │   ├── DashboardNew.tsx     # 用户仪表板
+│   │   ├── Pricing.tsx          # 定价页面
+│   │   ├── WeeklyPack.tsx       # Weekly Pack 配置
+│   │   ├── WeeklyPackPreview.tsx # Weekly Pack 预览
+│   │   └── generator/           # 单页生成器
+│   │       ├── GeneratorHome.tsx    # 分类选择（2x2 布局）
+│   │       ├── CategoryPage.tsx     # 页面类型列表
+│   │       └── GeneratorDetail.tsx  # 配置和生成
+│   ├── constants/
+│   │   └── pageTypes.ts         # 分类和页面类型定义
+│   ├── contexts/
+│   │   └── AuthContext.tsx      # 认证上下文
+│   ├── services/
+│   │   ├── api.ts               # 后端 API 调用
+│   │   ├── firestoreService.ts  # Firestore 操作
+│   │   └── firebase.ts          # Firebase 配置
+│   └── App.tsx                  # 路由配置
+│
+├── backend/                      # 后端源码
+│   ├── src/
+│   │   ├── index.ts             # Express 入口
+│   │   ├── routes/
+│   │   │   ├── worksheets.ts    # 工作表 API
+│   │   │   ├── weeklyPack.ts    # Weekly Pack API
+│   │   │   └── weeklyDelivery.ts # 每周发送 API
+│   │   ├── services/
+│   │   │   ├── generators/      # 各类型生成器
+│   │   │   │   ├── index.ts     # 生成器映射
+│   │   │   │   ├── weeklyPackService.ts
+│   │   │   │   ├── dotToDotService.ts
+│   │   │   │   └── patternCompareService.ts
+│   │   │   ├── worksheetService.ts
+│   │   │   ├── pdfGenerator.ts  # Puppeteer PDF 生成
+│   │   │   ├── imageGenerator.ts
+│   │   │   ├── imagenService.ts # Google Imagen API
+│   │   │   ├── cronService.ts   # 定时任务
+│   │   │   └── emailService.ts  # 邮件发送
+│   │   └── utils/
+│   │       └── imageHelper.ts   # 图片工具函数
+│   └── public/                  # 静态资源
+│       ├── fonts/               # 字体文件
+│       ├── uploads/             # 主题图片资源
+│       ├── generated/           # 生成的文件
+│       └── previews/            # 预览图
+│
+├── scripts/                      # Python 脚本
+│   ├── maze_generator.py        # 迷宫生成
+│   └── dot_to_dot.py            # 点对点处理
+│
+└── docs/                         # 文档
+    ├── README.md
+    ├── SETUP_GUIDE.md
+    ├── FIREBASE_SETUP.md
+    └── GOOGLE_IMAGEN_API.md
 ```
 
+---
 
+## 🚀 快速开始
 
-## 🎨 生成器架构
+### 前置要求
+- Node.js v18+
+- Python 3.x（用于迷宫和点对点生成）
+- Firebase 账户
+- Google Cloud 账户（Imagen API）
 
+### 1. 克隆项目
+```bash
+git clone https://github.com/qingnian108/aikidprint.git
+cd aikidprint
+```
 
+### 2. 安装依赖
+```bash
+# 前端依赖
+npm install
 
-应用使用分层导航结构：
+# 后端依赖
+cd backend
+npm install
+```
 
+### 3. 配置环境变量
 
+**前端 `.env.local`:**
+```env
+VITE_FIREBASE_API_KEY=your_api_key
+VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=your_project_id
+VITE_FIREBASE_STORAGE_BUCKET=your_project.firebasestorage.app
+VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
+VITE_FIREBASE_APP_ID=your_app_id
+VITE_API_BASE_URL=http://localhost:3000
+```
 
-1. **生成器首页** (`/generator`) - 显示三个主要分类
+**后端 `backend/.env`:**
+```env
+PORT=3000
+PYTHON_PATH=python
 
-2. **分类页面** (`/generator/:category`) - 列出分类内的可用页面类型
+# Firebase Admin
+FIREBASE_PROJECT_ID=your_project_id
+FIREBASE_CLIENT_EMAIL=your_service_account_email
+FIREBASE_PRIVATE_KEY="your_private_key"
 
-3. **生成器详情** (`/generator/:category/:pageType`) - 配置参数并生成工作表
+# Google Imagen API
+GOOGLE_CLOUD_PROJECT=your_gcp_project
+GOOGLE_APPLICATION_CREDENTIALS=./firebase-service-account.json
 
+# Email (Nodemailer)
+SMTP_HOST=smtp.gmail.com
+SMTP_PORT=587
+SMTP_USER=your_email
+SMTP_PASS=your_app_password
 
+# Cron
+ENABLE_CRON=false
+CRON_TIMEZONE=America/New_York
+```
 
-### 可用页面类型
+### 4. 启动开发服务器
 
+```bash
+# 终端 1 - 后端
+cd backend
+npm run dev
 
+# 终端 2 - 前端
+npm run dev
+```
 
-**字母与读写 (Letters & Literacy)：**
+- 前端: http://localhost:5173
+- 后端: http://localhost:3000
 
-- 大写/小写描红 (Uppercase/Lowercase Tracing)
+---
 
-- 名字定制 (Custom Name Tracing)
+## 📡 API 端点
 
-- 字母找找看 (Letter Hunt)
+### 工作表生成
+- `POST /api/worksheets/generate` - 生成单页工作表
+- `POST /api/worksheets/generate-pdf` - 生成 PDF
 
-- 首字母配对 (Beginning Sounds)
+### Weekly Pack
+- `POST /api/weekly-pack/generate` - 生成 Weekly Pack
+- `POST /api/weekly-pack/generate-pdf` - 生成 Weekly Pack PDF
 
-- 字母排序/缺字母 (Alphabet Order)
+### 每周发送
+- `POST /api/weekly-delivery/settings` - 保存发送设置
+- `GET /api/weekly-delivery/settings/:userId` - 获取发送设置
 
-- 字母+初级单词 (CVC Words)
+---
 
+## 🎨 主题系统
 
+支持 6 种儿童喜爱的主题：
+- 🦕 **Dinosaur** - 恐龙
+- 🚀 **Space** - 太空
+- 🌊 **Ocean** - 海洋
+- 🦄 **Unicorn** - 独角兽
+- 🚗 **Vehicles** - 交通工具
+- 🦁 **Safari** - 野生动物
 
-**数字与数学 (Numbers & Math)：**
-- 看图数数 (Count and Write)
-- 数字填格 (Number Grid Fill-In)
-- 找规律 (Pattern Completion)
-- 比较技能 (Comparison Skills)
-- 数字描红 (Number Tracing)
-- 简单加减图画题 (Picture Math)
+每个主题包含对应的装饰图片，存放在 `backend/public/uploads/{theme}/` 目录。
 
-
-**艺术与创造 (Art & Creativity)：**
-
-- 对称画 (Symmetry Drawing)
-
-- 分步简笔画 (Step-by-Step Drawing)
-
-- 创意添画 (Creative Prompts)
-
-- 涂色页生成器 (Coloring Page Mixer)
-
-- 自由涂鸦+图案边框 (Doodle Borders)
-
-- 图案+字母/数字混合页 (Mixed Practice)
-
-
-
-## 🔒 安全注意事项
-
-
-
-⚠️ **生产环境重要提示：**
-
-
-
-1. **需要后端 API**：当前实现使用模拟 API。请替换为实际的后端 API 端点进行图像生成。
-
-2. **配额验证**：将配额检查从客户端移至服务器端（Firebase Functions 或后端 API）。
-
-3. **用户订阅**：实现基于 Firestore 的订阅管理，而不是 localStorage。
-
-4. **API 密钥**：永远不要将 `.env.local` 提交到版本控制。使用特定于环境的配置。
-
-5. **速率限制**：为 API 调用实现服务器端速率限制以防止滥用。
-
-6. **图像存储**：为生成的图像设置适当的云存储（Firebase Storage 或 CDN）。
-
-
-
-## 🤝 贡献
-
-
-
-欢迎贡献！请随时提交 Pull Request。
-
-
+---
 
 ## 📄 许可证
 
-
-
-MIT 许可证 - 可自由用于个人或商业用途。
-
-
-
-## 📚 其他文档
-
-
-
-- [Firebase 设置指南](FIREBASE_SETUP.md)
-
-- [GitHub 设置指南](GITHUB_SETUP.md)
-
-- [完整设置指南](SETUP_GUIDE.md)
+MIT License
 
