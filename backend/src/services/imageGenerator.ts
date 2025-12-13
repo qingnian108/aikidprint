@@ -1,4 +1,4 @@
-import puppeteer from 'puppeteer';
+﻿import puppeteer from 'puppeteer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
@@ -1180,6 +1180,1672 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
+     * 生成 Alphabet Sequencing 页面
+     * 填写缺失的字母完成字母序列
+     */
+    async generateAlphabetSequencing(data: any): Promise<string> {
+        await this.initialize();
+        
+        const content = data?.content || data || {};
+        const { theme = 'dinosaur', rows = [] } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const stickerHtml = this.getStickersHtml(themeKey);
+        
+        // 生成行 HTML
+        const rowsHtml = rows.map((row: any) => {
+            const cellsHtml = row.sequence.map((letter: string | null) => {
+                if (letter === null) {
+                    return `<div class="cell blank-box"><div class="box-inner"></div></div>`;
+                }
+                return `<div class="cell letter">${letter}</div>`;
+            }).join('');
+            return `
+                <div class="row">
+                    <div class="writing-lines">
+                        <div class="line top-line"></div>
+                        <div class="line mid-line"></div>
+                        <div class="line bottom-line"></div>
+                    </div>
+                    <div class="cells">${cellsHtml}</div>
+                </div>
+            `;
+        }).join('');
+        
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .safe-area {
+            position: absolute;
+            left: 40px;
+            top: 67px;
+            width: calc(100% - 80px);
+            height: calc(100% - 107px);
+            padding: 20px 0 10px 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .title-row .main {
+            font-size: 32px;
+            font-weight: 900;
+            color: #0f172a;
+        }
+        .title-icon {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+        .content-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            padding: 0;
+        }
+        .row {
+            position: relative;
+            height: 145px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .writing-lines {
+            position: absolute;
+            left: 0;
+            right: 0;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 20px 0;
+        }
+        .line {
+            width: 100%;
+            height: 0;
+            border-bottom: 2px solid #333;
+        }
+        .mid-line {
+            border-bottom-style: dashed;
+            border-color: #999;
+        }
+        .cells {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            width: 100%;
+            padding: 0;
+        }
+        .cell {
+            width: 140px;
+            height: 105px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cell.letter {
+            font-size: 85px;
+            font-weight: 900;
+            color: #000;
+            font-family: 'Arial Black', 'Quicksand', sans-serif;
+        }
+        .cell.blank-box .box-inner {
+            width: 80px;
+            height: 80px;
+            border: 3px solid #000;
+            border-radius: 10px;
+            background: #fff;
+        }
+        .divider {
+            position: absolute;
+            top: 60px;
+            left: -24px;
+            width: calc(100% + 48px);
+            height: 1.5px;
+            background: ${themeColors.primary};
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <span class="main">Alphabet Sequencing</span>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="content-box">
+                ${rowsHtml}
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>
+        `;
+        
+        const filename = `alphabet-sequencing-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+        
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+        
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
+     * 生成 Beginning Sounds 页面
+     * 匹配图片和首字母 - 左侧字母卡片，右侧图片卡片，中间连线
+     */
+    async generateBeginningSounds(data: any): Promise<string> {
+        await this.initialize();
+        
+        const content = data?.content || data || {};
+        const { letterSet = 'A-E', theme = 'dinosaur', items = [], shuffledItems = [] } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const stickerHtml = this.getStickersHtml(themeKey);
+        
+        // 卡片背景颜色
+        const cardColors = [
+            '#E3F2FD', // 浅蓝
+            '#F3E5F5', // 浅紫
+            '#FFF3E0', // 浅橙
+            '#E8F5E9', // 浅绿
+            '#FFF8E1', // 浅黄
+            '#FCE4EC', // 浅粉
+            '#E0F7FA', // 浅青
+            '#FBE9E7', // 浅珊瑚
+        ];
+        
+        // 字母对应的颜色（用于字母本身）
+        const letterColors = [
+            '#F48FB1', // 粉红
+            '#CE93D8', // 紫色
+            '#80CBC4', // 青绿
+            '#A5D6A7', // 绿色
+            '#FFE082', // 黄色
+            '#FFAB91', // 橙色
+            '#90CAF9', // 蓝色
+            '#B39DDB', // 淡紫
+        ];
+        
+        // 生成左侧字母卡片 HTML
+        const leftCardsHtml = items.map((item: any, index: number) => `
+            <div class="card letter-card" style="background: ${cardColors[index % cardColors.length]};">
+                <span class="letter" style="color: ${letterColors[index % letterColors.length]};">${item.letter}</span>
+            </div>
+        `).join('');
+        
+        // 生成右侧图片卡片 HTML（使用打乱后的顺序）
+        const rightCardsHtml = shuffledItems.map((item: any, index: number) => `
+            <div class="card image-card" style="background: ${cardColors[(index + 3) % cardColors.length]};">
+                <img class="card-image" src="http://localhost:3000${item.image}" alt="${item.word}" />
+            </div>
+        `).join('');
+        
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .safe-area {
+            position: absolute;
+            left: 40px;
+            top: 67px;
+            width: calc(100% - 80px);
+            height: calc(100% - 107px);
+            padding: 24px 0 16px 0;
+            display: flex;
+            flex-direction: column;
+
+        }
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .title-row .main {
+            font-size: 32px;
+            font-weight: 900;
+            color: #0f172a;
+        }
+        .title-icon {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+        .content-box {
+            flex: 1;
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .columns-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 220px;
+        }
+        .left-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 27px;
+        }
+        .right-column {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 27px;
+        }
+        .card {
+            width: 110px;
+            height: 110px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            border: 3px solid rgba(255,255,255,0.8);
+        }
+        .letter-card .letter {
+            font-size: 72px;
+            font-weight: 900;
+            font-family: 'Comic Sans MS', 'Chalkboard', cursive;
+            text-shadow: 2px 2px 0 rgba(255,255,255,0.8);
+        }
+        .image-card {
+            padding: 6px;
+        }
+        .card-image {
+            width: 90px;
+            height: 90px;
+            object-fit: contain;
+        }
+        .divider {
+            position: absolute;
+            top: 60px;
+            left: -24px;
+            width: calc(100% + 48px);
+            height: 1.5px;
+            background: ${themeColors.primary};
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <span class="main">Beginning Sounds: ${letterSet}</span>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="content-box">
+                <div class="columns-wrapper">
+                    <div class="left-column">
+                        ${leftCardsHtml}
+                    </div>
+                    <div class="right-column">
+                        ${rightCardsHtml}
+                    </div>
+                </div>
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>
+        `;
+        
+        const filename = `beginning-sounds-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+        
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+        
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
+     * 生成 CVC Words 页面
+     * 简单的 CVC 单词练习 - 按照规范，中间安全区留空
+     */
+    async generateCVCWordsPage(data: any): Promise<string> {
+        await this.initialize();
+        
+        const content = data?.content || data || {};
+        const { wordFamily = 'at', theme = 'dinosaur', words = [] } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const stickerHtml = this.getStickersHtml(themeKey);
+        
+        // 卡片背景颜色
+        const cardBgColors = [
+            '#DBEAFE', // 浅蓝
+            '#FCE7F3', // 浅粉
+            '#CFFAFE', // 浅青
+            '#D1FAE5', // 浅绿
+            '#E9D5FF', // 浅紫
+            '#FEF3C7', // 浅黄
+        ];
+        
+        // 可用的 CVC 单词和对应的图片文件名（首字母大写）
+        const availableCvcWords = [
+            { word: 'cat', image: 'Cat' },
+            { word: 'dog', image: 'Dog' },
+            { word: 'hat', image: 'Hat' },
+            { word: 'pig', image: 'Pig' },
+            { word: 'sun', image: 'Sun' },
+            { word: 'van', image: 'Van' },
+            { word: 'net', image: 'Net' },
+            { word: 'jam', image: 'Jam' },
+            { word: 'egg', image: 'Egg' },
+            { word: 'ant', image: 'Ant' },
+            { word: 'bee', image: 'Bee' },
+            { word: 'car', image: 'Car' },
+        ];
+        
+        // 获取单词对应的图片
+        const getWordImage = (word: string) => {
+            const found = availableCvcWords.find(w => w.word === word.toLowerCase());
+            if (found) {
+                return `/uploads/bigpng/${found.image}.png`;
+            }
+            // 默认尝试首字母大写
+            return `/uploads/bigpng/${word.charAt(0).toUpperCase() + word.slice(1)}.png`;
+        };
+        
+        // 随机选择6个单词
+        const shuffled = [...availableCvcWords].sort(() => Math.random() - 0.5);
+        const displayWords = shuffled.slice(0, 6).map(w => w.word);
+        
+        const cardsHtml = displayWords.map((word: string, idx: number) => {
+            const bgColor = cardBgColors[idx % cardBgColors.length];
+            const letters = word.split('');
+            const letterBoxes = letters.map(() => `
+                <div class="letter-box">
+                    <div class="letter-line"></div>
+                </div>
+            `).join('');
+            
+            return `
+                <div class="word-card">
+                    <div class="image-area" style="background: ${bgColor};">
+                        <img class="word-image" src="http://localhost:3000${getWordImage(word)}" alt="${word}" />
+                    </div>
+                    <div class="letters-area">
+                        ${letterBoxes}
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .safe-area {
+            position: absolute;
+            left: 40px;
+            top: 67px;
+            width: calc(100% - 80px);
+            height: calc(100% - 107px);
+            padding: 20px 0 10px 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .title-row .main {
+            font-size: 32px;
+            font-weight: 900;
+            color: #0f172a;
+        }
+        .title-icon {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+        .content-box {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            gap: 35px 20px;
+            padding: 10px;
+        }
+        .word-card {
+            width: 200px;
+            border: 3px solid #1f2937;
+            border-radius: 20px;
+            overflow: hidden;
+            background: #fff;
+        }
+        .image-area {
+            height: 180px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 16px 16px 0 0;
+            margin: 4px 4px 0 4px;
+        }
+        .word-image {
+            width: 140px;
+            height: 140px;
+            object-fit: contain;
+        }
+        .letters-area {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            padding: 15px 10px 20px 10px;
+            background: #fff;
+        }
+        .letter-box {
+            width: 50px;
+            height: 55px;
+            border: 2px dashed #9ca3af;
+            border-radius: 8px;
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+            padding-bottom: 8px;
+        }
+        .letter-line {
+            width: 30px;
+            height: 3px;
+            background: #374151;
+        }
+        .divider {
+            position: absolute;
+            top: 60px;
+            left: 16px;
+            width: calc(100% - 32px);
+            height: 1.5px;
+            background: ${themeColors.primary};
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <span class="main">CVC Words</span>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="content-box">
+                <div class="cards-grid">
+                    ${cardsHtml}
+                </div>
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>
+        `;
+        
+        const filename = `cvc-words-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+        
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+        
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
+     * 生成 Match Uppercase & Lowercase 页面
+     * 大小写字母配对 - 左边大写顺序，右边小写打乱
+     */
+    async generateMatchUpperLower(data: any): Promise<string> {
+        await this.initialize();
+        
+        const content = data?.content || data || {};
+        const { letterSet = 'A-F', theme = 'dinosaur', uppercase = [], lowercase = [] } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const stickerHtml = this.getStickersHtml(themeKey);
+        
+        // 默认字母集
+        const defaultUppercase = ['A', 'B', 'C', 'D', 'E', 'F'];
+        const displayUppercase = uppercase.length > 0 ? uppercase : defaultUppercase;
+        
+        // 打乱小写字母顺序
+        const defaultLowercase = displayUppercase.map((l: string) => l.toLowerCase());
+        const displayLowercase = lowercase.length > 0 ? lowercase : 
+            [...defaultLowercase].sort(() => Math.random() - 0.5);
+        
+        // 生成左侧大写字母 HTML
+        const leftLettersHtml = displayUppercase.map((letter: string) => `
+            <div class="letter-item">${letter}</div>
+        `).join('');
+        
+        // 生成右侧小写字母 HTML
+        const rightLettersHtml = displayLowercase.map((letter: string) => `
+            <div class="letter-item">${letter}</div>
+        `).join('');
+        
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .safe-area {
+            position: absolute;
+            left: 40px;
+            top: 67px;
+            width: calc(100% - 80px);
+            height: calc(100% - 107px);
+            padding: 20px 0 10px 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 10px;
+        }
+        .title-row .main {
+            font-size: 32px;
+            font-weight: 900;
+            color: #0f172a;
+        }
+        .title-icon {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+        .subtitle {
+            text-align: center;
+            font-size: 16px;
+            font-weight: 600;
+            color: #64748b;
+            margin-bottom: 20px;
+            font-style: italic;
+        }
+        .content-box {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .columns-wrapper {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 280px;
+        }
+        .left-column, .right-column {
+            display: flex;
+            flex-direction: column;
+            gap: 43px;
+        }
+        .letter-item {
+            font-size: 72px;
+            font-weight: 900;
+            font-family: 'Arial Black', sans-serif;
+            color: #1f2937;
+            line-height: 1;
+        }
+        .divider {
+            position: absolute;
+            top: 60px;
+            left: 16px;
+            width: calc(100% - 32px);
+            height: 1.5px;
+            background: ${themeColors.primary};
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <span class="main">Match Uppercase & Lowercase</span>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="content-box">
+                <div class="columns-wrapper">
+                    <div class="left-column">
+                        ${leftLettersHtml}
+                    </div>
+                    <div class="right-column">
+                        ${rightLettersHtml}
+                    </div>
+                </div>
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>
+        `;
+        
+        const filename = `match-upper-lower-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+        
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+        
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
+     * 生成 Which is More? 页面
+     * 比较两组物体数量 - 3行，每行左右两组图片，每组放在方框里
+     */
+    async generateWhichIsMore(data: any): Promise<string> {
+        await this.initialize();
+        
+        const content = data?.content || data || {};
+        const { difficulty = 'easy', theme = 'dinosaur' } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const stickerHtml = this.getStickersHtml(themeKey);
+        
+        // 根据难度设置数量范围
+        const maxCount = difficulty === 'medium' ? 10 : 5;
+        const minCount = 1;
+        
+        // 从主题文件夹获取图片
+        const mainAssetsDir = path.join(__dirname, '../../public/uploads/assets/A_main_assets', themeKey, 'color');
+        let themeImages: string[] = [];
+        
+        try {
+            const files = fs.readdirSync(mainAssetsDir);
+            themeImages = files
+                .filter(f => f.endsWith('.png'))
+                .map(f => `/uploads/assets/A_main_assets/${themeKey}/color/${f}`);
+        } catch (e) {
+            themeImages = [
+                '/uploads/assets/A_main_assets/dinosaur/color/dinosaur_000_color.png',
+                '/uploads/assets/A_main_assets/dinosaur/color/dinosaur_001_color.png',
+                '/uploads/assets/A_main_assets/dinosaur/color/dinosaur_002_color.png',
+            ];
+        }
+        
+        // 随机选择3个不同的图片用于3行
+        const shuffled = [...themeImages].sort(() => Math.random() - 0.5);
+        const selectedImages = shuffled.slice(0, 3);
+        while (selectedImages.length < 3) {
+            selectedImages.push(themeImages[selectedImages.length % themeImages.length]);
+        }
+        
+        // 生成3行比较数据
+        const rows = [];
+        for (let i = 0; i < 3; i++) {
+            const leftCount = Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
+            let rightCount = Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
+            // 确保左右数量不同
+            while (rightCount === leftCount) {
+                rightCount = Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
+            }
+            rows.push({
+                image: selectedImages[i],
+                leftCount,
+                rightCount
+            });
+        }
+        
+        // 生成行 HTML - 每组图片放在方框里，图片排列成网格
+        const rowsHtml = rows.map((row, idx) => {
+            // 根据数量决定每行显示几个图片
+            const itemsPerRow = row.leftCount <= 5 ? row.leftCount : 5;
+            const leftImages = Array(row.leftCount).fill(0).map(() => 
+                `<img class="item-img" src="http://localhost:3000${row.image}" />`
+            ).join('');
+            
+            const rightItemsPerRow = row.rightCount <= 5 ? row.rightCount : 5;
+            const rightImages = Array(row.rightCount).fill(0).map(() => 
+                `<img class="item-img" src="http://localhost:3000${row.image}" />`
+            ).join('');
+            
+            return `
+                <div class="compare-row">
+                    <div class="group-wrapper">
+                        <div class="group-box">
+                            <div class="items-grid">${leftImages}</div>
+                        </div>
+                        <div class="answer-box"></div>
+                    </div>
+                    <div class="group-wrapper">
+                        <div class="group-box">
+                            <div class="items-grid">${rightImages}</div>
+                        </div>
+                        <div class="answer-box"></div>
+                    </div>
+                </div>
+            `;
+        }).join('');
+        
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .safe-area {
+            position: absolute;
+            left: 40px;
+            top: 67px;
+            width: calc(100% - 80px);
+            height: calc(100% - 107px);
+            padding: 20px 0 10px 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .title-row .main {
+            font-size: 32px;
+            font-weight: 900;
+            color: #0f172a;
+        }
+        .title-icon {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+        .content-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 25px;
+            padding: 0 15px;
+        }
+        .compare-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 30px;
+        }
+        .group-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .group-box {
+            width: 260px;
+            height: 180px;
+            border: 3px solid ${themeColors.primary};
+            border-radius: 16px;
+            background: ${themeColors.light};
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px;
+        }
+        .items-grid {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+            gap: 8px;
+            max-width: 230px;
+        }
+        .item-img {
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+        }
+        .answer-box {
+            width: 40px;
+            height: 40px;
+            border: 3px solid ${themeColors.primary};
+            border-radius: 8px;
+            background: #fff;
+        }
+        .divider {
+            position: absolute;
+            top: 60px;
+            left: 16px;
+            width: calc(100% - 32px);
+            height: 1.5px;
+            background: ${themeColors.primary};
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <span class="main">Which is More?</span>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="content-box">
+                ${rowsHtml}
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>
+        `;
+        
+        const filename = `which-is-more-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+        
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+        
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
+     * 生成 Number Bonds to 10 页面
+     */
+    async generateNumberBonds(data: any): Promise<string> {
+        await this.initialize();
+
+        const content = data?.content || data || {};
+        const { theme = 'dinosaur' } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const stickerHtml = this.getStickersHtml(themeKey);
+
+        const baseBonds =
+            Array.isArray((content as any)?.bonds) && (content as any).bonds.length > 0
+                ? (content as any).bonds
+                : (() => {
+                      const all = [
+                          { a: 0, b: 10 },
+                          { a: 1, b: 9 },
+                          { a: 2, b: 8 },
+                          { a: 3, b: 7 },
+                          { a: 4, b: 6 },
+                          { a: 5, b: 5 },
+                          { a: 6, b: 4 },
+                          { a: 7, b: 3 },
+                          { a: 8, b: 2 },
+                          { a: 9, b: 1 },
+                          { a: 10, b: 0 }
+                      ];
+                      return all
+                          .sort(() => Math.random() - 0.5)
+                          .slice(0, 8)
+                          .map((bond) => {
+                              const hideFirst = Math.random() > 0.5;
+                              return {
+                                  ...bond,
+                                  display: hideFirst ? { a: '_', b: bond.b } : { a: bond.a, b: '_' },
+                                  answer: hideFirst ? bond.a : bond.b
+                              };
+                          });
+                  })();
+
+        const pastelPairs = [
+            { left: '#c7f0c3', right: '#ffe7ad' },
+            { left: '#f9c7d8', right: '#ffd7b8' },
+            { left: '#cfc9ff', right: '#c0f3ff' },
+            { left: '#d8f7c9', right: '#ffe0b5' },
+            { left: '#cbe1ff', right: '#f9c7e8' },
+            { left: '#c9f2d0', right: '#f7e7c9' },
+            { left: '#ffe0b8', right: '#c9f2f2' },
+            { left: '#f7d8ff', right: '#f0e7c9' }
+        ];
+
+        const bondCards = baseBonds.slice(0, 8).map((bond: any, idx: number) => {
+            const leftValRaw = (bond as any)?.display?.a ?? (bond as any)?.a ?? '';
+            const rightValRaw = (bond as any)?.display?.b ?? (bond as any)?.b ?? '';
+            const leftText = leftValRaw === '_' ? '' : String(leftValRaw);
+            const rightText = rightValRaw === '_' ? '' : String(rightValRaw);
+            const palette = pastelPairs[idx % pastelPairs.length];
+            return `
+                <div class="bond-card">
+                    <svg class="bond-svg" viewBox="0 0 160 190" xmlns="http://www.w3.org/2000/svg">
+                        <line x1="80" y1="64" x2="36" y2="106" stroke="#111827" stroke-width="3.2" stroke-linecap="round" />
+                        <line x1="80" y1="64" x2="124" y2="106" stroke="#111827" stroke-width="3.2" stroke-linecap="round" />
+                        <circle cx="80" cy="36" r="30" fill="#dbeafe" stroke="#111827" stroke-width="3.2" />
+                        <circle cx="36" cy="128" r="30" fill="${palette.left}" stroke="#111827" stroke-width="3.2" />
+                        <circle cx="124" cy="128" r="30" fill="${palette.right}" stroke="#111827" stroke-width="3.2" />
+                        <text x="80" y="44" text-anchor="middle" font-family="Quicksand, sans-serif" font-weight="800" font-size="22" fill="#111827">10</text>
+                        <text x="36" y="136" text-anchor="middle" font-family="Quicksand, sans-serif" font-weight="800" font-size="22" fill="#111827">${leftText}</text>
+                        <text x="124" y="136" text-anchor="middle" font-family="Quicksand, sans-serif" font-weight="800" font-size="22" fill="#111827">${rightText}</text>
+                    </svg>
+                </div>
+            `;
+        }).join('');
+
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .safe-area {
+            position: absolute;
+            left: 40px;
+            top: 67px;
+            width: calc(100% - 80px);
+            height: calc(100% - 107px);
+            padding: 24px 18px 16px;
+            border-radius: 16px;
+            display: flex;
+            flex-direction: column;
+        }
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 6px;
+        }
+        .title-row .main {
+            font-size: 32px;
+            font-weight: 900;
+            color: #0f172a;
+        }
+        .title-icon {
+            width: 60px;
+            height: 60px;
+            object-fit: contain;
+        }
+        .bonds-grid {
+            width: 100%;
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            column-gap: 40px;
+            row-gap: 20px;
+            justify-items: center;
+            align-content: space-around;
+            padding: 0 20px;
+        }
+        .bond-card {
+            width: 180px;
+            height: 190px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .bond-svg {
+            width: 100%;
+            height: 100%;
+        }
+        .divider {
+            position: absolute;
+            top: 60px;
+            left: -24px;
+            width: calc(100% + 48px);
+            height: 1.5px;
+            background: ${themeColors.primary};
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <span class="main">Number Bonds to 10</span>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="bonds-grid">
+                ${bondCards}
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>
+        `;
+
+        const filename = `number-bonds-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
+     * 生成 Ten Frame Counting 页面
+     */
+    async generateTenFrame(data: any): Promise<string> {
+        await this.initialize();
+        
+        const content = data?.content || data || {};
+        const { theme = 'dinosaur' } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const stickerHtml = this.getStickersHtml(themeKey);
+        
+        // 生成6个十格框题目
+        const problems = [];
+        for (let i = 0; i < 6; i++) {
+            const count = Math.floor(Math.random() * 10) + 1; // 1-10
+            problems.push(count);
+        }
+        
+        // 生成十格框 HTML - 5列2行，每个格子有边框
+        const generateTenFrameHtml = (count: number) => {
+            let cells = '';
+            for (let i = 0; i < 10; i++) {
+                const filled = i < count;
+                cells += `<div class="tf-cell">${filled ? '<div class="dot"></div>' : ''}</div>`;
+            }
+            return `<div class="ten-frame">${cells}</div>`;
+        };
+        
+        const problemsHtml = problems.map((count, idx) => `
+            <div class="tf-problem">
+                ${generateTenFrameHtml(count)}
+                <div class="answer-box"></div>
+            </div>
+        `).join('');
+        
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .safe-area {
+            position: absolute;
+            left: 40px;
+            top: 67px;
+            width: calc(100% - 80px);
+            height: calc(100% - 107px);
+            padding: 20px 0 10px 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+        .title-row .main { font-size: 32px; font-weight: 900; color: #0f172a; }
+        .title-icon { width: 60px; height: 60px; object-fit: contain; }
+        .content-box {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(3, auto);
+            gap: 50px 50px;
+            padding: 0 20px;
+            align-content: center;
+            justify-content: center;
+        }
+        .tf-problem {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .ten-frame {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            grid-template-rows: repeat(2, 1fr);
+            width: 250px;
+            height: 100px;
+            border: 3px solid #1f2937;
+            border-radius: 4px;
+        }
+        .tf-cell {
+            border: 1.5px solid #1f2937;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .dot {
+            width: 32px;
+            height: 32px;
+            background: ${themeColors.primary};
+            border-radius: 50%;
+        }
+        .answer-box {
+            width: 120px;
+            height: 45px;
+            border: 2px solid #1f2937;
+            border-radius: 6px;
+            background: #fff;
+        }
+        .divider {
+            position: absolute;
+            top: 60px;
+            left: 16px;
+            width: calc(100% - 32px);
+            height: 1.5px;
+            background: ${themeColors.primary};
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <span class="main">Ten Frame Counting</span>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="content-box">
+                ${problemsHtml}
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>
+        `;
+        
+        const filename = `ten-frame-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
+     * 生成 Picture Addition 页面
+     */
+    async generatePictureAddition(data: any): Promise<string> {
+        await this.initialize();
+        
+        const content = data?.content || data || {};
+        const { theme = 'dinosaur' } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const stickerHtml = this.getStickersHtml(themeKey);
+        
+        // 从主题文件夹获取图片
+        const mainAssetsDir = path.join(__dirname, '../../public/uploads/assets/A_main_assets', themeKey, 'color');
+        let themeImages: string[] = [];
+        try {
+            const files = fs.readdirSync(mainAssetsDir);
+            themeImages = files.filter(f => f.endsWith('.png')).map(f => `/uploads/assets/A_main_assets/${themeKey}/color/${f}`);
+        } catch (e) {
+            themeImages = ['/uploads/assets/A_main_assets/dinosaur/color/dinosaur_000_color.png'];
+        }
+        
+        // 生成6道加法题，每边最多3个
+        const problems = [];
+        for (let i = 0; i < 6; i++) {
+            const a = Math.floor(Math.random() * 3) + 1; // 1-3
+            const b = Math.floor(Math.random() * 3) + 1; // 1-3
+            const image = themeImages[Math.floor(Math.random() * themeImages.length)];
+            problems.push({ a, b, sum: a + b, image });
+        }
+        
+        // 生成居中的图片组（使用flexbox居中）
+        const generateCenteredImages = (count: number, imageSrc: string) => {
+            const images = Array(count).fill(0).map(() => `<img class="add-img" src="http://localhost:3000${imageSrc}" />`).join('');
+            return images;
+        };
+        
+        const problemsHtml = problems.map((p, idx) => {
+            const leftImages = generateCenteredImages(p.a, p.image);
+            const rightImages = generateCenteredImages(p.b, p.image);
+            return `
+                <div class="add-problem">
+                    <div class="add-group left-group">${leftImages}</div>
+                    <span class="add-sign">+</span>
+                    <div class="add-group right-group">${rightImages}</div>
+                    <span class="add-sign">=</span>
+                    <div class="answer-box"></div>
+                </div>
+            `;
+        }).join('');
+        
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .safe-area {
+            position: absolute;
+            left: 40px;
+            top: 67px;
+            width: calc(100% - 80px);
+            height: calc(100% - 107px);
+            padding: 20px 0 10px 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .title-row .main { font-size: 32px; font-weight: 900; color: #0f172a; }
+        .title-icon { width: 60px; height: 60px; object-fit: contain; }
+        .content-box {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            gap: 90px;
+            padding: 0 10px;
+        }
+        .add-problem {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+        }
+        .add-group {
+            display: flex;
+            gap: 10px;
+            width: 200px;
+            height: 55px;
+            align-items: center;
+            justify-content: center;
+        }
+        .add-img { width: 52px; height: 52px; object-fit: contain; }
+        .add-sign { 
+            font-size: 32px; 
+            font-weight: 900; 
+            color: #374151; 
+            width: 60px;
+            text-align: center;
+        }
+        .answer-box {
+            width: 55px;
+            height: 55px;
+            border: 3px solid #374151;
+            border-radius: 8px;
+            background: #fff;
+        }
+        .divider {
+            position: absolute;
+            top: 60px;
+            left: 16px;
+            width: calc(100% - 32px);
+            height: 1.5px;
+            background: ${themeColors.primary};
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <span class="main">Picture Addition</span>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="content-box">
+                ${problemsHtml}
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>
+        `;
+        
+        const filename = `picture-addition-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
+     * 生成 Count the Shapes 页面
+     */
+    async generateCountShapes(data: any): Promise<string> {
+        await this.initialize();
+        
+        const content = data?.content || data || {};
+        const { theme = 'dinosaur' } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const stickerHtml = this.getStickersHtml(themeKey);
+        
+        // 形状定义
+        const shapes = [
+            { name: 'circle', svg: '<circle cx="20" cy="20" r="18" fill="COLOR" stroke="#333" stroke-width="2"/>', color: '#F87171' },
+            { name: 'square', svg: '<rect x="2" y="2" width="36" height="36" fill="COLOR" stroke="#333" stroke-width="2"/>', color: '#60A5FA' },
+            { name: 'triangle', svg: '<polygon points="20,2 38,38 2,38" fill="COLOR" stroke="#333" stroke-width="2"/>', color: '#FBBF24' },
+            { name: 'rectangle', svg: '<rect x="2" y="8" width="36" height="24" fill="COLOR" stroke="#333" stroke-width="2"/>', color: '#34D399' },
+            { name: 'heart', svg: '<path d="M20 35 C5 25 2 15 8 8 C14 2 20 8 20 12 C20 8 26 2 32 8 C38 15 35 25 20 35Z" fill="COLOR" stroke="#333" stroke-width="2"/>', color: '#F472B6' },
+        ];
+        
+        // 为每种形状生成随机数量 (5-9)
+        const shapeCounts: { shape: typeof shapes[0], count: number }[] = shapes.map(s => ({
+            shape: s,
+            count: Math.floor(Math.random() * 5) + 5
+        }));
+        
+        // 生成不重叠的随机分布形状
+        const allShapes: { shape: typeof shapes[0], x: number, y: number, rotation: number }[] = [];
+        const shapeSize = 45; // 形状大小
+        const padding = 10; // 形状之间的最小间距
+        const boxWidth = 600;
+        const boxHeight = 410;
+        
+        // 检查新位置是否与已有形状重叠
+        const isOverlapping = (newX: number, newY: number) => {
+            for (const existing of allShapes) {
+                const dx = newX - existing.x;
+                const dy = newY - existing.y;
+                const distance = Math.sqrt(dx * dx + dy * dy);
+                if (distance < shapeSize + padding) {
+                    return true;
+                }
+            }
+            return false;
+        };
+        
+        // 为每个形状找到不重叠的位置
+        shapeCounts.forEach(sc => {
+            for (let i = 0; i < sc.count; i++) {
+                let x, y;
+                let attempts = 0;
+                const maxAttempts = 100;
+                
+                do {
+                    x = Math.random() * (boxWidth - shapeSize) + 20;
+                    y = Math.random() * (boxHeight - shapeSize) + 20;
+                    attempts++;
+                } while (isOverlapping(x, y) && attempts < maxAttempts);
+                
+                allShapes.push({
+                    shape: sc.shape,
+                    x,
+                    y,
+                    rotation: Math.random() * 30 - 15
+                });
+            }
+        });
+        // 打乱顺序
+        allShapes.sort(() => Math.random() - 0.5);
+        
+        const shapesHtml = allShapes.map(s => {
+            const svg = s.shape.svg.replace('COLOR', s.shape.color);
+            return `<div class="shape-item" style="left: ${s.x}px; top: ${s.y}px; transform: rotate(${s.rotation}deg);">
+                <svg width="40" height="40" viewBox="0 0 40 40">${svg}</svg>
+            </div>`;
+        }).join('');
+        
+        const countBoxesHtml = shapes.map(s => {
+            const svg = s.svg.replace('COLOR', s.color);
+            return `<div class="count-item">
+                <svg width="40" height="40" viewBox="0 0 40 40">${svg}</svg>
+                <div class="count-box"></div>
+            </div>`;
+        }).join('');
+        
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .safe-area {
+            position: absolute;
+            left: 40px;
+            top: 67px;
+            width: calc(100% - 80px);
+            height: calc(100% - 107px);
+            padding: 20px 0 10px 0;
+            display: flex;
+            flex-direction: column;
+        }
+        .title-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+        .title-row .main { font-size: 32px; font-weight: 900; color: #0f172a; }
+        .title-icon { width: 60px; height: 60px; object-fit: contain; }
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        .shapes-box {
+            position: relative;
+            width: 640px;
+            height: 450px;
+            border: 3px solid #374151;
+            border-radius: 16px;
+            background: #fafafa;
+            margin-bottom: 25px;
+        }
+        .shape-item {
+            position: absolute;
+        }
+        .count-row {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+        }
+        .count-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+        }
+        .count-box {
+            width: 45px;
+            height: 45px;
+            border: 3px dashed #9ca3af;
+            border-radius: 8px;
+        }
+        .divider {
+            position: absolute;
+            top: 60px;
+            left: 16px;
+            width: calc(100% - 32px);
+            height: 1.5px;
+            background: ${themeColors.primary};
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <span class="main">Count the Shapes</span>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="content-area">
+                <div class="shapes-box">
+                    ${shapesHtml}
+                </div>
+                <div class="count-row">
+                    ${countBoxesHtml}
+                </div>
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>
+        `;
+        
+        const filename = `count-shapes-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
         return `/generated/worksheets/${filename}`;
     }
 
@@ -5676,178 +7342,8 @@ export class ImageGenerator {
         return `/generated/worksheets/${filename}`;
     }
 
-    async generateBeginningSounds(data: any): Promise<string> {
-        await this.initialize();
-
-        const letters: string[] = Array.isArray(data?.letters) && data.letters.length > 0
-            ? data.letters.slice(0, 5)
-            : ['A', 'B', 'C'];
-
-        // ����ĸ��ȡͼƬ
-        const imageItems = letters.map(letter => {
-            const { image, word } = getLetterImage(letter);
-            return {
-                letter,
-                word,
-                image
-            };
-        });
-
-        // ͼƬ˳�����?
-        const shuffledImages = [...imageItems];
-        for (let i = shuffledImages.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [shuffledImages[i], shuffledImages[j]] = [shuffledImages[j], shuffledImages[i]];
-        }
-
-        const html = `
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="UTF-8">
-    <style>
-        @font-face {
-            font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
-            font-weight: 400;
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
-            font-weight: 500;
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
-            font-weight: 600;
-            font-style: normal;
-        }
-        @font-face {
-            font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
-            font-weight: 700;
-            font-style: normal;
-        }
-    </style>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            width: 794px;
-            height: 1123px;
-            padding: 32px;
-            background: #ffffff;
-            font-family: 'Quicksand', sans-serif;
-        }
-        .title {
-            text-align: center;
-            font-size: 32px;
-            font-weight: 900;
-            color: #0f172a;
-            margin-bottom: 20px;
-        }
-        .board {
-            width: 520px;
-            height: 900px;
-            margin: 0 auto;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-evenly;
-        }
-        .row {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 300px;
-            padding: 6px 0;
-        }
-        .letter {
-            font-size: 72px;
-            font-weight: 900;
-            color: #0f172a;
-        }
-        .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: #0f172a;
-            display: inline-block;
-        }
-        .letter-group {
-            display: inline-flex;
-            align-items: center;
-            justify-content: flex-end;
-            gap: 12px;
-            min-width: 150px;
-        }
-        .image-group {
-            display: inline-flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 12px;
-            min-width: 190px;
-        }
-        .image-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-width: 160px;
-            min-height: 120px;
-        }
-        .image-wrapper img {
-            max-width: 190px;
-            max-height: 150px;
-            object-fit: contain;
-        }
-        .image-wrapper .emoji {
-            font-size: 110px;
-        }
-    </style>
-</head>
-<body>
-    <div class="title">Match Letters</div>
-    <div class="board">
-        ${letters.map((letter, idx) => {
-            const img = shuffledImages[idx];
-            return `
-            <div class="row">
-                <div class="letter-group">
-                    <div class="letter">${letter}</div>
-                    <span class="dot"></span>
-                </div>
-                <div class="image-group">
-                    <span class="dot"></span>
-                    <div class="image-wrapper">
-                        ${img && isImageFile(img.image)
-                            ? `<img src="http://localhost:3000${img.image}" alt="${img.word}">`
-                            : `<span class="emoji">${img?.image ?? ''}</span>`}
-                    </div>
-                </div>
-            </div>
-            `;
-        }).join('')}
-    </div>
-</body>
-</html>
-        `;
-
-        const filename = `match-letters-${Date.now()}.png`;
-        const filepath = path.join(OUTPUT_DIR, filename);
-
-        const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
-        await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
-        await page.screenshot({ path: filepath, fullPage: true });
-        await page.close();
-
-        return `/generated/worksheets/${filename}`;
-    }
-
     /**
-     * 生成 Pattern Sequencing（图案序列）练习�?
+     * 生成 Pattern Sequencing（图案序列）练习页
      * 每行展示一个重复的图案序列，孩子需要识别规律并在空白框中填入下一个图�?
      */
     async generatePatternSequencing(data: any): Promise<string> {
@@ -6214,6 +7710,464 @@ export class ImageGenerator {
         return `/generated/worksheets/${filename}`;
     }
 
+    /**
+     * 生成 Shape Path 页面
+     * 形状路径练习 - 沿着形状从起点走到终点
+     */
+    async generateShapePath(data: any): Promise<string> {
+        await this.initialize();
+        
+        const content = data?.content || data || {};
+        const { theme = 'dinosaur' } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const stickerHtml = this.getStickersHtml(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        
+        // 形状类型
+        const shapes = ['circle', 'square', 'triangle'];
+        
+        // 生成 5x5 的网格（5列5行），确保三种形状出现概率相等
+        // 总共 25 个格子，每种形状至少 8 个，剩余 1 个随机
+        const shapePool: string[] = [];
+        for (let i = 0; i < 8; i++) {
+            shapePool.push('circle', 'square', 'triangle');
+        }
+        shapePool.push(shapes[Math.floor(Math.random() * shapes.length)]); // 第25个随机
+        // 洗牌
+        for (let i = shapePool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [shapePool[i], shapePool[j]] = [shapePool[j], shapePool[i]];
+        }
+        
+        const grid: string[][] = [];
+        let poolIndex = 0;
+        for (let row = 0; row < 5; row++) {
+            const rowShapes: string[] = [];
+            for (let col = 0; col < 5; col++) {
+                rowShapes.push(shapePool[poolIndex++]);
+            }
+            grid.push(rowShapes);
+        }
+        
+        // 生成蛇形路径坐标（5x5网格）
+        const pathCoords: { row: number; col: number }[] = [];
+        let currentRow = 0;
+        let currentCol = 0;
+        let direction = 1; // 1 = 向右, -1 = 向左
+        
+        pathCoords.push({ row: currentRow, col: currentCol });
+        
+        while (currentRow < 4 || currentCol !== 4) {
+            if (direction === 1 && currentCol < 4) {
+                currentCol++;
+            } else if (direction === -1 && currentCol > 0) {
+                currentCol--;
+            } else {
+                currentRow++;
+                direction *= -1;
+            }
+            if (currentRow < 5) {
+                pathCoords.push({ row: currentRow, col: currentCol });
+            }
+            if (currentRow >= 4 && currentCol === 4) break;
+        }
+        
+        // 检查两个坐标是否相邻（在路径上连续）
+        const getPathIndex = (row: number, col: number) => {
+            return pathCoords.findIndex(p => p.row === row && p.col === col);
+        };
+        
+        // 生成形状 SVG（所有形状都是实线）
+        const renderShape = (shape: string, isStart: boolean, isEnd: boolean) => {
+            const strokeWidth = 2.5;
+            const stroke = '#1f2937';
+            const fill = 'none';
+            
+            if (isStart) {
+                return `
+                    <svg width="90" height="90" viewBox="0 0 100 100">
+                        <polygon points="50,8 61,38 95,38 68,58 79,88 50,68 21,88 32,58 5,38 39,38" 
+                            fill="${themeColors.secondary}" stroke="${themeColors.primary}" stroke-width="2"/>
+                        <text x="50" y="56" text-anchor="middle" font-size="13" font-weight="bold" fill="${themeColors.accent}">START</text>
+                    </svg>
+                `;
+            }
+            
+            if (isEnd) {
+                return `
+                    <svg width="90" height="90" viewBox="0 0 100 100">
+                        <circle cx="50" cy="50" r="40" fill="${themeColors.secondary}" stroke="${themeColors.primary}" stroke-width="2"/>
+                        <text x="50" y="56" text-anchor="middle" font-size="13" font-weight="bold" fill="${themeColors.accent}">FINISH</text>
+                    </svg>
+                `;
+            }
+            
+            switch (shape) {
+                case 'circle':
+                    return `
+                        <svg width="90" height="90" viewBox="0 0 100 100">
+                            <circle cx="50" cy="50" r="38" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"/>
+                        </svg>
+                    `;
+                case 'square':
+                    return `
+                        <svg width="90" height="90" viewBox="0 0 100 100">
+                            <rect x="12" y="12" width="76" height="76" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"/>
+                        </svg>
+                    `;
+                case 'triangle':
+                    return `
+                        <svg width="90" height="90" viewBox="0 0 100 100">
+                            <polygon points="50,12 88,85 12,85" fill="${fill}" stroke="${stroke}" stroke-width="${strokeWidth}"/>
+                        </svg>
+                    `;
+                default:
+                    return '';
+            }
+        };
+        
+        // 生成路径连接线（虚线）
+        const generatePathLines = () => {
+            const cellSize = 120; // 单元格大小
+            const lines: string[] = [];
+            
+            for (let i = 0; i < pathCoords.length - 1; i++) {
+                const current = pathCoords[i];
+                const next = pathCoords[i + 1];
+                
+                // 计算起点和终点位置（相对于网格容器）
+                const x1 = current.col * cellSize + cellSize / 2;
+                const y1 = current.row * cellSize + cellSize / 2;
+                const x2 = next.col * cellSize + cellSize / 2;
+                const y2 = next.row * cellSize + cellSize / 2;
+                
+                // 水平连接
+                if (current.row === next.row) {
+                    const startX = Math.min(x1, x2) + 45;
+                    const endX = Math.max(x1, x2) - 45;
+                    lines.push(`<line x1="${startX}" y1="${y1}" x2="${endX}" y2="${y2}" stroke="#1f2937" stroke-width="2" stroke-dasharray="4,4"/>`);
+                }
+                // 垂直连接
+                else if (current.col === next.col) {
+                    const startY = Math.min(y1, y2) + 45;
+                    const endY = Math.max(y1, y2) - 45;
+                    lines.push(`<line x1="${x1}" y1="${startY}" x2="${x2}" y2="${endY}" stroke="#1f2937" stroke-width="2" stroke-dasharray="4,4"/>`);
+                }
+            }
+            
+            return `<svg class="path-lines" width="${5 * cellSize}" height="${5 * cellSize}" style="position: absolute; top: 0; left: 0; pointer-events: none;">${lines.join('')}</svg>`;
+        };
+        
+        // 生成网格 HTML
+        const gridHtml = grid.map((rowShapes, rowIdx) => {
+            const cellsHtml = rowShapes.map((shape, colIdx) => {
+                const isStart = rowIdx === 0 && colIdx === 0;
+                const isEnd = rowIdx === 4 && colIdx === 4;
+                const shapeHtml = renderShape(shape, isStart, isEnd);
+                return `<div class="grid-cell">${shapeHtml}</div>`;
+            }).join('');
+            return `<div class="grid-row">${cellsHtml}</div>`;
+        }).join('');
+        
+        const pathLinesHtml = generatePathLines();
+        
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .safe-area {
+            position: absolute;
+            left: 40px;
+            top: 67px;
+            width: calc(100% - 80px);
+            height: calc(100% - 107px);
+            padding: 24px 18px 16px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        .title-row {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-shrink: 0;
+            margin-bottom: 16px;
+        }
+        .title-row .main {
+            font-size: 38px;
+            font-weight: 900;
+            color: #0f172a;
+        }
+        .title-icon {
+            width: 68px;
+            height: 68px;
+            object-fit: contain;
+        }
+        .grid-wrapper {
+            flex: 1;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .grid-container {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            gap: 0;
+        }
+        .grid-row {
+            display: flex;
+            justify-content: center;
+            gap: 0;
+        }
+        .grid-cell {
+            width: 120px;
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .path-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+        }
+        .divider {
+            position: absolute;
+            top: 60px;
+            left: -24px;
+            width: calc(100% + 48px);
+            height: 1.5px;
+            background: ${themeColors.primary};
+            opacity: 0.85;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <span class="main">Shape Path</span>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="grid-wrapper">
+                <div class="grid-container">
+                    ${gridHtml}
+                    ${pathLinesHtml}
+                </div>
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>
+        `;
+        
+        const filename = `shape-path-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+        
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+        
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
+     * Trace and Draw - 上方描红形状，下方自由绘画
+     */
+    async generateTraceAndDraw(data: any): Promise<string> {
+        await this.initialize();
+        const content = data?.content || data || {};
+        const { theme = 'dinosaur' } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const stickerHtml = this.getStickersHtml(themeKey);
+
+        // 描红形状 - 房子和树
+        const tracingShapes = `
+            <div class="shape-item house">
+                <svg width="280" height="260" viewBox="0 0 280 260">
+                    <!-- 房子屋顶 -->
+                    <polygon points="140,10 260,100 20,100" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-dasharray="5,4"/>
+                    <!-- 房子主体 -->
+                    <rect x="40" y="100" width="200" height="150" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-dasharray="5,4"/>
+                    <!-- 门 -->
+                    <rect x="110" y="170" width="60" height="80" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-dasharray="5,4"/>
+                    <!-- 窗户 -->
+                    <rect x="60" y="130" width="50" height="50" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-dasharray="5,4"/>
+                </svg>
+            </div>
+            <div class="shape-item tree">
+                <svg width="180" height="260" viewBox="0 0 180 260">
+                    <!-- 树冠（圆形） -->
+                    <circle cx="90" cy="80" r="70" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-dasharray="5,4"/>
+                    <!-- 树干 -->
+                    <rect x="65" y="145" width="50" height="105" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-dasharray="5,4"/>
+                </svg>
+            </div>
+        `;
+
+        const html = `<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .divider {
+            position: absolute;
+            top: 60px;
+            left: -24px;
+            width: calc(100% + 48px);
+            height: 1.5px;
+            background: ${themeColors.primary};
+            opacity: 0.85;
+        }
+        .safe-area {
+            position: absolute;
+            left: 40px;
+            top: 67px;
+            width: calc(100% - 80px);
+            height: calc(100% - 107px);
+            padding: 24px 18px 16px;
+            display: flex;
+            flex-direction: column;
+        }
+        .title-row {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        .title-row .main { font-size: 38px; font-weight: 900; color: #0f172a; }
+        .title-icon { width: 68px; height: 68px; object-fit: contain; }
+        .content-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+        .trace-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .trace-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #475569;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+        .shapes-grid {
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            gap: 40px;
+        }
+        .shape-item {
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        .draw-section {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .draw-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #475569;
+            margin-bottom: 12px;
+        }
+        .draw-box {
+            flex: 1;
+            border: 2.5px solid ${themeColors.primary};
+            border-radius: 16px;
+            background: #fff;
+            min-height: 420px;
+            position: relative;
+        }
+        .draw-hint {
+            position: absolute;
+            top: 16px;
+            left: 20px;
+            font-size: 14px;
+            color: #9ca3af;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <span class="main">Trace and Draw</span>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="content-area">
+                <div class="trace-section">
+                    <div class="trace-label">Trace the shapes:</div>
+                    <div class="shapes-grid">
+                        ${tracingShapes}
+                    </div>
+                </div>
+                <div class="draw-section">
+                    <div class="draw-label">Draw your own picture:</div>
+                    <div class="draw-box">
+                        <span class="draw-hint">Draw here...</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>`;
+
+        const filename = `trace-and-draw-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+        return `/generated/worksheets/${filename}`;
+    }
+
     async generateWorksheet(type: string, data: any): Promise<string> {
         console.log(`?? Generating worksheet: ${type}`, data);
 
@@ -6228,12 +8182,24 @@ export class ImageGenerator {
                 return await this.generateWriteMyName(data);
             case 'letter-recognition':
                 return await this.generateLetterRecognitionPage(data);
+            case 'alphabet-sequencing':
+                return await this.generateAlphabetSequencing(data);
+            case 'beginning-sounds':
+                return await this.generateBeginningSounds(data);
+            case 'cvc-words':
+                return await this.generateCVCWordsPage(data);
+            case 'match-upper-lower':
+                return await this.generateMatchUpperLower(data);
             case 'number-tracing':
                 return await this.generateNumberTracingPage(data);
             case 'counting-objects':
                 return await this.generateCountAndWrite(data);
             case 'number-path':
                 return await this.generateConnectDots(data);
+            case 'which-is-more':
+                return await this.generateWhichIsMore(data);
+            case 'number-bonds':
+                return await this.generateNumberBonds(data);
             case 'maze':
                 return await this.generateMazePage(data);
             case 'shadow-matching':
@@ -6256,6 +8222,17 @@ export class ImageGenerator {
                 return await this.generateColoringPage(data);
             case 'creative-prompt':
                 return await this.generateCreativePrompt(data);
+            case 'shape-path':
+                return await this.generateShapePath(data);
+            case 'trace-and-draw':
+                return await this.generateTraceAndDraw(data);
+            // Math - new
+            case 'ten-frame':
+                return await this.generateTenFrame(data);
+            case 'picture-addition':
+                return await this.generatePictureAddition(data);
+            case 'count-shapes':
+                return await this.generateCountShapes(data);
             default:
                 throw new Error(`Unknown worksheet type: ${type}`);
         }

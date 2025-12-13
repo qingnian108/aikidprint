@@ -318,6 +318,42 @@ router.post('/generate-pages', async (req, res) => {
             }
             break;
           }
+          
+          case 'alphabet-sequencing': {
+            const generator = literacyGenerators.get('alphabet-sequencing');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generateAlphabetSequencing(data);
+            }
+            break;
+          }
+          
+          case 'beginning-sounds': {
+            const generator = literacyGenerators.get('beginning-sounds');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generateBeginningSounds(data);
+            }
+            break;
+          }
+          
+          case 'cvc-words': {
+            const generator = literacyGenerators.get('cvc-words');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generateCVCWordsPage(data);
+            }
+            break;
+          }
+          
+          case 'match-upper-lower': {
+            const generator = literacyGenerators.get('match-upper-lower');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generateMatchUpperLower(data);
+            }
+            break;
+          }
             
           case 'number-tracing': {
             const generator = mathGenerators.get('number-tracing');
@@ -338,6 +374,51 @@ router.post('/generate-pages', async (req, res) => {
               // data.content 是数组，取第一个
               const content = Array.isArray(data.content) ? data.content[0] : data.content;
               imageUrl = await imageGenerator.generateCountAndWrite(content);
+            }
+            break;
+          }
+          
+          case 'which-is-more': {
+            const generator = mathGenerators.get('which-is-more');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generateWhichIsMore(data);
+            }
+            break;
+          }
+          
+          case 'number-bonds': {
+            const generator = mathGenerators.get('number-bonds');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generateNumberBonds(data);
+            }
+            break;
+          }
+          
+          case 'ten-frame': {
+            const generator = mathGenerators.get('ten-frame');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generateTenFrame(data);
+            }
+            break;
+          }
+          
+          case 'picture-addition': {
+            const generator = mathGenerators.get('picture-addition');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generatePictureAddition(data);
+            }
+            break;
+          }
+          
+          case 'count-shapes': {
+            const generator = mathGenerators.get('count-shapes');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generateCountShapes(data);
             }
             break;
           }
@@ -427,6 +508,24 @@ router.post('/generate-pages', async (req, res) => {
             if (generator) {
               const data = await generator(page.config);
               imageUrl = await imageGenerator.generateShapeTracing(data.content);
+            }
+            break;
+          }
+          
+          case 'shape-path': {
+            const generator = creativityGenerators.get('shape-path');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generateShapePath(data);
+            }
+            break;
+          }
+          
+          case 'trace-and-draw': {
+            const generator = creativityGenerators.get('trace-and-draw');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generateTraceAndDraw(data);
             }
             break;
           }

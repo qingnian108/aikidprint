@@ -14,14 +14,445 @@ export const literacyGenerators = new Map<string, Function>([
     ['uppercase-tracing', generateUppercaseTracing],
     ['lowercase-tracing', generateLowercaseTracing],
     ['letter-recognition', generateLetterRecognition],
-    ['write-my-name', generateWriteMyName]
+    ['write-my-name', generateWriteMyName],
+    ['alphabet-sequencing', generateAlphabetSequencing],
+    ['beginning-sounds', generateBeginningSounds],
+    ['cvc-words', generateCVCWords],
+    ['match-upper-lower', generateMatchUpperLower]
 ]);
+
+// Alphabet Sequencing 生成器
+async function generateAlphabetSequencing(config: any) {
+    const { difficulty = 'easy', theme = 'dinosaur' } = config;
+    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    
+    // 根据难度决定每行缺失的字母数量
+    const missingCount: Record<string, number> = {
+        easy: 1,
+        medium: 1,
+        hard: 2
+    };
+    const missing = missingCount[difficulty] || 1;
+    
+    // 生成 8 行序列，每行 4 个字母
+    const usedStarts: number[] = [];
+    
+    const makeRow = () => {
+        // 随机选择起始位置（确保有 4 个连续字母，且不重复）
+        const maxStart = alphabet.length - 4; // 0-22
+        let startIdx: number;
+        let attempts = 0;
+        do {
+            startIdx = Math.floor(Math.random() * (maxStart + 1));
+            attempts++;
+        } while (usedStarts.includes(startIdx) && attempts < 50);
+        usedStarts.push(startIdx);
+        
+        const len = 4; // 每行 4 个字母
+        const seq = alphabet.slice(startIdx, startIdx + len).split('');
+        
+        // 随机选择要隐藏的位置
+        const positions = Array.from({ length: len }, (_, i) => i);
+        // 打乱位置数组
+        for (let i = positions.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [positions[i], positions[j]] = [positions[j], positions[i]];
+        }
+        const hiddenPositions = positions.slice(0, missing);
+        
+        const displaySeq = seq.map((c, i) => hiddenPositions.includes(i) ? null : c);
+        const answers = hiddenPositions.map(pos => ({ position: pos, letter: seq[pos] }));
+        
+        return { 
+            sequence: displaySeq, 
+            answers,
+            fullSequence: seq
+        };
+    };
+    
+    const rows = Array.from({ length: 5 }, makeRow);
+    
+    return {
+        title: 'Alphabet Sequencing',
+        type: 'alphabet-sequencing',
+        content: {
+            difficulty,
+            theme,
+            rows,
+            instructions: 'Fill in the missing letters to complete the alphabet sequence.'
+        }
+    };
+}
+
+// Beginning Sounds 单词数据 - 每个字母对应的单词和图片
+const BEGINNING_SOUNDS_WORDS: Record<string, { word: string; image: string }[]> = {
+    'A': [
+        { word: 'Apple', image: '/uploads/bigpng/Apple.png' },
+        { word: 'Airplane', image: '/uploads/bigpng/Airplane.png' },
+        { word: 'Ant', image: '/uploads/bigpng/Ant.png' }
+    ],
+    'B': [
+        { word: 'Ball', image: '/uploads/bigpng/Ball.png' },
+        { word: 'Banana', image: '/uploads/bigpng/Banana.png' },
+        { word: 'Bee', image: '/uploads/bigpng/Bee.png' }
+    ],
+    'C': [
+        { word: 'Cat', image: '/uploads/bigpng/Cat.png' },
+        { word: 'Car', image: '/uploads/bigpng/Car.png' },
+        { word: 'Cake', image: '/uploads/bigpng/Cake.png' }
+    ],
+    'D': [
+        { word: 'Dog', image: '/uploads/bigpng/Dog.png' },
+        { word: 'Duck', image: '/uploads/bigpng/Duck.png' },
+        { word: 'Donut', image: '/uploads/bigpng/Donut.png' }
+    ],
+    'E': [
+        { word: 'Egg', image: '/uploads/bigpng/Egg.png' },
+        { word: 'Elephant', image: '/uploads/bigpng/Elephant.png' },
+        { word: 'Envelope', image: '/uploads/bigpng/Envelope.png' }
+    ],
+    'F': [
+        { word: 'Fish', image: '/uploads/bigpng/Fish.png' },
+        { word: 'Flower', image: '/uploads/bigpng/Flower.png' },
+        { word: 'Frog', image: '/uploads/bigpng/Frog.png' }
+    ],
+    'G': [
+        { word: 'Gift', image: '/uploads/bigpng/Gift.png' },
+        { word: 'Goat', image: '/uploads/bigpng/Goat.png' },
+        { word: 'Grape', image: '/uploads/bigpng/Grape.png' }
+    ],
+    'H': [
+        { word: 'Hat', image: '/uploads/bigpng/Hat.png' },
+        { word: 'Horse', image: '/uploads/bigpng/Horse.png' },
+        { word: 'House', image: '/uploads/bigpng/House.png' }
+    ],
+    'I': [
+        { word: 'Ice Cream', image: '/uploads/bigpng/Ice Cream.png' },
+        { word: 'Igloo', image: '/uploads/bigpng/Igloo.png' },
+        { word: 'Insect', image: '/uploads/bigpng/Insect.png' }
+    ],
+    'J': [
+        { word: 'Jam', image: '/uploads/bigpng/Jam.png' },
+        { word: 'Jellyfish', image: '/uploads/bigpng/Jellyfish.png' },
+        { word: 'Juice', image: '/uploads/bigpng/Juice.png' }
+    ],
+    'K': [
+        { word: 'Key', image: '/uploads/bigpng/Key.png' },
+        { word: 'Kite', image: '/uploads/bigpng/Kite.png' },
+        { word: 'Koala', image: '/uploads/bigpng/Koala.png' }
+    ],
+    'L': [
+        { word: 'Lamp', image: '/uploads/bigpng/Lamp.png' },
+        { word: 'Leaf', image: '/uploads/bigpng/Leaf.png' },
+        { word: 'Lion', image: '/uploads/bigpng/Lion.png' }
+    ],
+    'M': [
+        { word: 'Milk', image: '/uploads/bigpng/Milk.png' },
+        { word: 'Monkey', image: '/uploads/bigpng/Monkey.png' },
+        { word: 'Moon', image: '/uploads/bigpng/Moon.png' }
+    ],
+    'N': [
+        { word: 'Nest', image: '/uploads/bigpng/Nest.png' },
+        { word: 'Net', image: '/uploads/bigpng/Net.png' },
+        { word: 'Nose', image: '/uploads/bigpng/Nose.png' }
+    ],
+    'O': [
+        { word: 'Octopus', image: '/uploads/bigpng/Octopus.png' },
+        { word: 'Orange', image: '/uploads/bigpng/Orange.png' },
+        { word: 'Owl', image: '/uploads/bigpng/Owl.png' }
+    ],
+    'P': [
+        { word: 'Penguin', image: '/uploads/bigpng/Penguin.png' },
+        { word: 'Pig', image: '/uploads/bigpng/Pig.png' },
+        { word: 'Pizza', image: '/uploads/bigpng/Pizza.png' }
+    ],
+    'Q': [
+        { word: 'Quail', image: '/uploads/bigpng/Quail.png' },
+        { word: 'Queen', image: '/uploads/bigpng/Queen.png' },
+        { word: 'Quilt', image: '/uploads/bigpng/Quilt.png' }
+    ],
+    'R': [
+        { word: 'Rabbit', image: '/uploads/bigpng/Rabbit.png' },
+        { word: 'Rainbow', image: '/uploads/bigpng/Rainbow.png' },
+        { word: 'Robot', image: '/uploads/bigpng/Robot.png' }
+    ],
+    'S': [
+        { word: 'Snake', image: '/uploads/bigpng/Snake.png' },
+        { word: 'Star', image: '/uploads/bigpng/Star.png' },
+        { word: 'Sun', image: '/uploads/bigpng/Sun.png' }
+    ],
+    'T': [
+        { word: 'Train', image: '/uploads/bigpng/Train.png' },
+        { word: 'Tree', image: '/uploads/bigpng/Tree.png' },
+        { word: 'Turtle', image: '/uploads/bigpng/Turtle.png' }
+    ],
+    'U': [
+        { word: 'Umbrella', image: '/uploads/bigpng/Umbrella.png' },
+        { word: 'Unicorn', image: '/uploads/bigpng/Unicorn.png' }
+    ],
+    'V': [
+        { word: 'Van', image: '/uploads/bigpng/Van.png' },
+        { word: 'Vase', image: '/uploads/bigpng/Vase.png' }
+    ],
+    'W': [
+        { word: 'Whale', image: '/uploads/bigpng/Whale.png' }
+    ],
+    'X': [
+        { word: 'Xylophone', image: '/uploads/bigpng/Xylophone.png' }
+    ],
+    'Y': [
+        { word: 'Yacht', image: '/uploads/bigpng/Yacht.png' },
+        { word: 'Yak', image: '/uploads/bigpng/yak.png' },
+        { word: 'Yarn', image: '/uploads/bigpng/yarn.png' }
+    ],
+    'Z': [
+        { word: 'Zebra', image: '/uploads/bigpng/zebra.png' },
+        { word: 'Zipper', image: '/uploads/bigpng/zipper.png' }
+    ]
+};
+
+// 卡片背景颜色
+const CARD_COLORS = [
+    '#E3F2FD', // 浅蓝
+    '#F3E5F5', // 浅紫
+    '#FFF3E0', // 浅橙
+    '#E8F5E9', // 浅绿
+    '#FFF8E1', // 浅黄
+    '#FCE4EC', // 浅粉
+    '#E0F7FA', // 浅青
+    '#FBE9E7', // 浅珊瑚
+];
+
+// Beginning Sounds 生成器 - 匹配图片和首字母
+async function generateBeginningSounds(config: any) {
+    const { letterSet = 'A-E', theme = 'dinosaur' } = config;
+    
+    const letterSets: Record<string, string[]> = {
+        'A-E': ['A', 'B', 'C', 'D', 'E'],
+        'F-J': ['F', 'G', 'H', 'I', 'J'],
+        'K-O': ['K', 'L', 'M', 'N', 'O'],
+        'P-T': ['P', 'Q', 'R', 'S', 'T'],
+        'U-Z': ['U', 'V', 'W', 'X', 'Y', 'Z']
+    };
+    
+    const letters = letterSets[letterSet] || letterSets['A-E'];
+    
+    // 为每个字母随机选择一个单词
+    const items = letters.map((letter, index) => {
+        const wordOptions = BEGINNING_SOUNDS_WORDS[letter] || [];
+        const randomWord = wordOptions[Math.floor(Math.random() * wordOptions.length)] || { word: letter, image: '' };
+        return {
+            letter,
+            word: randomWord.word,
+            image: randomWord.image,
+            color: CARD_COLORS[index % CARD_COLORS.length]
+        };
+    });
+    
+    // 打乱右侧图片顺序（用于匹配练习）
+    const shuffledItems = [...items].sort(() => Math.random() - 0.5);
+    
+    return {
+        title: `Beginning Sounds: ${letterSet}`,
+        type: 'beginning-sounds',
+        content: {
+            letterSet,
+            letters,
+            items,
+            shuffledItems,
+            theme,
+            instructions: 'Match each picture to its beginning letter sound.'
+        }
+    };
+}
+
+// CVC Words 生成器 - 简单的 CVC 单词练习
+async function generateCVCWords(config: any) {
+    const { wordFamily = 'at', theme = 'dinosaur' } = config;
+    
+    const wordFamilies: Record<string, string[]> = {
+        'at': ['cat', 'bat', 'hat', 'mat', 'rat', 'sat'],
+        'an': ['can', 'man', 'fan', 'pan', 'ran', 'van'],
+        'ap': ['cap', 'map', 'tap', 'nap', 'gap', 'lap'],
+        'ig': ['big', 'pig', 'dig', 'fig', 'wig', 'jig'],
+        'op': ['hop', 'top', 'mop', 'pop', 'cop', 'bop'],
+        'ug': ['bug', 'mug', 'rug', 'hug', 'jug', 'tug']
+    };
+    
+    const words = wordFamilies[wordFamily] || wordFamilies['at'];
+    // 随机选择 4-6 个单词
+    const shuffled = [...words].sort(() => Math.random() - 0.5);
+    const selectedWords = shuffled.slice(0, 6);
+    
+    return {
+        title: `CVC Words: -${wordFamily}`,
+        type: 'cvc-words',
+        content: {
+            wordFamily,
+            words: selectedWords,
+            theme,
+            instructions: `Read and trace the -${wordFamily} words.`
+        }
+    };
+}
+
+// Match Uppercase & Lowercase 生成器
+async function generateMatchUpperLower(config: any) {
+    const { letterSet = 'A-F', theme = 'dinosaur' } = config;
+    
+    const letterSets: Record<string, string[]> = {
+        'A-F': ['A', 'B', 'C', 'D', 'E', 'F'],
+        'G-L': ['G', 'H', 'I', 'J', 'K', 'L'],
+        'M-R': ['M', 'N', 'O', 'P', 'Q', 'R'],
+        'S-V': ['S', 'T', 'U', 'V'],
+        'W-Z': ['W', 'X', 'Y', 'Z']
+    };
+    
+    const letters = letterSets[letterSet] || letterSets['A-F'];
+    
+    // 生成大小写配对
+    const pairs = letters.map(letter => ({
+        uppercase: letter,
+        lowercase: letter.toLowerCase()
+    }));
+    
+    // 打乱小写字母的顺序用于匹配练习
+    const shuffledLowercase = [...letters.map(l => l.toLowerCase())].sort(() => Math.random() - 0.5);
+    
+    return {
+        title: `Match Letters: ${letterSet}`,
+        type: 'match-upper-lower',
+        content: {
+            letterSet,
+            pairs,
+            uppercase: letters,
+            lowercase: shuffledLowercase,
+            theme,
+            instructions: 'Draw a line to match each uppercase letter to its lowercase pair.'
+        }
+    };
+}
 
 export const mathGenerators = new Map<string, Function>([
     ['number-tracing', generateNumberTracing],
     ['counting-objects', generateCountAndWrite],
-    ['number-path', generateConnectDots]
+    ['number-path', generateConnectDots],
+    ['which-is-more', generateWhichIsMore],
+    ['number-bonds', generateNumberBonds],
+    ['ten-frame', generateTenFrame],
+    ['picture-addition', generatePictureAddition],
+    ['count-shapes', generateCountShapes]
 ]);
+
+// Ten Frame Counting 生成器
+async function generateTenFrame(config: any) {
+    const { theme = 'dinosaur' } = config;
+    return {
+        title: 'Ten Frame Counting',
+        type: 'ten-frame',
+        content: { theme }
+    };
+}
+
+// Picture Addition 生成器
+async function generatePictureAddition(config: any) {
+    const { theme = 'dinosaur' } = config;
+    return {
+        title: 'Picture Addition',
+        type: 'picture-addition',
+        content: { theme }
+    };
+}
+
+// Count the Shapes 生成器
+async function generateCountShapes(config: any) {
+    const { theme = 'dinosaur' } = config;
+    return {
+        title: 'Count the Shapes',
+        type: 'count-shapes',
+        content: { theme }
+    };
+}
+
+// Which is More? 生成器 - 比较两组物体数量
+async function generateWhichIsMore(config: any) {
+    const { difficulty = 'easy', theme = 'dinosaur' } = config;
+    
+    // 根据难度决定数字范围
+    const ranges: Record<string, { min: number; max: number }> = {
+        easy: { min: 1, max: 5 },
+        medium: { min: 1, max: 10 },
+        hard: { min: 1, max: 20 }
+    };
+    const range = ranges[difficulty] || ranges['easy'];
+    
+    // 生成 6 道比较题
+    const problems = Array.from({ length: 6 }, () => {
+        const left = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+        let right = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+        // 确保两边不相等
+        while (right === left) {
+            right = Math.floor(Math.random() * (range.max - range.min + 1)) + range.min;
+        }
+        return {
+            left,
+            right,
+            answer: left > right ? 'left' : 'right'
+        };
+    });
+    
+    return {
+        title: 'Which is More?',
+        type: 'which-is-more',
+        content: {
+            difficulty,
+            theme,
+            problems,
+            instructions: 'Circle the group that has more objects.'
+        }
+    };
+}
+
+// Number Bonds to 10 生成器 - 凑十练习
+async function generateNumberBonds(config: any) {
+    const { theme = 'dinosaur' } = config;
+    
+    // 生成所有凑十的组合
+    const bonds = [
+        { a: 0, b: 10 },
+        { a: 1, b: 9 },
+        { a: 2, b: 8 },
+        { a: 3, b: 7 },
+        { a: 4, b: 6 },
+        { a: 5, b: 5 },
+        { a: 6, b: 4 },
+        { a: 7, b: 3 },
+        { a: 8, b: 2 },
+        { a: 9, b: 1 },
+        { a: 10, b: 0 }
+    ];
+    
+    // 随机选择 8 个，并随机决定隐藏哪个数字
+    const shuffled = [...bonds].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, 8).map(bond => {
+        const hideFirst = Math.random() > 0.5;
+        return {
+            ...bond,
+            display: hideFirst ? { a: '_', b: bond.b } : { a: bond.a, b: '_' },
+            answer: hideFirst ? bond.a : bond.b
+        };
+    });
+    
+    return {
+        title: 'Number Bonds to 10',
+        type: 'number-bonds',
+        content: {
+            theme,
+            bonds: selected,
+            instructions: 'Fill in the missing number to make 10.'
+        }
+    };
+}
 
 // Coloring & Art category has been removed; no artGenerators are exposed.
 
@@ -136,91 +567,6 @@ async function generateWriteMyName(config: any) {
 }
 
 // generateCustomName and generateLetterHunt have been removed (worksheets deprecated)
-
-async function generateBeginningSounds(config: any) {
-    const { set = 'A-E' } = config;
-    const sets: Record<string, string[]> = {
-        'A-E': ['A', 'B', 'C', 'D', 'E'],
-        'F-J': ['F', 'G', 'H', 'I', 'J'],
-        'K-O': ['K', 'L', 'M', 'N', 'O'],
-        'P-T': ['P', 'Q', 'R', 'S', 'T'],
-        'U-Z': ['U', 'V', 'W', 'X', 'Y', 'Z']
-    };
-    const letters = (sets[set] || sets['A-E']).slice(0, 5);
-    return {
-        title: `Match Letters: ${set}`,
-        type: 'match-letters',
-        content: {
-            set,
-            letters,
-            instructions: 'Match each letter to the picture that starts with it!'
-        }
-    };
-}
-
-async function generateAlphabetOrder(config: any) {
-    const { case: letterCase = 'uppercase', pageCount = 1 } = config;
-    const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    const toCase = (ch: string) => (letterCase === 'lowercase' ? ch.toLowerCase() : ch);
-    const makeSeq = () => {
-        const maxStart = alphabet.length - 5;
-        const startIdx = Math.floor(Math.random() * (maxStart + 1));
-        const len = 3 + Math.floor(Math.random() * 3);
-        const seq = alphabet.slice(startIdx, startIdx + len).split('');
-        let missPos = seq.length > 2 ? 1 + Math.floor(Math.random() * (seq.length - 2)) : Math.floor(Math.random() * seq.length);
-        const missingLetter = seq[missPos];
-        const displaySeq = seq.map((c, i) => (i === missPos ? '_' : toCase(c)));
-        return { sequence: displaySeq, missingLetter, missingIndex: missPos };
-    };
-    const makeRows = () => Array.from({ length: 5 }, makeSeq);
-    const pages = Math.max(1, Math.min(5, parseInt(pageCount) || 1));
-    return {
-        title: 'Alphabet Order',
-        type: 'alphabet-order',
-        content: pages > 1
-            ? Array.from({ length: pages }, () => ({ letterCase, rows: makeRows(), instructions: 'Fill in the missing letter for each sequence.' }))
-            : { letterCase, rows: makeRows(), instructions: 'Fill in the missing letter for each sequence.' }
-    };
-}
-
-async function generateCVCWords(config: any) {
-    const { pageCount = 1 } = config;
-    const pages = Math.max(1, Math.min(5, parseInt(pageCount) || 1));
-    const pool = getRandomDecorImages(Math.max(60, pages * 6 + 10));
-    // shuffle pool
-    for (let i = pool.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [pool[i], pool[j]] = [pool[j], pool[i]];
-    }
-    const used = new Set<string>();
-    const pickPage = (pageIdx: number) => {
-        const start = pageIdx * 6;
-        const imgs = [];
-        for (let i = 0; i < 6; i++) {
-            const idx = start + i;
-            imgs.push(pool[idx] || pool[idx % pool.length]);
-        }
-        return imgs.map(img => {
-            const base = img.split('/').pop() || '';
-            const raw = base.replace(/\.[^.]+$/, '').replace(/[_-]+/g, ' ').toLowerCase();
-            let word = raw.replace(/\d+/g, '').trim() || 'word';
-            let n = 1;
-            while (used.has(word) && n < 50) {
-                word = `${raw}-${n}`;
-                n++;
-            }
-            used.add(word);
-            return { word, image: img };
-        });
-    };
-    return {
-        title: 'CVC Words',
-        type: 'cvc-words',
-        content: pages > 1
-            ? Array.from({ length: pages }, (_, i) => ({ words: pickPage(i), instructions: 'Trace the word and look at the picture.' }))
-            : { words: pickPage(0), instructions: 'Trace the word and look at the picture.' }
-    };
-}
 
 // ========== Logic (blank safe area, themed stickers) ==========
 async function generateLogicBlank(config: any) {
@@ -395,6 +741,65 @@ async function generatePatternSequencing(config: any) {
     };
 }
 
+/**
+ * Shape Path 生成器 - 形状路径练习
+ * 生成一个 5x5 的形状网格，孩子需要沿着特定形状从起点走到终点
+ */
+async function generateShapePath(config: any) {
+    const { theme = 'dinosaur' } = config;
+    
+    // 形状类型：圆形、正方形、三角形
+    const shapes = ['circle', 'square', 'triangle'];
+    
+    // 生成 5x6 的网格（5列6行）
+    const grid: string[][] = [];
+    for (let row = 0; row < 6; row++) {
+        const rowShapes: string[] = [];
+        for (let col = 0; col < 5; col++) {
+            // 随机选择形状
+            rowShapes.push(shapes[Math.floor(Math.random() * shapes.length)]);
+        }
+        grid.push(rowShapes);
+    }
+    
+    // 生成路径（从左上角到右下角的蛇形路径）
+    // 路径坐标数组
+    const path: { row: number; col: number }[] = [];
+    
+    // 简单的蛇形路径生成
+    let currentRow = 0;
+    let currentCol = 0;
+    let direction = 1; // 1 = 向右, -1 = 向左
+    
+    path.push({ row: currentRow, col: currentCol });
+    
+    while (currentRow < 5 || currentCol !== 4) {
+        if (direction === 1 && currentCol < 4) {
+            currentCol++;
+        } else if (direction === -1 && currentCol > 0) {
+            currentCol--;
+        } else {
+            currentRow++;
+            direction *= -1;
+        }
+        if (currentRow < 6) {
+            path.push({ row: currentRow, col: currentCol });
+        }
+        if (currentRow >= 5 && currentCol === 4) break;
+    }
+    
+    return {
+        title: 'Shape Path',
+        type: 'shape-path',
+        content: {
+            theme,
+            grid,
+            path,
+            instructions: 'Trace along the shapes from start to finish.'
+        }
+    };
+}
+
 export const logicGenerators = new Map<string, Function>([
     ['maze', generateMaze],
     ['shadow-matching', generateShadowMatching],
@@ -446,8 +851,20 @@ export const creativityGenerators = new Map<string, Function>([
     ['trace-lines', generateTraceLines],
     ['shape-tracing', generateShapeTracing],
     ['coloring-page', generateColoringPage],
-    ['creative-prompt', generateCreativePrompt]
+    ['creative-prompt', generateCreativePrompt],
+    ['trace-and-draw', generateTraceAndDraw],
+    ['shape-path', generateShapePath]
 ]);
+
+// Trace and Draw 生成器
+async function generateTraceAndDraw(config: any) {
+    const { theme = 'dinosaur' } = config;
+    return {
+        title: 'Trace and Draw',
+        type: 'trace-and-draw',
+        content: { theme }
+    };
+}
 
 // 保留 fineMotorGenerators 以兼容旧代码（指向同一个 map）
 export const fineMotorGenerators = creativityGenerators;

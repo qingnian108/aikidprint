@@ -52,9 +52,9 @@
   },
   "uploads-letter-A-default": {
     "usedImages": [
-      "/uploads/bigpng/Airplane.png",
+      "/uploads/bigpng/Apple.png",
       "/uploads/bigpng/Ant.png",
-      "/uploads/bigpng/Apple.png"
+      "/uploads/bigpng/Airplane.png"
     ],
     "allImages": [
       "/uploads/bigpng/Airplane.png",
@@ -2740,9 +2740,9 @@
   },
   "uploads-letter-J-default": {
     "usedImages": [
-      "/uploads/bigpng/Jellyfish.png",
       "/uploads/bigpng/Jam.png",
-      "/uploads/bigpng/Juice.png"
+      "/uploads/bigpng/Juice.png",
+      "/uploads/bigpng/Jellyfish.png"
     ],
     "allImages": [
       "/uploads/bigpng/Jam.png",

@@ -3,58 +3,183 @@
     "userId": "guest",
     "categoryId": "creativity",
     "categoryName": "creativity",
-    "pageTypeId": "creative-prompt",
-    "pageTypeName": "Creative Prompt",
-    "imageUrl": "http://localhost:3000/generated/worksheets/creative-prompt-1765539251928.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\creative-prompt-1765539251928.png",
+    "pageTypeId": "trace-and-draw",
+    "pageTypeName": "Trace and Draw",
+    "imageUrl": "http://localhost:3000/generated/worksheets/trace-and-draw-1765640579466.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\trace-and-draw-1765640579466.png",
     "config": {
-      "promptType": "blank_sign",
       "theme": "dinosaur"
     },
-    "id": "1765539252088-3prl8xopm",
-    "createdAt": "2025-12-12T11:34:12.088Z"
+    "id": "1765640580410-pm3zjem7o",
+    "createdAt": "2025-12-13T15:43:00.410Z"
   },
   {
     "userId": "guest",
     "categoryId": "creativity",
     "categoryName": "creativity",
-    "pageTypeId": "coloring-page",
-    "pageTypeName": "Coloring Page",
-    "imageUrl": "http://localhost:3000/generated/worksheets/coloring-page-1765539250763.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\coloring-page-1765539250763.png",
+    "pageTypeId": "trace-and-draw",
+    "pageTypeName": "Trace and Draw",
+    "imageUrl": "http://localhost:3000/generated/worksheets/trace-and-draw-1765640461643.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\trace-and-draw-1765640461643.png",
     "config": {
       "theme": "dinosaur"
     },
-    "id": "1765539250915-w6edgg6sk",
-    "createdAt": "2025-12-12T11:34:10.915Z"
+    "id": "1765640462631-yt49vvrav",
+    "createdAt": "2025-12-13T15:41:02.631Z"
   },
   {
     "userId": "guest",
-    "categoryId": "fine-motor",
-    "categoryName": "fine-motor",
-    "pageTypeId": "shape-tracing",
-    "pageTypeName": "Shape Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/shape-tracing-1765539249432.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-tracing-1765539249432.png",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "trace-and-draw",
+    "pageTypeName": "Trace and Draw",
+    "imageUrl": "http://localhost:3000/generated/worksheets/trace-and-draw-1765640308493.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\trace-and-draw-1765640308493.png",
     "config": {
       "theme": "dinosaur"
     },
-    "id": "1765539249754-0wvx6hlom",
-    "createdAt": "2025-12-12T11:34:09.754Z"
+    "id": "1765640309357-ngcehs3e9",
+    "createdAt": "2025-12-13T15:38:29.357Z"
   },
   {
     "userId": "guest",
-    "categoryId": "fine-motor",
-    "categoryName": "fine-motor",
-    "pageTypeId": "trace-lines",
-    "pageTypeName": "Trace Lines",
-    "imageUrl": "http://localhost:3000/generated/worksheets/trace-lines-1765539248205.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\trace-lines-1765539248205.png",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "shape-path",
+    "pageTypeName": "Shape Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shape-path-1765640302240.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-path-1765640302240.png",
+    "config": {
+      "theme": "vehicles"
+    },
+    "id": "1765640303334-r5rqry934",
+    "createdAt": "2025-12-13T15:38:23.334Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "shape-path",
+    "pageTypeName": "Shape Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shape-path-1765640297122.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-path-1765640297122.png",
+    "config": {
+      "theme": "ocean"
+    },
+    "id": "1765640298199-n6fos2gpu",
+    "createdAt": "2025-12-13T15:38:18.199Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "shape-path",
+    "pageTypeName": "Shape Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shape-path-1765640198785.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-path-1765640198785.png",
+    "config": {
+      "theme": "ocean"
+    },
+    "id": "1765640199887-0eb6dq4hx",
+    "createdAt": "2025-12-13T15:36:39.887Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "shape-path",
+    "pageTypeName": "Shape Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shape-path-1765640190867.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-path-1765640190867.png",
     "config": {
       "theme": "dinosaur"
     },
-    "id": "1765539248422-7zn710x35",
-    "createdAt": "2025-12-12T11:34:08.422Z"
+    "id": "1765640191988-bh8wfj4mw",
+    "createdAt": "2025-12-13T15:36:31.988Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "shape-path",
+    "pageTypeName": "Shape Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shape-path-1765640187087.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-path-1765640187087.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765640188195-dgbpoiy2i",
+    "createdAt": "2025-12-13T15:36:28.195Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "shape-path",
+    "pageTypeName": "Shape Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shape-path-1765640185325.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-path-1765640185325.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765640186447-f6rya9o78",
+    "createdAt": "2025-12-13T15:36:26.447Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "shape-path",
+    "pageTypeName": "Shape Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shape-path-1765640182334.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-path-1765640182334.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765640183297-h2pi42m3n",
+    "createdAt": "2025-12-13T15:36:23.297Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "shape-path",
+    "pageTypeName": "Shape Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shape-path-1765640101303.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-path-1765640101303.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765640102309-jsxjr3koh",
+    "createdAt": "2025-12-13T15:35:02.309Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "shape-path",
+    "pageTypeName": "Shape Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shape-path-1765640031583.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-path-1765640031583.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765640032679-w5wou0kcv",
+    "createdAt": "2025-12-13T15:33:52.679Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "shape-path",
+    "pageTypeName": "Shape Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shape-path-1765639990083.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-path-1765639990083.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765639991182-8lou3bbl1",
+    "createdAt": "2025-12-13T15:33:11.182Z"
   },
   {
     "userId": "guest",
@@ -62,232 +187,96 @@
     "categoryName": "logic",
     "pageTypeId": "pattern-sequencing",
     "pageTypeName": "Pattern Sequencing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/pattern-sequencing-1765539247058.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\pattern-sequencing-1765539247058.png",
+    "imageUrl": "http://localhost:3000/generated/worksheets/pattern-sequencing-1765639979688.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\pattern-sequencing-1765639979688.png",
     "config": {
       "theme": "dinosaur"
     },
-    "id": "1765539247189-pscpgg6d1",
-    "createdAt": "2025-12-12T11:34:07.189Z"
+    "id": "1765639979948-ycw5xif58",
+    "createdAt": "2025-12-13T15:32:59.948Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "shape-path",
+    "pageTypeName": "Shape Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shape-path-1765639964711.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-path-1765639964711.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765639965777-ktfnoleyo",
+    "createdAt": "2025-12-13T15:32:45.777Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "shape-path",
+    "pageTypeName": "Shape Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shape-path-1765639849553.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-path-1765639849553.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765639850639-3ysdhifn0",
+    "createdAt": "2025-12-13T15:30:50.639Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "shape-path",
+    "pageTypeName": "Shape Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shape-path-1765639733294.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-path-1765639733294.png",
+    "config": {
+      "theme": "dinosaur"
+    },
+    "id": "1765639734312-rrux22vly",
+    "createdAt": "2025-12-13T15:28:54.312Z"
   },
   {
     "userId": "guest",
     "categoryId": "logic",
     "categoryName": "logic",
-    "pageTypeId": "pattern-compare",
-    "pageTypeName": "Pattern Compare",
-    "imageUrl": "http://localhost:3000/generated/worksheets/pattern-compare-1765539245739.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\pattern-compare-1765539245739.png",
+    "pageTypeId": "shape-path",
+    "pageTypeName": "Shape Path",
+    "imageUrl": "http://localhost:3000/generated/worksheets/shape-path-1765639620551.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shape-path-1765639620551.png",
     "config": {
       "theme": "dinosaur"
     },
-    "id": "1765539246040-2xw2whkr9",
-    "createdAt": "2025-12-12T11:34:06.040Z"
+    "id": "1765639621649-7zwrjlvid",
+    "createdAt": "2025-12-13T15:27:01.649Z"
   },
   {
     "userId": "guest",
-    "categoryId": "logic",
-    "categoryName": "logic",
-    "pageTypeId": "sorting",
-    "pageTypeName": "Sorting",
-    "imageUrl": "http://localhost:3000/generated/worksheets/sorting-1765539181061.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\sorting-1765539181061.png",
+    "categoryId": "creativity",
+    "categoryName": "creativity",
+    "pageTypeId": "trace-and-draw",
+    "pageTypeName": "Trace and Draw",
+    "imageUrl": "http://localhost:3000/generated/worksheets/trace-and-draw-1765639529809.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\trace-and-draw-1765639529809.png",
     "config": {
       "theme": "dinosaur"
     },
-    "id": "1765539181196-ipwoiwq0c",
-    "createdAt": "2025-12-12T11:33:01.196Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "logic",
-    "categoryName": "logic",
-    "pageTypeId": "shadow-matching",
-    "pageTypeName": "Shadow Matching",
-    "imageUrl": "http://localhost:3000/generated/worksheets/shadow-matching-dinosaur-1765539179908.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\shadow-matching-dinosaur-1765539179908.png",
-    "config": {
-      "theme": "dinosaur"
-    },
-    "id": "1765539180045-5tcewin2i",
-    "createdAt": "2025-12-12T11:33:00.045Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "logic",
-    "categoryName": "logic",
-    "pageTypeId": "maze",
-    "pageTypeName": "Maze",
-    "imageUrl": "http://localhost:3000/generated/worksheets/maze-1765539178775.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\maze-1765539178775.png",
-    "config": {
-      "theme": "dinosaur",
-      "difficulty": "medium"
-    },
-    "id": "1765539178898-4b4suqabn",
-    "createdAt": "2025-12-12T11:32:58.898Z"
+    "id": "1765639530929-bn58k41pq",
+    "createdAt": "2025-12-13T15:25:30.929Z"
   },
   {
     "userId": "guest",
     "categoryId": "math",
     "categoryName": "Numbers & Math",
-    "pageTypeId": "number-path",
-    "pageTypeName": "Number Path",
-    "imageUrl": "http://localhost:3000/generated/worksheets/connect-dots-dinosaur-1765539177575.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\connect-dots-dinosaur-1765539177575.png",
+    "pageTypeId": "count-shapes",
+    "pageTypeName": "Count the Shapes",
+    "imageUrl": "http://localhost:3000/generated/worksheets/count-shapes-1765639518541.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\count-shapes-1765639518541.png",
     "config": {
       "theme": "dinosaur"
     },
-    "id": "1765539177716-e6kobk7pj",
-    "createdAt": "2025-12-12T11:32:57.716Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "math",
-    "categoryName": "Numbers & Math",
-    "pageTypeId": "counting-objects",
-    "pageTypeName": "Count and Write",
-    "imageUrl": "http://localhost:3000/generated/worksheets/count-write-dinosaur-1765539176195.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\count-write-dinosaur-1765539176195.png",
-    "config": {
-      "theme": "dinosaur",
-      "difficulty": "medium"
-    },
-    "id": "1765539176333-mmb96btf1",
-    "createdAt": "2025-12-12T11:32:56.333Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "math",
-    "categoryName": "Numbers & Math",
-    "pageTypeId": "number-tracing",
-    "pageTypeName": "Number Tracing 0–4",
-    "imageUrl": "http://localhost:3000/generated/worksheets/number-tracing-0-4-1765539174982.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\number-tracing-0-4-1765539174982.png",
-    "config": {
-      "range": "0-4",
-      "theme": "dinosaur"
-    },
-    "id": "1765539175178-92yts13qt",
-    "createdAt": "2025-12-12T11:32:55.178Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "write-my-name",
-    "pageTypeName": "Write My Name",
-    "imageUrl": "http://localhost:3000/generated/worksheets/write-my-name-1765539173821.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\write-my-name-1765539173821.png",
-    "config": {
-      "name": "LEO",
-      "theme": "dinosaur"
-    },
-    "id": "1765539173970-lovcvjvfp",
-    "createdAt": "2025-12-12T11:32:53.970Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "letter-recognition",
-    "pageTypeName": "Find the Letter A",
-    "imageUrl": "http://localhost:3000/generated/worksheets/letter-recognition-A-1765539172658.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\letter-recognition-A-1765539172658.png",
-    "config": {
-      "letter": "A",
-      "difficulty": "easy",
-      "theme": "dinosaur"
-    },
-    "id": "1765539172807-lyemik61k",
-    "createdAt": "2025-12-12T11:32:52.807Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "lowercase-tracing",
-    "pageTypeName": "Lowercase a Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/lowercase-a-1765539171506.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\lowercase-a-1765539171506.png",
-    "config": {
-      "letter": "a",
-      "theme": "dinosaur"
-    },
-    "id": "1765539171645-o8tae8ulo",
-    "createdAt": "2025-12-12T11:32:51.645Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765539170250.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765539170250.png",
-    "config": {
-      "letter": "A",
-      "theme": "dinosaur"
-    },
-    "id": "1765539170488-nhgxbl780",
-    "createdAt": "2025-12-12T11:32:50.488Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "math",
-    "categoryName": "Numbers & Math",
-    "pageTypeId": "number-path",
-    "pageTypeName": "Number Path",
-    "imageUrl": "http://localhost:3000/generated/worksheets/connect-dots-dinosaur-1765538947663.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\connect-dots-dinosaur-1765538947663.png",
-    "config": {
-      "theme": "dinosaur"
-    },
-    "id": "1765538948074-bowg8e8j8",
-    "createdAt": "2025-12-12T11:29:08.074Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase B Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-B-1765536540949.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-B-1765536540949.png",
-    "config": {
-      "theme": "dinosaur",
-      "letter": "B"
-    },
-    "id": "1765536541177-x4hsu2vd6",
-    "createdAt": "2025-12-12T10:49:01.177Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765536428785.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765536428785.png",
-    "config": {
-      "theme": "dinosaur"
-    },
-    "id": "1765536428935-81ggqs8tn",
-    "createdAt": "2025-12-12T10:47:08.935Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "uppercase-tracing",
-    "pageTypeName": "Uppercase A Tracing",
-    "imageUrl": "http://localhost:3000/generated/worksheets/uppercase-A-1765536398513.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\uppercase-A-1765536398513.png",
-    "config": {
-      "theme": "dinosaur",
-      "nickname": "test"
-    },
-    "id": "1765536399005-e1ae9nr4w",
-    "createdAt": "2025-12-12T10:46:39.005Z"
+    "id": "1765639519599-yf5q7gi93",
+    "createdAt": "2025-12-13T15:25:19.599Z"
   }
 ]

@@ -128,6 +128,68 @@ export const CATEGORIES: Category[] = [
           { id: 'name', type: 'text', label: 'Name', defaultValue: 'LEO', placeholder: 'Enter name (e.g. LEO)' },
           { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
+      },
+      {
+        id: 'alphabet-sequencing',
+        title: 'Alphabet Sequencing',
+        description: 'Fill in the missing letters in the alphabet sequence.',
+        previewImage: '/previews/alphabet-sequencing.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'beginning-sounds',
+        title: 'Beginning Sounds',
+        description: 'Match pictures to their beginning letter sounds.',
+        previewImage: '/previews/beginning-sounds.png',
+        options: [
+          {
+            id: 'letterSet',
+            type: 'select',
+            label: 'Letter Set',
+            defaultValue: 'A-E',
+            options: [
+              { value: 'A-E', label: 'A - E' },
+              { value: 'F-J', label: 'F - J' },
+              { value: 'K-O', label: 'K - O' },
+              { value: 'P-T', label: 'P - T' },
+              { value: 'U-Z', label: 'U - Z' }
+            ]
+          },
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'cvc-words',
+        title: 'CVC Words',
+        description: 'Practice reading and writing simple CVC words.',
+        previewImage: '/previews/cvc-words.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'match-upper-lower',
+        title: 'Match Uppercase & Lowercase',
+        description: 'Match uppercase letters to their lowercase pairs.',
+        previewImage: '/previews/match-upper-lower.png',
+        options: [
+          {
+            id: 'letterSet',
+            type: 'select',
+            label: 'Letter Set',
+            defaultValue: 'A-F',
+            options: [
+              { value: 'A-F', label: 'A - F' },
+              { value: 'G-L', label: 'G - L' },
+              { value: 'M-R', label: 'M - R' },
+              { value: 'S-V', label: 'S - V' },
+              { value: 'W-Z', label: 'W - Z' }
+            ]
+          },
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
       }
     ]
   },
@@ -183,6 +245,61 @@ export const CATEGORIES: Category[] = [
         title: 'Number Path',
         description: 'Connect the numbers in order to complete the path.',
         previewImage: '/previews/number-path.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'which-is-more',
+        title: 'Which is More?',
+        description: 'Compare two groups and identify which has more objects.',
+        previewImage: '/previews/which-is-more.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS },
+          {
+            id: 'difficulty',
+            type: 'select',
+            label: 'Range',
+            defaultValue: 'easy',
+            options: [
+              { value: 'easy', label: '1 - 5' },
+              { value: 'medium', label: '1 - 10' }
+            ]
+          }
+        ]
+      },
+      {
+        id: 'number-bonds',
+        title: 'Number Bonds to 10',
+        description: 'Learn number bonds that make 10.',
+        previewImage: '/previews/number-bonds.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'ten-frame',
+        title: 'Ten Frame Counting',
+        description: 'Count dots in ten frames and write the number.',
+        previewImage: '/previews/ten-frame.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'picture-addition',
+        title: 'Picture Addition',
+        description: 'Count and add pictures to learn basic addition.',
+        previewImage: '/previews/picture-addition.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'count-shapes',
+        title: 'Count the Shapes',
+        description: 'Count different shapes and write the numbers.',
+        previewImage: '/previews/count-shapes.png',
         options: [
           { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
@@ -306,6 +423,24 @@ export const CATEGORIES: Category[] = [
               { value: 'halfbody', label: 'Half Body' }
             ]
           },
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'trace-and-draw',
+        title: 'Trace and Draw',
+        description: 'Trace the picture, then draw your own.',
+        previewImage: '/previews/trace-and-draw.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'shape-path',
+        title: 'Shape Path',
+        description: 'Trace along the shapes from start to finish.',
+        previewImage: '/previews/shape-path.png',
+        options: [
           { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       }
