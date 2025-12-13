@@ -11,12 +11,15 @@ export class WorksheetService {
 
     constructor() {
         // Initialize generator map: categoryId -> pageTypeId -> generator function
+        // 4 大板块：literacy, math, logic, creativity
+        // creativity 包含了原来的 fine-motor 和 creativity
         this.generators = new Map([
             ['literacy', literacyGenerators],
             ['math', mathGenerators],
             ['logic', logicGenerators],
-            ['fine-motor', fineMotorGenerators],
-            ['creativity', creativityGenerators]
+            ['creativity', creativityGenerators],
+            // 兼容旧的 fine-motor 分类（指向 creativity）
+            ['fine-motor', fineMotorGenerators]
         ]);
     }
 

@@ -422,12 +422,7 @@ async function generateShapeTracing(config: any) {
     };
 }
 
-export const fineMotorGenerators = new Map<string, Function>([
-    ['trace-lines', generateTraceLines],
-    ['shape-tracing', generateShapeTracing]
-]);
-
-// ==================== CREATIVITY ====================
+// ==================== CREATIVITY & MOTOR (合并) ====================
 async function generateColoringPage(config: any) {
     const { theme = 'dinosaur' } = config;
     return {
@@ -446,10 +441,16 @@ async function generateCreativePrompt(config: any) {
     };
 }
 
+// 合并 Fine Motor 和 Creativity 到一个分类
 export const creativityGenerators = new Map<string, Function>([
+    ['trace-lines', generateTraceLines],
+    ['shape-tracing', generateShapeTracing],
     ['coloring-page', generateColoringPage],
     ['creative-prompt', generateCreativePrompt]
 ]);
+
+// 保留 fineMotorGenerators 以兼容旧代码（指向同一个 map）
+export const fineMotorGenerators = creativityGenerators;
 
 async function generatePatternCompletion(config: any) {
     const { pageCount = 1 } = config;

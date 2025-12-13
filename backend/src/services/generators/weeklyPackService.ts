@@ -283,7 +283,7 @@ export async function generateWeeklyPackConfig(
   pages.push({
     order: order++,
     type: 'trace-lines',
-    category: 'fine-motor',
+    category: 'creativity',
     title: 'Trace Lines',
     config: {
       theme,
@@ -295,7 +295,7 @@ export async function generateWeeklyPackConfig(
   pages.push({
     order: order++,
     type: 'shape-tracing',
-    category: 'fine-motor',
+    category: 'creativity',
     title: 'Shape Tracing',
     config: {
       theme,

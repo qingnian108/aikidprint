@@ -32,11 +32,9 @@ const PREVIEW_CONFIGS = [
   { id: 'pattern-compare', categoryId: 'logic', pageTypeId: 'pattern-compare', config: { theme: 'dinosaur' } },
   { id: 'pattern-sequencing', categoryId: 'logic', pageTypeId: 'pattern-sequencing', config: { theme: 'dinosaur' } },
   
-  // Fine Motor
-  { id: 'trace-lines', categoryId: 'fine-motor', pageTypeId: 'trace-lines', config: { theme: 'dinosaur' } },
-  { id: 'shape-tracing', categoryId: 'fine-motor', pageTypeId: 'shape-tracing', config: { theme: 'dinosaur' } },
-  
-  // Creativity
+  // Creativity & Motor (合并了 Fine Motor 和 Creativity)
+  { id: 'trace-lines', categoryId: 'creativity', pageTypeId: 'trace-lines', config: { theme: 'dinosaur' } },
+  { id: 'shape-tracing', categoryId: 'creativity', pageTypeId: 'shape-tracing', config: { theme: 'dinosaur' } },
   { id: 'coloring-page', categoryId: 'creativity', pageTypeId: 'coloring-page', config: { theme: 'dinosaur' } },
   { id: 'creative-prompt', categoryId: 'creativity', pageTypeId: 'creative-prompt', config: { promptType: 'blank_sign', theme: 'dinosaur' } },
 ];

@@ -1,4 +1,4 @@
-import { Pencil, Calculator, Palette } from 'lucide-react';
+import { Pencil, Calculator, Brain, Palette } from 'lucide-react';
 import type { ReactNode } from 'react';
 
 type IconComponent = (props: any) => ReactNode;
@@ -32,10 +32,21 @@ export type Category = {
   pageTypes: PageType[];
 };
 
+// 主题选项（复用）
+const THEME_OPTIONS = [
+  { value: 'dinosaur', label: 'Dinosaur' },
+  { value: 'space', label: 'Space' },
+  { value: 'ocean', label: 'Ocean' },
+  { value: 'unicorn', label: 'Unicorn' },
+  { value: 'vehicles', label: 'Vehicles' },
+  { value: 'safari', label: 'Safari' }
+];
+
 export const CATEGORIES: Category[] = [
+  // 1. Literacy Skills（读写能力）– 黄色
   {
     id: 'literacy',
-    title: 'Alphabet Skills',
+    title: 'Literacy Skills',
     description: 'Letter tracing, name practice, and phonics starters.',
     color: 'bg-duck-yellow',
     icon: Pencil,
@@ -56,20 +67,26 @@ export const CATEGORIES: Category[] = [
               label: String.fromCharCode(65 + i)
             }))
           },
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'lowercase-tracing',
+        title: 'Lowercase Letter Tracing',
+        description: 'Practice writing lowercase letters with themed decorations.',
+        previewImage: '/previews/lowercase-tracing.png',
+        options: [
           {
-            id: 'theme',
+            id: 'letter',
             type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'space', label: 'Space' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          }
+            label: 'Letter',
+            defaultValue: 'a',
+            options: Array.from({ length: 26 }, (_, i) => ({
+              value: String.fromCharCode(97 + i),
+              label: String.fromCharCode(97 + i)
+            }))
+          },
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       },
       {
@@ -99,52 +116,7 @@ export const CATEGORIES: Category[] = [
               { value: 'hard', label: 'Hard' }
             ]
           },
-          {
-            id: 'theme',
-            type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'space', label: 'Space' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          }
-        ]
-      },
-      {
-        id: 'lowercase-tracing',
-        title: 'Lowercase Letter Tracing',
-        description: 'Practice writing lowercase letters with themed decorations.',
-        previewImage: '/previews/lowercase-tracing.png',
-        options: [
-          {
-            id: 'letter',
-            type: 'select',
-            label: 'Letter',
-            defaultValue: 'a',
-            options: Array.from({ length: 26 }, (_, i) => ({
-              value: String.fromCharCode(97 + i),
-              label: String.fromCharCode(97 + i)
-            }))
-          },
-          {
-            id: 'theme',
-            type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'space', label: 'Space' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          }
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       },
       {
@@ -153,31 +125,13 @@ export const CATEGORIES: Category[] = [
         description: 'Practice writing your name with themed decorations.',
         previewImage: '/previews/write-my-name.png',
         options: [
-          {
-            id: 'name',
-            type: 'text',
-            label: 'Name',
-            defaultValue: 'LEO',
-            placeholder: 'Enter name (e.g. LEO)'
-          },
-          {
-            id: 'theme',
-            type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'space', label: 'Space' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          }
+          { id: 'name', type: 'text', label: 'Name', defaultValue: 'LEO', placeholder: 'Enter name (e.g. LEO)' },
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       }
-    ],
+    ]
   },
+  // 2. Math Skills（数学能力）– 绿色
   {
     id: 'math',
     title: 'Math Skills',
@@ -201,20 +155,7 @@ export const CATEGORIES: Category[] = [
               { value: '5-9', label: '5–9' }
             ]
           },
-          {
-            id: 'theme',
-            type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'space', label: 'Space' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          }
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       },
       {
@@ -223,20 +164,7 @@ export const CATEGORIES: Category[] = [
         description: 'Count objects and write the number.',
         previewImage: '/previews/counting-objects.png',
         options: [
-          {
-            id: 'theme',
-            type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'space', label: 'Space' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          },
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS },
           {
             id: 'difficulty',
             type: 'select',
@@ -256,30 +184,18 @@ export const CATEGORIES: Category[] = [
         description: 'Connect the numbers in order to complete the path.',
         previewImage: '/previews/number-path.png',
         options: [
-          {
-            id: 'theme',
-            type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'space', label: 'Space' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          }
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       }
     ]
   },
+  // 3. Logic & Thinking Skills（逻辑与思维能力）– 蓝色
   {
     id: 'logic',
-    title: 'Logic Skills',
-    description: 'Mazes, shadows, sorting, patterns, comparisons.',
+    title: 'Logic & Thinking',
+    description: 'Mazes, shadows, sorting, patterns, and comparisons.',
     color: 'bg-duck-blue',
-    icon: Palette,
+    icon: Brain,
     pageTypes: [
       {
         id: 'maze',
@@ -287,20 +203,7 @@ export const CATEGORIES: Category[] = [
         description: 'Find the path through the maze.',
         previewImage: '/previews/maze.png',
         options: [
-          {
-            id: 'theme',
-            type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'space', label: 'Space' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          },
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS },
           {
             id: 'difficulty',
             type: 'select',
@@ -320,20 +223,7 @@ export const CATEGORIES: Category[] = [
         description: 'Match objects to their shadows.',
         previewImage: '/previews/shadow-matching.png',
         options: [
-          {
-            id: 'theme',
-            type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'space', label: 'Space' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          }
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       },
       {
@@ -342,20 +232,7 @@ export const CATEGORIES: Category[] = [
         description: 'Sort items into the correct groups.',
         previewImage: '/previews/sorting.png',
         options: [
-          {
-            id: 'theme',
-            type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'space', label: 'Space' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          }
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       },
       {
@@ -364,20 +241,7 @@ export const CATEGORIES: Category[] = [
         description: 'Spot and compare repeating patterns.',
         previewImage: '/previews/pattern-compare.png',
         options: [
-          {
-            id: 'theme',
-            type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'space', label: 'Space' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          }
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       },
       {
@@ -386,30 +250,18 @@ export const CATEGORIES: Category[] = [
         description: 'Complete the pattern by finding the next item.',
         previewImage: '/previews/pattern-sequencing.png',
         options: [
-          {
-            id: 'theme',
-            type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'space', label: 'Space' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          }
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       }
     ]
   },
+  // 4. Creativity & Motor Skills（创意与运笔能力）– 紫粉色
   {
-    id: 'fine-motor',
-    title: 'Fine Motor Skills',
-    description: 'Line tracing and shape practice for hand control.',
-    color: 'bg-purple-400',
-    icon: Pencil,
+    id: 'creativity',
+    title: 'Creativity & Motor',
+    description: 'Line tracing, shape practice, coloring, and creative prompts.',
+    color: 'bg-gradient-to-r from-purple-400 to-pink-400',
+    icon: Palette,
     pageTypes: [
       {
         id: 'trace-lines',
@@ -417,20 +269,7 @@ export const CATEGORIES: Category[] = [
         description: 'Practice tracing different types of lines.',
         previewImage: '/previews/trace-lines.png',
         options: [
-          {
-            id: 'theme',
-            type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'space', label: 'Space' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          }
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       },
       {
@@ -439,51 +278,16 @@ export const CATEGORIES: Category[] = [
         description: 'Trace basic shapes to build motor skills.',
         previewImage: '/previews/shape-tracing.png',
         options: [
-          {
-            id: 'theme',
-            type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'space', label: 'Space' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          }
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
-      }
-    ]
-  },
-  {
-    id: 'creativity',
-    title: 'Creativity',
-    description: 'Coloring pages and creative drawing prompts.',
-    color: 'bg-pink-400',
-    icon: Palette,
-    pageTypes: [
+      },
       {
         id: 'coloring-page',
         title: 'Coloring Page',
         description: 'Fun coloring pages with themed illustrations.',
         previewImage: '/previews/coloring-page.png',
         options: [
-          {
-            id: 'theme',
-            type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'space', label: 'Space' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          }
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       },
       {
@@ -502,20 +306,7 @@ export const CATEGORIES: Category[] = [
               { value: 'halfbody', label: 'Half Body' }
             ]
           },
-          {
-            id: 'theme',
-            type: 'select',
-            label: 'Theme',
-            defaultValue: 'dinosaur',
-            options: [
-              { value: 'dinosaur', label: 'Dinosaur' },
-              { value: 'space', label: 'Space' },
-              { value: 'ocean', label: 'Ocean' },
-              { value: 'unicorn', label: 'Unicorn' },
-              { value: 'vehicles', label: 'Vehicles' },
-              { value: 'safari', label: 'Safari' }
-            ]
-          }
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       }
     ]
