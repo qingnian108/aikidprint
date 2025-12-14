@@ -27,17 +27,21 @@ async function generateAlphabetSequencing(config: any) {
     const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     
     // 根据难度决定每行缺失的字母数量
-    const missingCount: Record<string, number> = {
-        easy: 1,
-        medium: 1,
-        hard: 2
+    // easy: 固定1个, medium: 随机1-2个, hard: 固定2个
+    const getMissingCount = (diff: string): number => {
+        if (diff === 'easy') return 1;
+        if (diff === 'medium') return Math.random() < 0.5 ? 1 : 2;
+        if (diff === 'hard') return 2;
+        return 1;
     };
-    const missing = missingCount[difficulty] || 1;
     
-    // 生成 8 行序列，每行 4 个字母
+    // 生成 5 行序列，每行 4 个字母
     const usedStarts: number[] = [];
     
     const makeRow = () => {
+        // 每行独立计算缺失数量（medium难度时随机）
+        const missing = getMissingCount(difficulty);
+        
         // 随机选择起始位置（确保有 4 个连续字母，且不重复）
         const maxStart = alphabet.length - 4; // 0-22
         let startIdx: number;
@@ -223,7 +227,7 @@ const CARD_COLORS = [
     '#FBE9E7', // 浅珊瑚
 ];
 
-// Beginning Sounds 生成器 - 匹配图片和首字母
+// Beginning Sounds 生成器 - 匹配图片和首字母（固定5个字母）
 async function generateBeginningSounds(config: any) {
     const { letterSet = 'A-E', theme = 'dinosaur' } = config;
     
@@ -266,9 +270,9 @@ async function generateBeginningSounds(config: any) {
     };
 }
 
-// CVC Words 生成器 - 简单的 CVC 单词练习
+// CVC Words 生成器 - 简单的 CVC 单词练习（随机混合词族）
 async function generateCVCWords(config: any) {
-    const { wordFamily = 'at', theme = 'dinosaur' } = config;
+    const { theme = 'dinosaur' } = config;
     
     const wordFamilies: Record<string, string[]> = {
         'at': ['cat', 'bat', 'hat', 'mat', 'rat', 'sat'],
@@ -279,8 +283,12 @@ async function generateCVCWords(config: any) {
         'ug': ['bug', 'mug', 'rug', 'hug', 'jug', 'tug']
     };
     
+    // 随机选择一个词族
+    const allFamilies = ['at', 'an', 'ap', 'ig', 'op', 'ug'];
+    const wordFamily = allFamilies[Math.floor(Math.random() * allFamilies.length)];
+    
     const words = wordFamilies[wordFamily] || wordFamilies['at'];
-    // 随机选择 4-6 个单词
+    // 随机选择 6 个单词
     const shuffled = [...words].sort(() => Math.random() - 0.5);
     const selectedWords = shuffled.slice(0, 6);
     
@@ -296,7 +304,7 @@ async function generateCVCWords(config: any) {
     };
 }
 
-// Match Uppercase & Lowercase 生成器
+// Match Uppercase & Lowercase 生成器（字母数量由 letterSet 决定）
 async function generateMatchUpperLower(config: any) {
     const { letterSet = 'A-F', theme = 'dinosaur' } = config;
     
@@ -341,26 +349,47 @@ export const mathGenerators = new Map<string, Function>([
     ['number-bonds', generateNumberBonds],
     ['ten-frame', generateTenFrame],
     ['picture-addition', generatePictureAddition],
-    ['count-shapes', generateCountShapes]
+    ['count-shapes', generateCountShapes],
+    ['picture-subtraction', generatePictureSubtraction],
+    ['number-sequencing', generateNumberSequencing]
 ]);
 
-// Ten Frame Counting 生成器
+// Ten Frame Counting 生成器（固定1-10范围）
 async function generateTenFrame(config: any) {
     const { theme = 'dinosaur' } = config;
+    
     return {
         title: 'Ten Frame Counting',
         type: 'ten-frame',
-        content: { theme }
+        content: { 
+            theme,
+            minNumber: 1,
+            maxNumber: 10,
+            doubleFrame: false
+        }
     };
 }
 
 // Picture Addition 生成器
 async function generatePictureAddition(config: any) {
-    const { theme = 'dinosaur' } = config;
+    const { difficulty = 'easy', theme = 'dinosaur' } = config;
+    
+    // 根据难度决定数字范围
+    const difficultyConfig: Record<string, { maxSum: number }> = {
+        easy: { maxSum: 5 },
+        medium: { maxSum: 10 },
+        hard: { maxSum: 15 }
+    };
+    const config_ = difficultyConfig[difficulty] || difficultyConfig['easy'];
+    
     return {
         title: 'Picture Addition',
         type: 'picture-addition',
-        content: { theme }
+        content: { 
+            theme,
+            difficulty,
+            maxSum: config_.maxSum
+        }
     };
 }
 
@@ -374,6 +403,45 @@ async function generateCountShapes(config: any) {
     };
 }
 
+// Picture Subtraction 生成器 - 图片减法
+async function generatePictureSubtraction(config: any) {
+    const { difficulty = 'easy', theme = 'dinosaur' } = config;
+    
+    // 根据难度决定数字范围
+    const difficultyConfig: Record<string, { maxMinuend: number }> = {
+        easy: { maxMinuend: 5 },
+        medium: { maxMinuend: 10 },
+        hard: { maxMinuend: 15 }
+    };
+    const config_ = difficultyConfig[difficulty] || difficultyConfig['easy'];
+    
+    return {
+        title: 'Picture Subtraction',
+        type: 'picture-subtraction',
+        content: { 
+            theme,
+            difficulty,
+            maxMinuend: config_.maxMinuend
+        }
+    };
+}
+
+// Number Sequencing 生成器 - 数字序列（固定1-20范围）
+async function generateNumberSequencing(config: any) {
+    const { theme = 'dinosaur' } = config;
+    
+    return {
+        title: 'Number Sequencing',
+        type: 'number-sequencing',
+        content: { 
+            theme,
+            maxNumber: 20,
+            skipCount: false,
+            skipBy: 1
+        }
+    };
+}
+
 // Which is More? 生成器 - 比较两组物体数量
 async function generateWhichIsMore(config: any) {
     const { difficulty = 'easy', theme = 'dinosaur' } = config;
@@ -381,8 +449,8 @@ async function generateWhichIsMore(config: any) {
     // 根据难度决定数字范围
     const ranges: Record<string, { min: number; max: number }> = {
         easy: { min: 1, max: 5 },
-        medium: { min: 1, max: 10 },
-        hard: { min: 1, max: 20 }
+        medium: { min: 1, max: 7 },
+        hard: { min: 1, max: 10 }
     };
     const range = ranges[difficulty] || ranges['easy'];
     
@@ -413,24 +481,16 @@ async function generateWhichIsMore(config: any) {
     };
 }
 
-// Number Bonds to 10 生成器 - 凑十练习
+// Number Bonds 生成器 - 凑10练习（固定为10）
 async function generateNumberBonds(config: any) {
     const { theme = 'dinosaur' } = config;
+    const target = 10;
     
-    // 生成所有凑十的组合
-    const bonds = [
-        { a: 0, b: 10 },
-        { a: 1, b: 9 },
-        { a: 2, b: 8 },
-        { a: 3, b: 7 },
-        { a: 4, b: 6 },
-        { a: 5, b: 5 },
-        { a: 6, b: 4 },
-        { a: 7, b: 3 },
-        { a: 8, b: 2 },
-        { a: 9, b: 1 },
-        { a: 10, b: 0 }
-    ];
+    // 生成所有凑10的组合
+    const bonds: { a: number; b: number }[] = [];
+    for (let i = 0; i <= target; i++) {
+        bonds.push({ a: i, b: target - i });
+    }
     
     // 随机选择 8 个，并随机决定隐藏哪个数字
     const shuffled = [...bonds].sort(() => Math.random() - 0.5);
@@ -448,6 +508,7 @@ async function generateNumberBonds(config: any) {
         type: 'number-bonds',
         content: {
             theme,
+            target,
             bonds: selected,
             instructions: 'Fill in the missing number to make 10.'
         }
@@ -580,13 +641,14 @@ async function generateLogicBlank(config: any) {
 
 // ==================== MATH ====================
 async function generateCountAndWrite(config: any) {
-    const { theme = 'dinosaur', pageCount = 1 } = config;
+    const { theme = 'dinosaur', difficulty = 'easy', pageCount = 1 } = config;
     const makeItems = () => Array.from({ length: 8 }, () => ({ count: Math.floor(Math.random() * 6) + 1, theme }));
     return {
         title: 'Count and Write',
         type: 'counting-objects',
         content: Array.from({ length: Math.max(1, Math.min(5, parseInt(pageCount) || 1)) }, () => ({
             theme,
+            difficulty,
             items: makeItems(),
             instructions: 'Count the objects and write the number!'
         }))
@@ -594,7 +656,15 @@ async function generateCountAndWrite(config: any) {
 }
 
 export async function generateConnectDots(config: any) {
-    const { pageCount = 1, theme = 'dinosaur', maxNumber = DEFAULT_MAX_NUMBER } = config;
+    const { pageCount = 1, theme = 'dinosaur', difficulty = 'easy', maxNumber } = config;
+    
+    // 根据难度决定点数
+    const dotCounts: Record<string, number> = {
+        easy: 10,
+        medium: 20,
+        hard: 30
+    };
+    const actualMaxNumber = maxNumber || dotCounts[difficulty] || DEFAULT_MAX_NUMBER;
     
     // 尝试生成点对点图片
     let dotsImageUrl = '';
@@ -603,7 +673,7 @@ export async function generateConnectDots(config: any) {
     try {
         // 动态导入点对点服务
         const { processDotToDotFromTheme } = await import('./dotToDotService.js');
-        const result = await processDotToDotFromTheme(theme, maxNumber);
+        const result = await processDotToDotFromTheme(theme, actualMaxNumber);
         dotsImageUrl = result.dotsImageUrl;
         characterName = result.characterName;
         console.log(`[ConnectDots] 点对点图片生成成功: ${dotsImageUrl}`);
@@ -618,7 +688,8 @@ export async function generateConnectDots(config: any) {
         title: 'Number Path',
         type: 'number-path',
         content: {
-            maxNumber,
+            maxNumber: actualMaxNumber,
+            difficulty,
             theme,
             dotsImageUrl,
             characterName,  // 添加角色名字
@@ -684,10 +755,14 @@ const generateMaze = async (config: any) => {
 
 async function generateShadowMatching(config: any) {
     const { theme = 'dinosaur' } = config || {};
+    
     return {
         title: 'Shadow Matching',
         type: 'shadow-matching',
-        content: { theme }
+        content: { 
+            theme,
+            itemCount: 5
+        }
     };
 }
 // Sorting 使用专门的生成器
@@ -731,12 +806,180 @@ async function generatePatternCompare(config: any) {
  */
 async function generatePatternSequencing(config: any) {
     const { theme = 'dinosaur', rowCount = 4 } = config;
+    
     return {
         title: 'Pattern Sequencing',
         type: 'pattern-sequencing',
         content: { 
             theme,
+            patternType: 'AB',
             rowCount
+        }
+    };
+}
+
+/**
+ * Logic Grid 生成器
+ * 固定 3x3 网格
+ */
+async function generateLogicGrid(config: any) {
+    const { theme = 'dinosaur' } = config;
+    
+    const gridSize = 3;
+    
+    // 形状和颜色
+    const shapes = ['circle', 'square', 'triangle'];
+    const colors = ['#4A90D9', '#4CAF50', '#FF9800']; // 蓝、绿、橙
+    
+    // 生成一个有效的拉丁方阵
+    const generateLatinSquare = (size: number) => {
+        const grid: { shape: string; color: string }[][] = [];
+        const shapeOrder = [...shapes].sort(() => Math.random() - 0.5);
+        const colorOrder = [...colors].sort(() => Math.random() - 0.5);
+        
+        for (let row = 0; row < size; row++) {
+            grid[row] = [];
+            for (let col = 0; col < size; col++) {
+                grid[row][col] = {
+                    shape: shapeOrder[(row + col) % size],
+                    color: colorOrder[(row + col * 2) % size]
+                };
+            }
+        }
+        return grid;
+    };
+    
+    const grid = generateLatinSquare(gridSize);
+    
+    // 随机选择一个位置作为缺失项（通常选择右下角）
+    const missingRow = gridSize - 1;
+    const missingCol = gridSize - 1;
+    const answer = { ...grid[missingRow][missingCol] };
+    
+    return {
+        title: '3x3 Logic Grid',
+        type: 'logic-grid',
+        content: {
+            theme,
+            gridSize,
+            grid,
+            missingPosition: { row: missingRow, col: missingCol },
+            answer,
+            instructions: 'Complete the missing piece in the 3x3 grid.'
+        }
+    };
+}
+
+/**
+ * Odd One Out 生成器
+ * 每行显示 4 个物品，其中 3 个相同或相似，1 个不同，孩子需要找出不同的那个
+ * 固定 4 行
+ */
+async function generateOddOneOut(config: any) {
+    const { theme = 'dinosaur' } = config;
+    
+    // 预定义的物品组（每组包含相似物品和一个不同的）
+    const itemGroups = [
+        { similar: ['dog', 'dog', 'dog'], odd: 'cat', category: 'animals' },
+        { similar: ['apple', 'apple', 'apple'], odd: 'orange', category: 'fruits' },
+        { similar: ['car', 'car', 'car'], odd: 'airplane', category: 'vehicles' },
+        { similar: ['soccer', 'soccer', 'soccer'], odd: 'basketball', category: 'sports' },
+        { similar: ['flower', 'flower', 'flower'], odd: 'tree', category: 'plants' },
+        { similar: ['sun', 'sun', 'sun'], odd: 'moon', category: 'sky' },
+        { similar: ['fish', 'fish', 'fish'], odd: 'bird', category: 'animals' }
+    ];
+    
+    const rowCount = 4;
+    
+    // 随机选择指定数量的组
+    const shuffled = [...itemGroups].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, rowCount);
+    
+    // 为每组生成行数据，随机放置 odd 项的位置
+    const rows = selected.map(group => {
+        const items = [...group.similar, group.odd];
+        // 打乱顺序
+        for (let i = items.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [items[i], items[j]] = [items[j], items[i]];
+        }
+        const oddIndex = items.indexOf(group.odd);
+        return {
+            items,
+            oddIndex,
+            category: group.category
+        };
+    });
+    
+    return {
+        title: 'Odd One Out',
+        type: 'odd-one-out',
+        content: {
+            theme,
+            rows,
+            instructions: 'Circle the one that is different.'
+        }
+    };
+}
+
+/**
+ * Matching Halves 生成器
+ * 左侧显示物品的左半部分，右侧显示打乱顺序的右半部分，孩子需要连线匹配
+ * 固定 5 对
+ */
+async function generateMatchingHalves(config: any) {
+    const { theme = 'dinosaur' } = config;
+    
+    // 可用于匹配的物品（需要有明显的左右两半）
+    const allItems = ['apple', 'ball', 'heart', 'star', 'butterfly', 'flower', 'fish'];
+    
+    const pairCount = 5;
+    
+    // 随机选择指定数量的物品
+    const shuffled = [...allItems].sort(() => Math.random() - 0.5);
+    const selected = shuffled.slice(0, pairCount);
+    
+    // 生成左侧顺序（固定）和右侧顺序（打乱）
+    const leftItems = selected.map((item, index) => ({ item, id: index }));
+    const rightItems = [...leftItems].sort(() => Math.random() - 0.5);
+    
+    return {
+        title: 'Matching Halves',
+        type: 'matching-halves',
+        content: {
+            theme,
+            leftItems,
+            rightItems,
+            instructions: 'Match the two halves to complete the picture.'
+        }
+    };
+}
+
+/**
+ * Shape Synthesis 生成器
+ * 提供一组基本形状，孩子可以用这些形状组合创造物体
+ */
+async function generateShapeSynthesis(config: any) {
+    const { theme = 'dinosaur' } = config;
+    
+    // 可用的基本形状及其颜色
+    const availableShapes = [
+        { shape: 'circle', color: '#E53935' },      // 红色圆形
+        { shape: 'triangle', color: '#1E88E5' },    // 蓝色三角形
+        { shape: 'square', color: '#43A047' },      // 绿色正方形
+        { shape: 'rectangle', color: '#FB8C00' },   // 橙色矩形
+        { shape: 'semicircle', color: '#8E24AA' },  // 紫色半圆
+        { shape: 'diamond', color: '#FDD835' },     // 黄色菱形
+        { shape: 'oval', color: '#00ACC1' }         // 青色椭圆
+    ];
+    
+    return {
+        title: 'Shape Synthesis',
+        type: 'shape-synthesis',
+        content: {
+            theme,
+            shapes: availableShapes,
+            instructions: 'Use these shapes to build an object. What can you make?'
         }
     };
 }
@@ -805,25 +1048,42 @@ export const logicGenerators = new Map<string, Function>([
     ['shadow-matching', generateShadowMatching],
     ['sorting', generateSortingData],
     ['pattern-compare', generatePatternCompare],
-    ['pattern-sequencing', generatePatternSequencing]
+    ['pattern-sequencing', generatePatternSequencing],
+    ['logic-grid', generateLogicGrid],
+    ['odd-one-out', generateOddOneOut],
+    ['matching-halves', generateMatchingHalves],
+    ['shape-synthesis', generateShapeSynthesis]
 ]);
 
 // ==================== FINE MOTOR ====================
 async function generateTraceLines(config: any) {
-    const { theme = 'dinosaur', lineType = 'straight' } = config;
+    const { theme = 'dinosaur' } = config;
+    
     return {
         title: 'Trace Lines',
         type: 'trace-lines',
-        content: { theme, lineType }
+        content: { 
+            theme, 
+            lineType: 'mixed'
+        }
     };
 }
 
 async function generateShapeTracing(config: any) {
-    const { theme = 'dinosaur', shape = 'circle' } = config;
+    const { theme = 'dinosaur' } = config;
+    
+    // 固定基础形状
+    const shapes = ['circle', 'square', 'triangle', 'rectangle'];
+    const shape = shapes[Math.floor(Math.random() * shapes.length)];
+    
     return {
         title: 'Shape Tracing',
         type: 'shape-tracing',
-        content: { theme, shape }
+        content: { 
+            theme, 
+            shape,
+            shapes
+        }
     };
 }
 

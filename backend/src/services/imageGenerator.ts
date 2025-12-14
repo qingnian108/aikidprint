@@ -143,11 +143,21 @@ export class ImageGenerator {
         }
         .border-sticker {
             position: absolute;
-            width: 36px;
-            height: 36px;
+            width: 42px;
+            height: 42px;
             object-fit: contain;
-            opacity: 0.9;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
+            opacity: 1;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            z-index: 2;
+        }
+        .border-sticker.bottom-sticker {
+            width: 38px;
+            height: 38px;
+        }
+        .border-sticker.corner-sticker {
+            width: 55px;
+            height: 55px;
+            z-index: 5;
         }
         `;
     }
@@ -170,58 +180,209 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成贴纸 HTML
+     * 生成贴纸 HTML（密集布局：左右底部三边 + 底部两角）
      */
     private getStickersHtml(themeKey: string): string {
-        const borderImages = getThemeBorders(themeKey, 16);
+        const borderImages = getThemeBorders(themeKey, 50);
         const borderPool: string[] = [...borderImages];
         const baseLen = borderImages.length;
         if (baseLen > 0) {
-            while (borderPool.length < 16) {
+            while (borderPool.length < 50) {
                 borderPool.push(borderImages[borderPool.length % baseLen]);
             }
         }
+        // 打乱顺序
         for (let i = borderPool.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [borderPool[i], borderPool[j]] = [borderPool[j], borderPool[i]];
         }
 
-        const stickerPlacementsLeft = [
-            { top: '110px', left: '2px', rotate: -6 },
-            { top: '230px', left: '2px', rotate: 4 },
-            { top: '350px', left: '2px', rotate: -3 },
-            { top: '470px', left: '2px', rotate: 6 },
-            { top: '590px', left: '2px', rotate: -4 },
-            { top: '710px', left: '2px', rotate: 5 },
-            { top: '830px', left: '2px', rotate: -5 },
-            { top: '950px', left: '2px', rotate: 3 },
-        ];
-        const stickerPlacementsRight = [
-            { top: '110px', right: '2px', rotate: 6 },
-            { top: '230px', right: '2px', rotate: -4 },
-            { top: '350px', right: '2px', rotate: 5 },
-            { top: '470px', right: '2px', rotate: -5 },
-            { top: '590px', right: '2px', rotate: 4 },
-            { top: '710px', right: '2px', rotate: -4 },
-            { top: '830px', right: '2px', rotate: 6 },
-            { top: '950px', right: '2px', rotate: -3 }
+        // 随机偏移函数
+        const randOffset = (base: number, range: number) => base + (Math.random() - 0.5) * range;
+        const randRotate = () => (Math.random() - 0.5) * 30; // ±15度
+
+        // 左侧贴纸位置（10个，从110px开始确保在横线下方）
+        const stickerPlacementsLeft: Array<{ top: number; left: number }> = [];
+        for (let i = 0; i < 10; i++) {
+            stickerPlacementsLeft.push({
+                top: randOffset(110 + i * 95, 10),
+                left: randOffset(-5, 8)
+            });
+        }
+
+        // 右侧贴纸位置（10个）
+        const stickerPlacementsRight: Array<{ top: number; right: number }> = [];
+        for (let i = 0; i < 10; i++) {
+            stickerPlacementsRight.push({
+                top: randOffset(110 + i * 95, 10),
+                right: randOffset(-5, 8)
+            });
+        }
+
+        // 底部贴纸位置（8个）
+        const stickerPlacementsBottom: Array<{ bottom: number; left: number }> = [];
+        for (let i = 0; i < 8; i++) {
+            stickerPlacementsBottom.push({
+                bottom: randOffset(-8, 10),
+                left: randOffset(50 + i * 90, 15)
+            });
+        }
+
+        // 底部两角特殊位置（较大的贴纸）
+        const cornerPlacements = [
+            { bottom: -5, left: -5, size: 55 },   // 左下
+            { bottom: -5, right: -5, size: 55 }   // 右下
         ];
 
-        const perSide = Math.min(8, Math.floor(borderPool.length / 2));
-        const stickersLeft = borderPool.slice(0, perSide);
-        const stickersRight = borderPool.slice(perSide, perSide * 2);
+        let stickerIdx = 0;
+        const getNextSticker = () => borderPool[stickerIdx++ % borderPool.length];
 
-        const stickerHtmlLeft = stickersLeft.map((src: string, idx: number) => {
-            const placement = stickerPlacementsLeft[idx];
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="top:${placement.top};left:${placement.left};transform: rotate(${placement.rotate}deg);" />`;
+        // 生成左侧贴纸 HTML
+        const stickerHtmlLeft = stickerPlacementsLeft.map((p) => {
+            const src = getNextSticker();
+            const rotate = randRotate();
+            return `<img class="border-sticker" src="http://localhost:3000${src}" style="top:${p.top}px;left:${p.left}px;transform:rotate(${rotate}deg);" />`;
         }).join('');
 
-        const stickerHtmlRight = stickersRight.map((src: string, idx: number) => {
-            const placement = stickerPlacementsRight[idx];
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="top:${placement.top};right:${placement.right};transform: rotate(${placement.rotate}deg);" />`;
+        // 生成右侧贴纸 HTML
+        const stickerHtmlRight = stickerPlacementsRight.map((p) => {
+            const src = getNextSticker();
+            const rotate = randRotate();
+            return `<img class="border-sticker" src="http://localhost:3000${src}" style="top:${p.top}px;right:${p.right}px;transform:rotate(${rotate}deg);" />`;
         }).join('');
 
-        return stickerHtmlLeft + stickerHtmlRight;
+        // 生成底部贴纸 HTML
+        const stickerHtmlBottom = stickerPlacementsBottom.map((p) => {
+            const src = getNextSticker();
+            const rotate = randRotate();
+            return `<img class="border-sticker bottom-sticker" src="http://localhost:3000${src}" style="bottom:${p.bottom}px;left:${p.left}px;transform:rotate(${rotate}deg);" />`;
+        }).join('');
+
+        // 生成底部两角贴纸 HTML（较大）
+        const stickerHtmlCorners = cornerPlacements.map((p) => {
+            const src = getNextSticker();
+            const rotate = randRotate();
+            let posStyle = '';
+            if ('left' in p) posStyle = `bottom:${p.bottom}px;left:${p.left}px;`;
+            else posStyle = `bottom:${p.bottom}px;right:${(p as any).right}px;`;
+            return `<img class="border-sticker corner-sticker" src="http://localhost:3000${src}" style="${posStyle}width:${p.size}px;height:${p.size}px;transform:rotate(${rotate}deg);z-index:5;" />`;
+        }).join('');
+
+        return stickerHtmlLeft + stickerHtmlRight + stickerHtmlBottom + stickerHtmlCorners;
+    }
+
+    /**
+     * 生成密集贴纸 HTML（左右底部三边 + 底部两角）
+     */
+    private getDenseStickersHtml(themeKey: string): { html: string; css: string } {
+        const borderImages = getThemeBorders(themeKey, 50);
+        const borderPool: string[] = [...borderImages];
+        const baseLen = borderImages.length;
+        if (baseLen > 0) {
+            while (borderPool.length < 50) {
+                borderPool.push(borderImages[borderPool.length % baseLen]);
+            }
+        }
+        // 打乱顺序
+        for (let i = borderPool.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [borderPool[i], borderPool[j]] = [borderPool[j], borderPool[i]];
+        }
+
+        // 随机偏移函数
+        const randOffset = (base: number, range: number) => base + (Math.random() - 0.5) * range;
+        const randRotate = () => (Math.random() - 0.5) * 30; // ±15度
+
+        // 左侧贴纸位置（10个，从110px开始确保在横线下方）
+        const stickerPlacementsLeft: Array<{ top: number; left: number }> = [];
+        for (let i = 0; i < 10; i++) {
+            stickerPlacementsLeft.push({
+                top: randOffset(110 + i * 95, 10),
+                left: randOffset(-5, 8)
+            });
+        }
+
+        // 右侧贴纸位置（10个）
+        const stickerPlacementsRight: Array<{ top: number; right: number }> = [];
+        for (let i = 0; i < 10; i++) {
+            stickerPlacementsRight.push({
+                top: randOffset(110 + i * 95, 10),
+                right: randOffset(-5, 8)
+            });
+        }
+
+        // 底部贴纸位置（8个）
+        const stickerPlacementsBottom: Array<{ bottom: number; left: number }> = [];
+        for (let i = 0; i < 8; i++) {
+            stickerPlacementsBottom.push({
+                bottom: randOffset(-8, 10),
+                left: randOffset(50 + i * 90, 15)
+            });
+        }
+
+        // 底部两角特殊位置（较大的贴纸）
+        const cornerPlacements = [
+            { bottom: -5, left: -5, size: 55 },   // 左下
+            { bottom: -5, right: -5, size: 55 }   // 右下
+        ];
+
+        let stickerIdx = 0;
+        const getNextSticker = () => borderPool[stickerIdx++ % borderPool.length];
+
+        // 生成左侧贴纸 HTML
+        const stickerHtmlLeft = stickerPlacementsLeft.map((p) => {
+            const src = getNextSticker();
+            const rotate = randRotate();
+            return `<img class="border-sticker" src="http://localhost:3000${src}" style="top:${p.top}px;left:${p.left}px;transform:rotate(${rotate}deg);" />`;
+        }).join('');
+
+        // 生成右侧贴纸 HTML
+        const stickerHtmlRight = stickerPlacementsRight.map((p) => {
+            const src = getNextSticker();
+            const rotate = randRotate();
+            return `<img class="border-sticker" src="http://localhost:3000${src}" style="top:${p.top}px;right:${p.right}px;transform:rotate(${rotate}deg);" />`;
+        }).join('');
+
+        // 生成底部贴纸 HTML
+        const stickerHtmlBottom = stickerPlacementsBottom.map((p) => {
+            const src = getNextSticker();
+            const rotate = randRotate();
+            return `<img class="border-sticker bottom-sticker" src="http://localhost:3000${src}" style="bottom:${p.bottom}px;left:${p.left}px;transform:rotate(${rotate}deg);" />`;
+        }).join('');
+
+        // 生成底部两角贴纸 HTML（较大）
+        const stickerHtmlCorners = cornerPlacements.map((p) => {
+            const src = getNextSticker();
+            const rotate = randRotate();
+            let posStyle = '';
+            if ('left' in p) posStyle = `bottom:${p.bottom}px;left:${p.left}px;`;
+            else posStyle = `bottom:${p.bottom}px;right:${(p as any).right}px;`;
+            return `<img class="border-sticker corner-sticker" src="http://localhost:3000${src}" style="${posStyle}width:${p.size}px;height:${p.size}px;transform:rotate(${rotate}deg);z-index:5;" />`;
+        }).join('');
+
+        const html = stickerHtmlLeft + stickerHtmlRight + stickerHtmlBottom + stickerHtmlCorners;
+
+        const css = `
+        .border-sticker {
+            position: absolute;
+            width: 42px;
+            height: 42px;
+            object-fit: contain;
+            opacity: 1;
+            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
+            z-index: 2;
+        }
+        .border-sticker.bottom-sticker {
+            width: 38px;
+            height: 38px;
+        }
+        .border-sticker.corner-sticker {
+            width: 55px;
+            height: 55px;
+            z-index: 5;
+        }`;
+
+        return { html, css };
     }
 
     async generateMazePage(data: any): Promise<string> {
@@ -586,6 +747,11 @@ export class ImageGenerator {
         const pages = Array.isArray((data as any)?.content)
             ? (data as any).content
             : [data?.content || data || {}];
+        
+        // 获取主题颜色
+        const theme = pages[0]?.theme || 'dinosaur';
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
 
         const pagesHtml = pages.map((pageData: any) => {
             const rows = Array.isArray(pageData?.rows) ? pageData.rows : [];
@@ -660,7 +826,7 @@ export class ImageGenerator {
             text-align: center;
             font-size: 32px;
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
             margin-bottom: 16px;
         }
         .board {
@@ -1246,7 +1412,7 @@ export class ImageGenerator {
         .title-row .main {
             font-size: 32px;
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
         }
         .title-icon {
             width: 60px;
@@ -1379,6 +1545,13 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
+        // 固定5个字母的布局参数
+        const cardSize = 110;
+        const cardGap = 27;
+        const fontSize = 72;
+        const imageSize = 90;
+        const columnGap = 220;
+        
         // 卡片背景颜色
         const cardColors = [
             '#E3F2FD', // 浅蓝
@@ -1405,15 +1578,15 @@ export class ImageGenerator {
         
         // 生成左侧字母卡片 HTML
         const leftCardsHtml = items.map((item: any, index: number) => `
-            <div class="card letter-card" style="background: ${cardColors[index % cardColors.length]};">
-                <span class="letter" style="color: ${letterColors[index % letterColors.length]};">${item.letter}</span>
+            <div class="card letter-card" style="background: ${cardColors[index % cardColors.length]}; width: ${cardSize}px; height: ${cardSize}px;">
+                <span class="letter" style="color: ${letterColors[index % letterColors.length]}; font-size: ${fontSize}px;">${item.letter}</span>
             </div>
         `).join('');
         
         // 生成右侧图片卡片 HTML（使用打乱后的顺序）
         const rightCardsHtml = shuffledItems.map((item: any, index: number) => `
-            <div class="card image-card" style="background: ${cardColors[(index + 3) % cardColors.length]};">
-                <img class="card-image" src="http://localhost:3000${item.image}" alt="${item.word}" />
+            <div class="card image-card" style="background: ${cardColors[(index + 3) % cardColors.length]}; width: ${cardSize}px; height: ${cardSize}px;">
+                <img class="card-image" src="http://localhost:3000${item.image}" alt="${item.word}" style="width: ${imageSize}px; height: ${imageSize}px;" />
             </div>
         `).join('');
         
@@ -1445,7 +1618,7 @@ export class ImageGenerator {
         .title-row .main {
             font-size: 32px;
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
         }
         .title-icon {
             width: 60px;
@@ -1464,23 +1637,21 @@ export class ImageGenerator {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 220px;
+            gap: ${columnGap}px;
         }
         .left-column {
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 27px;
+            gap: ${cardGap}px;
         }
         .right-column {
             display: flex;
             flex-direction: column;
             justify-content: center;
-            gap: 27px;
+            gap: ${cardGap}px;
         }
         .card {
-            width: 110px;
-            height: 110px;
             border-radius: 16px;
             display: flex;
             align-items: center;
@@ -1489,7 +1660,6 @@ export class ImageGenerator {
             border: 3px solid rgba(255,255,255,0.8);
         }
         .letter-card .letter {
-            font-size: 72px;
             font-weight: 900;
             font-family: 'Comic Sans MS', 'Chalkboard', cursive;
             text-shadow: 2px 2px 0 rgba(255,255,255,0.8);
@@ -1498,8 +1668,6 @@ export class ImageGenerator {
             padding: 6px;
         }
         .card-image {
-            width: 90px;
-            height: 90px;
             object-fit: contain;
         }
         .divider {
@@ -1660,7 +1828,7 @@ export class ImageGenerator {
         .title-row .main {
             font-size: 32px;
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
         }
         .title-icon {
             width: 60px;
@@ -1796,14 +1964,45 @@ export class ImageGenerator {
         const displayLowercase = lowercase.length > 0 ? lowercase : 
             [...defaultLowercase].sort(() => Math.random() - 0.5);
         
-        // 生成左侧大写字母 HTML
+        // 根据字母数量动态调整间距和大小
+        const letterCount = displayUppercase.length;
+        let boxSize: number;
+        let fontSize: number;
+        let rowGap: number;
+        let columnGap: number;
+        
+        if (letterCount <= 4) {
+            // 4个字母：大方框，大间距
+            boxSize = 100;
+            fontSize = 56;
+            rowGap = 40;
+            columnGap = 300;
+        } else if (letterCount <= 6) {
+            // 6个字母：中等
+            boxSize = 85;
+            fontSize = 48;
+            rowGap = 28;
+            columnGap = 280;
+        } else {
+            // 8个字母：紧凑
+            boxSize = 70;
+            fontSize = 40;
+            rowGap = 16;
+            columnGap = 260;
+        }
+        
+        // 生成左侧大写字母 HTML（带方框）
         const leftLettersHtml = displayUppercase.map((letter: string) => `
-            <div class="letter-item">${letter}</div>
+            <div class="letter-box" style="width: ${boxSize}px; height: ${boxSize}px; border-color: ${themeColors.primary};">
+                <span class="letter" style="font-size: ${fontSize}px;">${letter}</span>
+            </div>
         `).join('');
         
-        // 生成右侧小写字母 HTML
+        // 生成右侧小写字母 HTML（带方框）
         const rightLettersHtml = displayLowercase.map((letter: string) => `
-            <div class="letter-item">${letter}</div>
+            <div class="letter-box" style="width: ${boxSize}px; height: ${boxSize}px; border-color: ${themeColors.secondary};">
+                <span class="letter" style="font-size: ${fontSize}px;">${letter}</span>
+            </div>
         `).join('');
         
         const html = `
@@ -1833,20 +2032,12 @@ export class ImageGenerator {
         .title-row .main {
             font-size: 32px;
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
         }
         .title-icon {
             width: 60px;
             height: 60px;
             object-fit: contain;
-        }
-        .subtitle {
-            text-align: center;
-            font-size: 16px;
-            font-weight: 600;
-            color: #64748b;
-            margin-bottom: 20px;
-            font-style: italic;
         }
         .content-box {
             flex: 1;
@@ -1858,15 +2049,23 @@ export class ImageGenerator {
             display: flex;
             justify-content: center;
             align-items: center;
-            gap: 280px;
+            gap: ${columnGap}px;
         }
         .left-column, .right-column {
             display: flex;
             flex-direction: column;
-            gap: 43px;
+            align-items: center;
+            gap: ${rowGap}px;
         }
-        .letter-item {
-            font-size: 72px;
+        .letter-box {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid;
+            border-radius: 12px;
+            background: #fff;
+        }
+        .letter {
             font-weight: 900;
             font-family: 'Arial Black', sans-serif;
             color: #1f2937;
@@ -1943,7 +2142,12 @@ export class ImageGenerator {
         const stickerHtml = this.getStickersHtml(themeKey);
         
         // 根据难度设置数量范围
-        const maxCount = difficulty === 'medium' ? 10 : 5;
+        const difficultyConfig: Record<string, number> = {
+            easy: 5,
+            medium: 7,
+            hard: 10
+        };
+        const maxCount = difficultyConfig[difficulty] || 5;
         const minCount = 1;
         
         // 从主题文件夹获取图片
@@ -2044,7 +2248,7 @@ export class ImageGenerator {
         .title-row .main {
             font-size: 32px;
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
         }
         .title-icon {
             width: 60px;
@@ -2256,7 +2460,7 @@ export class ImageGenerator {
         .title-row .main {
             font-size: 32px;
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
         }
         .title-icon {
             width: 60px;
@@ -2395,7 +2599,7 @@ export class ImageGenerator {
             gap: 12px;
             margin-bottom: 20px;
         }
-        .title-row .main { font-size: 32px; font-weight: 900; color: #0f172a; }
+        .title-row .main { font-size: 32px; font-weight: 900; color: ${themeColors.primary}; }
         .title-icon { width: 60px; height: 60px; object-fit: contain; }
         .content-box {
             flex: 1;
@@ -2564,7 +2768,7 @@ export class ImageGenerator {
             gap: 12px;
             margin-bottom: 15px;
         }
-        .title-row .main { font-size: 32px; font-weight: 900; color: #0f172a; }
+        .title-row .main { font-size: 32px; font-weight: 900; color: ${themeColors.primary}; }
         .title-icon { width: 60px; height: 60px; object-fit: contain; }
         .content-box {
             flex: 1;
@@ -2761,7 +2965,7 @@ export class ImageGenerator {
             gap: 12px;
             margin-bottom: 15px;
         }
-        .title-row .main { font-size: 32px; font-weight: 900; color: #0f172a; }
+        .title-row .main { font-size: 32px; font-weight: 900; color: ${themeColors.primary}; }
         .title-icon { width: 60px; height: 60px; object-fit: contain; }
         .content-area {
             flex: 1;
@@ -2894,62 +3098,9 @@ export class ImageGenerator {
         };
         const rewardDino = rewardMap[themeKey] || rewardMap['dinosaur'];
 
-        // 边框贴纸：保证左右各 8 个，数量不足循环补齐再洗�?
-        const borderImages = getThemeBorders(themeKey, 16);
-        const borderPool: string[] = [...borderImages];
-        const baseLen = borderImages.length;
-        if (baseLen > 0) {
-            while (borderPool.length < 16) {
-                borderPool.push(borderImages[borderPool.length % baseLen]);
-            }
-        }
-        for (let i = borderPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [borderPool[i], borderPool[j]] = [borderPool[j], borderPool[i]];
-        }
-
-        const stickerPlacementsLeft: Array<{ top: string; left: string; rotate: number }> = [
-            { top: '110px', left: '2px', rotate: -6 },
-            { top: '230px', left: '2px', rotate: 4 },
-            { top: '350px', left: '2px', rotate: -3 },
-            { top: '470px', left: '2px', rotate: 6 },
-            { top: '590px', left: '2px', rotate: -4 },
-            { top: '710px', left: '2px', rotate: 5 },
-            { top: '830px', left: '2px', rotate: -5 },
-            { top: '950px', left: '2px', rotate: 3 },
-        ];
-        const stickerPlacementsRight: Array<{ top: string; right: string; rotate: number }> = [
-            { top: '110px', right: '2px', rotate: 6 },
-            { top: '230px', right: '2px', rotate: -4 },
-            { top: '350px', right: '2px', rotate: 5 },
-            { top: '470px', right: '2px', rotate: -5 },
-            { top: '590px', right: '2px', rotate: 4 },
-            { top: '710px', right: '2px', rotate: -4 },
-            { top: '830px', right: '2px', rotate: 6 },
-            { top: '950px', right: '2px', rotate: -3 }
-        ];
-
-        const perSide = Math.min(
-            Math.floor(borderPool.length / 2),
-            stickerPlacementsLeft.length,
-            stickerPlacementsRight.length
-        );
-        const stickersLeft = borderPool.slice(0, perSide);
-        const stickersRight = borderPool.slice(perSide, perSide * 2);
-
-        const stickerHtmlLeft = stickersLeft.map((src: string, idx: number) => {
-            const placement = stickerPlacementsLeft[idx];
-            const pos = `top:${placement.top};left:${placement.left}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtmlRight = stickersRight.map((src: string, idx: number) => {
-            const placement = stickerPlacementsRight[idx];
-            const pos = `top:${placement.top};right:${placement.right}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtml = stickerHtmlLeft + stickerHtmlRight;
+        // 使用通用密集贴纸方法
+        const denseStickers = this.getDenseStickersHtml(themeKey);
+        const stickerHtml = denseStickers.html;
 
         // 生成混合字母网格
         let gridCells: string[] = [];
@@ -3132,7 +3283,7 @@ export class ImageGenerator {
             font-size: ${fontSize}px;     /* 难度动态字号：easy 70 / medium 60 / hard 50 */
             font-weight: 900;
             letter-spacing: 0.3px;
-            color: #0f172a;              /* 实心深色填充 */
+            color: ${themeColors.primary};              /* 主题色填充 */
             -webkit-text-stroke: 0;      /* 取消描边 */
             line-height: 1;
         }
@@ -3158,14 +3309,7 @@ export class ImageGenerator {
             line-height: 1;
             color: #f5a623;
         }
-        .border-sticker {
-            position: absolute;
-            width: 36px;
-            height: 36px;
-            object-fit: contain;
-            opacity: 0.9;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
-        }
+        ${denseStickers.css}
         .footer {
             position: absolute;
             bottom: 16px;
@@ -3682,7 +3826,7 @@ export class ImageGenerator {
         const { theme = 'dinosaur', name = 'LEO' } = content;
         const themeKey = String(theme).toLowerCase();
         const themeColors = getThemeColor(themeKey);
-        const stickerHtml = this.getStickersHtml(themeKey);
+        const denseStickers = this.getDenseStickersHtml(themeKey);
 
         // 处理名字：转大写，最�?0个字�?
         const displayName = String(name).toUpperCase().replace(/[^A-Z]/g, '').slice(0, 10);
@@ -3846,6 +3990,7 @@ export class ImageGenerator {
         .tracing-text.single {
             justify-content: center;
         }
+        ${denseStickers.css}
     </style>
 </head>
 <body>
@@ -3857,7 +4002,7 @@ export class ImageGenerator {
         <div class="divider"></div>
         <div class="safe-area">
             <div class="content-wrapper">
-                <!-- 顶部大字母图�?-->
+                <!-- 顶部大字母图片 -->
                 <div class="big-letters-section">
                     ${bigLettersHtml}
                 </div>
@@ -3865,7 +4010,7 @@ export class ImageGenerator {
                 <div class="character-section">
                     ${characterImage ? `<img class="character-image" src="http://localhost:3000${characterImage}" alt="character" />` : ''}
                 </div>
-                <!-- 练习�?- 参考大写字母描红样�?-->
+                <!-- 练习区 - 参考大写字母描红样式 -->
                 <div class="practice">
                     <div class="practice-title">Practice Writing:</div>
                     <div class="practice-lines">
@@ -3891,7 +4036,7 @@ export class ImageGenerator {
                 </div>
             </div>
         </div>
-        ${stickerHtml}
+        ${denseStickers.html}
     </div>
 </body>
 </html>`;
@@ -5371,6 +5516,11 @@ export class ImageGenerator {
             ? (data as any).content
             : [data?.content || data || {}];
 
+        // 获取主题颜色
+        const theme = pages[0]?.theme || 'dinosaur';
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+
         // Ϊÿҳ׼��ȱʡͼ�أ����������?
         const defaultIcons = getRandomDecorImages(20);
 
@@ -5485,7 +5635,7 @@ export class ImageGenerator {
             text-align: center;
             font-size: 32px;
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
             margin-bottom: 18px;
         }
         .board {
@@ -5503,7 +5653,7 @@ export class ImageGenerator {
         }
         .box {
             min-height: 130px;
-            border: 2px solid #0f172a;
+            border: 2px solid ${themeColors.primary};
             border-radius: 14px;
             background: #ffffff;
             display: flex;
@@ -5536,7 +5686,7 @@ export class ImageGenerator {
             text-align: center;
             font-size: 18px;
             font-weight: 800;
-            color: #0f172a;
+            color: ${themeColors.primary};
             line-height: 1.3;
         }
     </style>
@@ -5777,7 +5927,7 @@ export class ImageGenerator {
             text-align: center;
             font-size: 22px;
             font-weight: 800;
-            color: #0f172a;
+            color: ${themeColors.primary};
             margin: 0 0 12px;
             padding: 6px 14px;
         }
@@ -5800,7 +5950,7 @@ export class ImageGenerator {
             left: 12px;
             font-size: 12px;
             font-weight: 800;
-            color: #0f172a;
+            color: ${themeColors.primary};
         }
         .page-break { page-break-after: always; }
         .border-sticker {
@@ -6122,6 +6272,11 @@ export class ImageGenerator {
                 ? (data as any)
                 : [data || {}];
 
+        // 获取主题颜色
+        const theme = contentArray[0]?.theme || 'dinosaur';
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+
         const pagesHtml = contentArray.map((pageData: any) => {
             let words = Array.isArray(pageData?.words) ? pageData.words : [];
             if (!words || words.length === 0) {
@@ -6226,7 +6381,7 @@ export class ImageGenerator {
             text-align: center;
             font-size: 32px;
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
             margin-bottom: 18px;
         }
         .board {
@@ -6243,7 +6398,7 @@ export class ImageGenerator {
         }
         .card {
             height: 280px;
-            border: 2px solid #0f172a;
+            border: 2px solid ${themeColors.primary};
             border-radius: 16px;
             padding: 16px 14px 12px;
             background: #ffffff;
@@ -6256,7 +6411,7 @@ export class ImageGenerator {
         .trace {
             font-size: 32px;
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
             letter-spacing: 1.2px;
         }
         .trace.shrink {
@@ -6307,20 +6462,26 @@ export class ImageGenerator {
     async generateCountAndWrite(data: any): Promise<string> {
         await this.initialize();
 
-        const { theme = 'dinosaur' } = data;
+        // 从 content 数组的第一个元素中获取 theme 和 difficulty
+        const contentArray = Array.isArray(data?.content) ? data.content : [data?.content || data || {}];
+        const firstContent = contentArray[0] || {};
+        const { theme = 'dinosaur', difficulty = 'easy' } = firstContent;
         const themeKey = String(theme || 'dinosaur').toLowerCase();
         const themeColors = getThemeColor(themeKey);
+        
+        // 根据难度设置数字范围
+        const difficultyConfig: Record<string, { min: number; max: number }> = {
+            easy: { min: 1, max: 5 },
+            medium: { min: 1, max: 8 },
+            hard: { min: 1, max: 12 }
+        };
+        const range = difficultyConfig[difficulty] || difficultyConfig['easy'];
+        console.log(`[CountAndWrite] difficulty: ${difficulty}, range: ${range.min}-${range.max}`);
         const titleIcon = getRandomTitleIcon(themeKey);
         
-        // 随机决定图标位置（左或右�?
+        // 随机决定图标位置（左或右）
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" alt="theme icon">` : '';
-
-        const contentArray = Array.isArray((data as any)?.content)
-            ? (data as any).content
-            : Array.isArray(data)
-                ? (data as any)
-                : [data || {}];
 
         const borderImages = getThemeBorders(themeKey, 16);
         const borderPool: string[] = [...borderImages];
@@ -6400,26 +6561,48 @@ export class ImageGenerator {
             const titleText = 'Counting Objects';
             const titleIcon = titleIconMap[themeKey] || titleIconMap['dinosaur'];
             const rowsHtml = items.map((item: any, idx: number) => {
-                // 右侧 3 个数字：随机生成 1-6 且升�?
+                // 右侧 3 个数字：根据难度范围随机生成且升序
                 const optionsSet = new Set<number>();
                 while (optionsSet.size < 3) {
-                    optionsSet.add(Math.floor(Math.random() * 5) + 1); // 1-5
+                    optionsSet.add(Math.floor(Math.random() * (range.max - range.min + 1)) + range.min);
                 }
                 const options = Array.from(optionsSet).sort((a, b) => a - b);
-                // 左侧图标数量：从右侧三个数字里随机挑一个（最�?6�?
+                // 左侧图标数量：从右侧三个数字里随机挑一个
                 const correctIndex = Math.floor(Math.random() * options.length);
-                const count = Math.min(5, options[correctIndex]);
+                const count = Math.min(range.max, options[correctIndex]);
 
-                // 动态缩放，数量多时自动变小，避免超出容�?
-                const size = Math.max(42, 90 - (count - 1) * 6);
+                // 动态缩放和布局，数量多时分两排并缩小
+                const needTwoRows = count > 5;
+                let size: number;
+                if (needTwoRows) {
+                    // 两排时：根据数量调整大小
+                    size = count <= 8 ? 48 : count <= 10 ? 42 : 36;
+                } else {
+                    // 单排时：根据数量调整大小
+                    size = count <= 3 ? 70 : count <= 4 ? 60 : 55;
+                }
                 const randomIcon = () => (themeIcons.length ? themeIcons[Math.floor(Math.random() * themeIcons.length)] : '');
-                const icons = `<div class="icon-box">${Array.from({ length: count }, () => {
+                
+                // 生成图标数组
+                const iconElements = Array.from({ length: count }, () => {
                     const iconSrc = randomIcon();
                     const iconTag = iconSrc
-                        ? `<img src="http://localhost:3000${iconSrc}" alt="icon" style="max-width:${size}px;max-height:${size}px;">`
+                        ? `<img src="http://localhost:3000${iconSrc}" alt="icon" style="width:${size}px;height:${size}px;">`
                         : `<span class="emoji" style="font-size:${size}px;">🦕</span>`;
-                    return `<span class="icon">${iconTag}</span>`;
-                }).join('')}</div>`;
+                    return `<span class="icon" style="width:${size}px;height:${size}px;">${iconTag}</span>`;
+                });
+                
+                // 如果需要两排，分成上下两排
+                let iconsHtml: string;
+                if (needTwoRows) {
+                    const halfCount = Math.ceil(count / 2);
+                    const row1 = iconElements.slice(0, halfCount).join('');
+                    const row2 = iconElements.slice(halfCount).join('');
+                    iconsHtml = `<div class="icon-box two-rows"><div class="icon-row">${row1}</div><div class="icon-row">${row2}</div></div>`;
+                } else {
+                    iconsHtml = `<div class="icon-box">${iconElements.join('')}</div>`;
+                }
+                const icons = iconsHtml;
 
                 // 右侧数字升序展示，正确项随机落位
                 const optionsHtml = options.map(n => `<div class="opt${n === count ? ' correct' : ''}">${n}</div>`).join('');
@@ -6595,32 +6778,40 @@ export class ImageGenerator {
             width: 100%;
         }
         .cluster {
-            height: 120px;
+            min-height: 100px;
             width: 420px;
             display: flex;
             justify-content: center;
             align-items: center;
             padding: 0 4px;
-            overflow: hidden;
-            flex-wrap: nowrap; /* 强制单行 */
+            overflow: visible;
         }
         .cluster .icon-box {
             width: 100%;
-            height: 100%;
-            border: none; /* 去掉小黑�?*/
+            border: none;
             border-radius: 0;
-            padding: 10px 8px;
+            padding: 6px 8px;
             display: flex;
-            flex-wrap: nowrap; /* 禁止换行 */
-            gap: 10px;
+            flex-wrap: nowrap;
+            gap: 6px;
             align-items: center;
             justify-content: center;
             background: rgba(255,255,255,0.9);
-            overflow: hidden;
+            overflow: visible;
+        }
+        .cluster .icon-box.two-rows {
+            flex-direction: column;
+            gap: 2px;
+            padding: 2px 8px;
+        }
+        .icon-row {
+            display: flex;
+            flex-wrap: nowrap;
+            gap: 4px;
+            align-items: center;
+            justify-content: center;
         }
         .icon {
-            width: 70px;
-            height: 70px;
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -6630,8 +6821,6 @@ export class ImageGenerator {
             width: 100%;
             height: 100%;
             object-fit: contain;
-            max-width: none;
-            max-height: none;
         }
         .option-set {
             display: grid;
@@ -6662,8 +6851,8 @@ export class ImageGenerator {
             background: #fff;
         }
         .opt.correct {
-            border-color: #2dd4bf;
-            background: #e7fbf6;
+            border-color: #0f172a;
+            background: #fff;
         }
         .page-break { page-break-after: always; }
         .border-sticker {
@@ -6702,6 +6891,11 @@ export class ImageGenerator {
             : Array.isArray(data)
                 ? data
                 : [data || {}];
+
+        // 获取主题颜色
+        const theme = contentArray[0]?.theme || 'dinosaur';
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
 
         // �̶�ʹ�ñ�������ṩ�ľ�̬Ŀ¼�����⻷������ָ����Ч�����������
         const fontBase = `http://localhost:${process.env.PORT || 3000}`;
@@ -6793,7 +6987,7 @@ export class ImageGenerator {
             text-align: center;
             font-size: 32px;
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
             margin-bottom: 20px;
         }
         .board {
@@ -6815,12 +7009,12 @@ export class ImageGenerator {
             align-items: center;
             font-size: 40px;
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
         }
         .blank {
             width: 30px;
             height: 38px;
-            border-bottom: 3px solid #0f172a;
+            border-bottom: 3px solid ${themeColors.primary};
         }
         .image-wrapper {
             display: flex;
@@ -6860,6 +7054,11 @@ export class ImageGenerator {
 
     async generateCustomName(data: any): Promise<string> {
         await this.initialize();
+
+        // 获取主题颜色
+        const theme = data?.theme || 'dinosaur';
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
 
         const name: string = (data?.name || 'EMMA').trim();
         const safeName = name.length > 0 ? name : 'EMMA';
@@ -6942,7 +7141,7 @@ export class ImageGenerator {
         .title {
             font-size: 42px;
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
             letter-spacing: 2px;
         }
         .subtitle {
@@ -6972,7 +7171,7 @@ export class ImageGenerator {
             opacity: 0.96;
         }
         .section {
-            border: 3px solid #0f172a;
+            border: 3px solid ${themeColors.primary};
             border-radius: 14px;
             padding: 14px 16px;
             background: #f8fafc;
@@ -6987,7 +7186,7 @@ export class ImageGenerator {
         .section-title {
             font-size: 14px;
             font-weight: 800;
-            color: #0f172a;
+            color: ${themeColors.primary};
             letter-spacing: 0.5px;
             margin-bottom: 10px;
             display: flex;
@@ -7118,6 +7317,11 @@ export class ImageGenerator {
     async generateLetterHunt(data: any): Promise<string> {
         await this.initialize();
 
+        // 获取主题颜色
+        const theme = data?.theme || 'dinosaur';
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+
         const targetLetter = (data?.targetLetter || 'A').toUpperCase();
         const letters: string[] = Array.isArray(data?.letters) ? data.letters : [];
         const letterSize = data?.letterSize || 26;
@@ -7245,7 +7449,7 @@ export class ImageGenerator {
         .title {
             font-size: 34px;
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
             letter-spacing: 1px;
         }
         .subtitle {
@@ -7284,7 +7488,7 @@ export class ImageGenerator {
         }
         .cell span {
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
             line-height: 1;
         }
         .main-image, .main-emoji {
@@ -7711,6 +7915,614 @@ export class ImageGenerator {
     }
 
     /**
+     * 生成 3x3 Logic Grid 页面
+     * 3x3 逻辑网格 - 找出缺失的图形
+     */
+    async generateLogicGrid(data: any): Promise<string> {
+        await this.initialize();
+        
+        const content = data?.content || data || {};
+        const { theme = 'dinosaur' } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const stickerHtml = this.getStickersHtml(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        
+        // 形状和颜色
+        const shapes = ['circle', 'square', 'triangle'];
+        const colors = ['#4A90D9', '#4CAF50', '#FF9800']; // 蓝、绿、橙
+        
+        // 生成一个有效的 3x3 拉丁方阵
+        const shapeOrder = [...shapes].sort(() => Math.random() - 0.5);
+        const colorOrder = [...colors].sort(() => Math.random() - 0.5);
+        
+        const grid: { shape: string; color: string }[][] = [];
+        for (let row = 0; row < 3; row++) {
+            grid[row] = [];
+            for (let col = 0; col < 3; col++) {
+                grid[row][col] = {
+                    shape: shapeOrder[(row + col) % 3],
+                    color: colorOrder[(row + col * 2) % 3]
+                };
+            }
+        }
+        
+        // 缺失位置（右下角）
+        const missingRow = 2;
+        const missingCol = 2;
+        const answer = { ...grid[missingRow][missingCol] };
+        
+        // 生成形状 SVG
+        const getShapeSvg = (shape: string, color: string, size: number = 80) => {
+            switch (shape) {
+                case 'circle':
+                    return `<svg width="${size}" height="${size}" viewBox="0 0 100 100"><circle cx="50" cy="50" r="45" fill="${color}" stroke="#333" stroke-width="3"/></svg>`;
+                case 'square':
+                    return `<svg width="${size}" height="${size}" viewBox="0 0 100 100"><rect x="5" y="5" width="90" height="90" fill="${color}" stroke="#333" stroke-width="3"/></svg>`;
+                case 'triangle':
+                    return `<svg width="${size}" height="${size}" viewBox="0 0 100 100"><polygon points="50,5 95,95 5,95" fill="${color}" stroke="#333" stroke-width="3"/></svg>`;
+                default:
+                    return '';
+            }
+        };
+        
+        // 生成网格 HTML - 使用更大的尺寸
+        const gridHtml = grid.map((row, rowIdx) => {
+            const cellsHtml = row.map((cell, colIdx) => {
+                if (rowIdx === missingRow && colIdx === missingCol) {
+                    return `<div class="grid-cell missing"><span class="question-mark">?</span></div>`;
+                }
+                return `<div class="grid-cell">${getShapeSvg(cell.shape, cell.color, 140)}</div>`;
+            }).join('');
+            return `<div class="grid-row">${cellsHtml}</div>`;
+        }).join('');
+        
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            padding: 0;
+        }
+        .grid-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            background: ${themeColors.light};
+            padding: 28px;
+            border-radius: 20px;
+            border: 4px solid ${themeColors.primary};
+        }
+        .grid-row {
+            display: flex;
+            gap: 12px;
+        }
+        .grid-cell {
+            width: 180px;
+            height: 180px;
+            background: white;
+            border: 4px solid ${themeColors.secondary};
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .grid-cell.missing {
+            background: ${themeColors.light};
+            border: 4px dashed ${themeColors.accent};
+        }
+        .question-mark {
+            font-size: 96px;
+            font-weight: 800;
+            color: ${themeColors.accent};
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line short"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <div class="main">3x3 Logic Grid</div>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="content-area">
+                <div class="grid-container">
+                    ${gridHtml}
+                </div>
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>
+        `;
+
+        const filename = `logic-grid-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html);
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
+     * 生成 Odd One Out 页面
+     * 找出不同的一个
+     */
+    async generateOddOneOut(data: any): Promise<string> {
+        await this.initialize();
+        
+        const content = data?.content || data || {};
+        const { theme = 'dinosaur' } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const stickerHtml = this.getStickersHtml(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        
+        // 获取主题素材
+        const colorAssets = getThemeColorAssets(themeKey, 30);
+        const shuffled = [...colorAssets].sort(() => Math.random() - 0.5);
+        
+        // 生成 5 行，每行 4 个物品（3 个相同，1 个不同）
+        const rows: Array<{ items: string[]; oddIndex: number }> = [];
+        
+        for (let i = 0; i < 5; i++) {
+            const mainItem = shuffled[i * 2] || shuffled[0];
+            const oddItem = shuffled[i * 2 + 1] || shuffled[1];
+            
+            // 创建 4 个物品：3 个相同 + 1 个不同
+            const items = [mainItem, mainItem, mainItem, oddItem];
+            
+            // 打乱顺序
+            for (let j = items.length - 1; j > 0; j--) {
+                const k = Math.floor(Math.random() * (j + 1));
+                [items[j], items[k]] = [items[k], items[j]];
+            }
+            
+            // 找到 odd 的位置
+            const oddIndex = items.indexOf(oddItem);
+            
+            rows.push({ items, oddIndex });
+        }
+        
+        // 生成行 HTML
+        const rowsHtml = rows.map((row, idx) => {
+            const itemsHtml = row.items.map(item => 
+                `<div class="item-cell"><img src="http://localhost:3000${item}" /></div>`
+            ).join('');
+            
+            return `
+                <div class="odd-row">
+                    <div class="row-number">${idx + 1}.</div>
+                    <div class="items-container">${itemsHtml}</div>
+                </div>
+            `;
+        }).join('');
+        
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex: 1;
+            justify-content: center;
+            padding: 10px 0;
+        }
+        .odd-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 12px;
+            background: ${themeColors.light};
+            border-radius: 16px;
+        }
+        .row-number {
+            font-size: 24px;
+            font-weight: 700;
+            color: ${themeColors.accent};
+            min-width: 40px;
+        }
+        .items-container {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+            justify-content: center;
+        }
+        .item-cell {
+            width: 130px;
+            height: 130px;
+            background: white;
+            border: 3px solid ${themeColors.secondary};
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+        .item-cell img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line short"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <div class="main">Odd One Out</div>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="content-area">
+                ${rowsHtml}
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>
+        `;
+
+        const filename = `odd-one-out-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html);
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
+     * 生成 Matching Halves 页面
+     * 匹配两半
+     */
+    async generateMatchingHalves(data: any): Promise<string> {
+        await this.initialize();
+        
+        const content = data?.content || data || {};
+        const { theme = 'dinosaur' } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const stickerHtml = this.getStickersHtml(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        
+        // 获取主题素材
+        const colorAssets = getThemeColorAssets(themeKey, 10);
+        const shuffled = [...colorAssets].sort(() => Math.random() - 0.5);
+        const selected = shuffled.slice(0, 5);
+        
+        // 左侧固定顺序，右侧打乱
+        const leftItems = selected.map((item, idx) => ({ item, id: idx }));
+        const rightItems = [...leftItems].sort(() => Math.random() - 0.5);
+        
+        // 生成左侧 HTML（显示图片的左半部分，数字在右边靠近中间）
+        const leftHtml = leftItems.map((item, idx) => `
+            <div class="half-item left-item">
+                <div class="half-image">
+                    <img class="left-half-img" src="http://localhost:3000${item.item}" />
+                </div>
+                <div class="half-number">${idx + 1}</div>
+            </div>
+        `).join('');
+        
+        // 生成右侧 HTML（显示图片的右半部分，字母在左边靠近中间）
+        const rightHtml = rightItems.map((item, idx) => `
+            <div class="half-item right-item">
+                <div class="half-letter">${String.fromCharCode(65 + idx)}</div>
+                <div class="half-image">
+                    <img class="right-half-img" src="http://localhost:3000${item.item}" />
+                </div>
+            </div>
+        `).join('');
+        
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+            justify-content: center;
+            width: 100%;
+            padding: 0;
+        }
+        .matching-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0 40px;
+        }
+        .column {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            flex-shrink: 0;
+        }
+        .half-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px;
+            background: ${themeColors.light};
+            border-radius: 14px;
+            height: 115px;
+            width: 200px;
+        }
+        .half-number, .half-letter {
+            width: 36px;
+            height: 36px;
+            background: ${themeColors.primary};
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .half-image {
+            flex: 1;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+            background: white;
+            border-radius: 12px;
+            border: 3px solid ${themeColors.secondary};
+        }
+        /* 左半部分图片：只显示图片左边一半，居中在方框内 */
+        .left-half-img {
+            height: 95px;
+            max-height: 95px;
+            width: auto;
+            max-width: 200%;
+            object-fit: contain;
+            clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
+        }
+        /* 右半部分图片：只显示图片右边一半，居中在方框内 */
+        .right-half-img {
+            height: 95px;
+            max-height: 95px;
+            width: auto;
+            max-width: 200%;
+            object-fit: contain;
+            clip-path: polygon(50% 0, 100% 0, 100% 100%, 50% 100%);
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line short"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <div class="main">Matching Halves</div>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="content-area">
+                <div class="matching-container">
+                    <div class="column">${leftHtml}</div>
+                    <div class="column">${rightHtml}</div>
+                </div>
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>
+        `;
+
+        const filename = `matching-halves-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html);
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
+     * 生成 Shape Synthesis 页面
+     * 形状合成 - 用基本形状创造物体
+     */
+    async generateShapeSynthesis(data: any): Promise<string> {
+        await this.initialize();
+        
+        const content = data?.content || data || {};
+        const { theme = 'dinosaur' } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const stickerHtml = this.getStickersHtml(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        
+        // 可用的基本形状及其颜色
+        const availableShapes = [
+            { shape: 'circle', color: '#E53935' },      // 红色圆形
+            { shape: 'triangle', color: '#1E88E5' },    // 蓝色三角形
+            { shape: 'square', color: '#43A047' },      // 绿色正方形
+            { shape: 'rectangle', color: '#FB8C00' },   // 橙色矩形
+            { shape: 'semicircle', color: '#8E24AA' },  // 紫色半圆
+            { shape: 'diamond', color: '#FDD835' },     // 黄色菱形
+            { shape: 'oval', color: '#00ACC1' }         // 青色椭圆
+        ];
+        
+        // 生成形状 SVG
+        const getShapeSvg = (shape: string, color: string) => {
+            const size = 50;
+            switch (shape) {
+                case 'circle':
+                    return `<svg width="${size}" height="${size}" viewBox="0 0 50 50"><circle cx="25" cy="25" r="22" fill="${color}" stroke="#333" stroke-width="2"/></svg>`;
+                case 'triangle':
+                    return `<svg width="${size}" height="${size}" viewBox="0 0 50 50"><polygon points="25,3 47,47 3,47" fill="${color}" stroke="#333" stroke-width="2"/></svg>`;
+                case 'square':
+                    return `<svg width="${size}" height="${size}" viewBox="0 0 50 50"><rect x="3" y="3" width="44" height="44" fill="${color}" stroke="#333" stroke-width="2"/></svg>`;
+                case 'rectangle':
+                    return `<svg width="70" height="${size}" viewBox="0 0 70 50"><rect x="3" y="8" width="64" height="34" fill="${color}" stroke="#333" stroke-width="2"/></svg>`;
+                case 'semicircle':
+                    return `<svg width="${size}" height="30" viewBox="0 0 50 30"><path d="M 3 27 A 22 22 0 0 1 47 27 L 3 27" fill="${color}" stroke="#333" stroke-width="2"/></svg>`;
+                case 'diamond':
+                    return `<svg width="${size}" height="${size}" viewBox="0 0 50 50"><polygon points="25,3 47,25 25,47 3,25" fill="${color}" stroke="#333" stroke-width="2"/></svg>`;
+                case 'oval':
+                    return `<svg width="60" height="40" viewBox="0 0 60 40"><ellipse cx="30" cy="20" rx="27" ry="17" fill="${color}" stroke="#333" stroke-width="2"/></svg>`;
+                default:
+                    return '';
+            }
+        };
+        
+        // 生成形状工具栏 HTML
+        const shapesHtml = availableShapes.map(s => 
+            `<div class="shape-item">${getShapeSvg(s.shape, s.color)}</div>`
+        ).join('');
+        
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .content-area {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            flex: 1;
+            padding: 10px 0;
+        }
+        .shapes-toolbar {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            padding: 16px 20px;
+            background: ${themeColors.light};
+            border-radius: 16px;
+            border: 3px solid ${themeColors.secondary};
+            flex-wrap: wrap;
+        }
+        .shape-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8px;
+        }
+        .canvas-area {
+            flex: 1;
+            background: white;
+            border: 3px solid ${themeColors.secondary};
+            border-radius: 16px;
+            min-height: 600px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-start;
+            padding-top: 20px;
+        }
+        .canvas-hint {
+            font-size: 24px;
+            color: #cbd5e1;
+            font-weight: 600;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line short"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <div class="main">Shape Synthesis</div>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="content-area">
+                <div class="shapes-toolbar">
+                    ${shapesHtml}
+                </div>
+                <div class="canvas-area">
+                    <span class="canvas-hint">Draw here!</span>
+                </div>
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>
+        `;
+
+        const filename = `shape-synthesis-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html);
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
      * 生成 Shape Path 页面
      * 形状路径练习 - 沿着形状从起点走到终点
      */
@@ -7903,7 +8715,7 @@ export class ImageGenerator {
         .title-row .main {
             font-size: 38px;
             font-weight: 900;
-            color: #0f172a;
+            color: ${themeColors.primary};
         }
         .title-icon {
             width: 68px;
@@ -8005,26 +8817,28 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 描红形状 - 房子和树
+        // 描红形状 - 房子和树（参考图片）
         const tracingShapes = `
             <div class="shape-item house">
-                <svg width="280" height="260" viewBox="0 0 280 260">
-                    <!-- 房子屋顶 -->
-                    <polygon points="140,10 260,100 20,100" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-dasharray="5,4"/>
+                <svg width="260" height="280" viewBox="0 0 260 280">
+                    <!-- 房子屋顶（高三角形） -->
+                    <polygon points="130,5 250,110 10,110" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,3"/>
                     <!-- 房子主体 -->
-                    <rect x="40" y="100" width="200" height="150" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-dasharray="5,4"/>
-                    <!-- 门 -->
-                    <rect x="110" y="170" width="60" height="80" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-dasharray="5,4"/>
-                    <!-- 窗户 -->
-                    <rect x="60" y="130" width="50" height="50" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-dasharray="5,4"/>
+                    <rect x="25" y="110" width="210" height="165" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,3"/>
+                    <!-- 左窗户 -->
+                    <rect x="45" y="140" width="55" height="55" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,3"/>
+                    <!-- 门（中间） -->
+                    <rect x="125" y="175" width="50" height="100" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,3"/>
                 </svg>
             </div>
             <div class="shape-item tree">
-                <svg width="180" height="260" viewBox="0 0 180 260">
+                <svg width="160" height="280" viewBox="0 0 160 280">
                     <!-- 树冠（圆形） -->
-                    <circle cx="90" cy="80" r="70" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-dasharray="5,4"/>
-                    <!-- 树干 -->
-                    <rect x="65" y="145" width="50" height="105" fill="none" stroke="#9ca3af" stroke-width="2.5" stroke-dasharray="5,4"/>
+                    <circle cx="80" cy="75" r="65" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,3"/>
+                    <!-- 树干（从圆形底部开始） -->
+                    <rect x="55" y="140" width="50" height="135" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,3"/>
+                    <!-- 用白色遮盖圆形和树干重叠部分 -->
+                    <rect x="54" y="140" width="52" height="10" fill="white" stroke="none"/>
                 </svg>
             </div>
         `;
@@ -8061,7 +8875,7 @@ export class ImageGenerator {
             gap: 10px;
             margin-bottom: 20px;
         }
-        .title-row .main { font-size: 38px; font-weight: 900; color: #0f172a; }
+        .title-row .main { font-size: 38px; font-weight: 900; color: ${themeColors.primary}; }
         .title-icon { width: 68px; height: 68px; object-fit: contain; }
         .content-area {
             flex: 1;
@@ -8100,12 +8914,6 @@ export class ImageGenerator {
             display: flex;
             flex-direction: column;
         }
-        .draw-label {
-            font-size: 16px;
-            font-weight: 600;
-            color: #475569;
-            margin-bottom: 12px;
-        }
         .draw-box {
             flex: 1;
             border: 2.5px solid ${themeColors.primary};
@@ -8116,11 +8924,11 @@ export class ImageGenerator {
         }
         .draw-hint {
             position: absolute;
-            top: 16px;
-            left: 20px;
-            font-size: 14px;
-            color: #9ca3af;
-            font-style: italic;
+            top: 12px;
+            left: 16px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #475569;
         }
     </style>
 </head>
@@ -8139,15 +8947,13 @@ export class ImageGenerator {
             </div>
             <div class="content-area">
                 <div class="trace-section">
-                    <div class="trace-label">Trace the shapes:</div>
                     <div class="shapes-grid">
                         ${tracingShapes}
                     </div>
                 </div>
                 <div class="draw-section">
-                    <div class="draw-label">Draw your own picture:</div>
                     <div class="draw-box">
-                        <span class="draw-hint">Draw here...</span>
+                        <span class="draw-hint">Draw your own picture:</span>
                     </div>
                 </div>
             </div>
@@ -8210,6 +9016,14 @@ export class ImageGenerator {
                 return await this.generatePatternComparePage(data);
             case 'pattern-sequencing':
                 return await this.generatePatternSequencing(data);
+            case 'logic-grid':
+                return await this.generateLogicGrid(data);
+            case 'odd-one-out':
+                return await this.generateOddOneOut(data);
+            case 'matching-halves':
+                return await this.generateMatchingHalves(data);
+            case 'shape-synthesis':
+                return await this.generateShapeSynthesis(data);
             case 'logic-blank':
                 return await this.generateLogicBlank(data);
             // Fine Motor Skills
@@ -8233,6 +9047,10 @@ export class ImageGenerator {
                 return await this.generatePictureAddition(data);
             case 'count-shapes':
                 return await this.generateCountShapes(data);
+            case 'picture-subtraction':
+                return await this.generatePictureSubtraction(data);
+            case 'number-sequencing':
+                return await this.generateNumberSequencing(data);
             default:
                 throw new Error(`Unknown worksheet type: ${type}`);
         }
@@ -8683,6 +9501,334 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
         await page.setContent(html);
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
+     * 生成图片减法页面
+     * 2x2 网格，每个格子显示物体，部分被划掉（X标记），下方是减法算式
+     */
+    async generatePictureSubtraction(data: any): Promise<string> {
+        await this.initialize();
+        const content = data?.content || data || {};
+        const { theme = 'dinosaur' } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const stickerHtml = this.getStickersHtml(themeKey);
+
+        // 获取主题彩色素材
+        const colorAssets = getThemeColorAssets(themeKey, 6);
+
+        // 生成6道减法题
+        const problems = Array.from({ length: 6 }, (_, idx) => {
+            const total = Math.floor(Math.random() * 5) + 4; // 4-8
+            const subtract = Math.floor(Math.random() * (total - 1)) + 1; // 1 到 total-1
+            const result = total - subtract;
+            const imageUrl = colorAssets[idx % colorAssets.length] || colorAssets[0];
+            
+            return { total, subtract, result, imageUrl };
+        });
+
+        // 生成每个问题的HTML
+        const problemsHtml = problems.map((p, idx) => {
+            // 生成物体图标（前subtract个被划掉）
+            const objectsHtml = Array.from({ length: p.total }, (_, i) => {
+                const isCrossed = i < p.subtract;
+                return `
+                    <div class="object-item ${isCrossed ? 'crossed' : ''}">
+                        <img src="http://localhost:3000${p.imageUrl}" alt="object" />
+                        ${isCrossed ? '<div class="cross-mark">✕</div>' : ''}
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="problem-box">
+                    <div class="objects-grid">${objectsHtml}</div>
+                    <div class="equation">
+                        <span class="num">${p.total}</span>
+                        <span class="op">−</span>
+                        <span class="num">${p.subtract}</span>
+                        <span class="op">=</span>
+                        <span class="answer-box"></span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .problems-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            grid-template-rows: repeat(3, auto);
+            gap: 20px 16px;
+            padding: 16px 10px;
+            align-content: center;
+            flex: 1;
+        }
+        .problem-box {
+            background: #fff;
+            border: 2.5px solid ${themeColors.primary};
+            border-radius: 16px;
+            padding: 12px 16px;
+            display: flex;
+            flex-direction: column;
+        }
+        .objects-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            justify-content: center;
+            align-items: center;
+            align-content: center;
+            max-width: 280px;
+            margin: 0 auto;
+            min-height: 120px;
+        }
+        .object-item {
+            width: 48px;
+            height: 48px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .object-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+        .object-item.crossed img {
+            opacity: 0.4;
+        }
+        .cross-mark {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 38px;
+            font-weight: 900;
+            color: #ef4444;
+            line-height: 1;
+        }
+        .equation {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            font-size: 28px;
+            font-weight: 700;
+            color: #1a1a1a;
+            padding-top: 10px;
+            margin-top: auto;
+            border-top: 1.5px dashed #e5e7eb;
+        }
+        .num {
+            min-width: 28px;
+            text-align: center;
+        }
+        .op {
+            color: ${themeColors.primary};
+        }
+        .answer-box {
+            width: 48px;
+            height: 40px;
+            border: 2.5px dashed #9ca3af;
+            border-radius: 8px;
+            background: #f9fafb;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line short"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <span class="main">Picture Subtraction</span>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="problems-grid">
+                ${problemsHtml}
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>`;
+
+        const filename = `picture-subtraction-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html, { waitUntil: 'networkidle0' });
+        await page.evaluateHandle('document.fonts.ready');
+        await page.screenshot({ path: filepath, fullPage: true });
+        await page.close();
+        return `/generated/worksheets/${filename}`;
+    }
+
+    /**
+     * 生成数字序列页面
+     * 多行数字序列，用椭圆/药丸形状连接，部分数字为空需要填写
+     */
+    async generateNumberSequencing(data: any): Promise<string> {
+        await this.initialize();
+        const content = data?.content || data || {};
+        const { theme = 'dinosaur' } = content;
+        const themeKey = String(theme).toLowerCase();
+        const themeColors = getThemeColor(themeKey);
+        const titleIcon = getRandomTitleIcon(themeKey);
+        const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const stickerHtml = this.getStickersHtml(themeKey);
+
+        // 生成6行数字序列
+        const sequences: { numbers: (number | null)[]; start: number }[] = [];
+        const usedStarts = new Set<number>();
+        
+        for (let i = 0; i < 6; i++) {
+            let start: number;
+            do {
+                start = Math.floor(Math.random() * 15) + 1; // 1-15
+            } while (usedStarts.has(start));
+            usedStarts.add(start);
+            
+            // 每行5个数字，随机1-2个空白
+            const numbers: (number | null)[] = [];
+            const blankCount = Math.random() > 0.5 ? 2 : 1;
+            const blankPositions = new Set<number>();
+            while (blankPositions.size < blankCount) {
+                blankPositions.add(Math.floor(Math.random() * 5));
+            }
+            
+            for (let j = 0; j < 5; j++) {
+                numbers.push(blankPositions.has(j) ? null : start + j);
+            }
+            
+            sequences.push({ numbers, start });
+        }
+
+        // 生成序列HTML
+        const sequencesHtml = sequences.map((seq, rowIdx) => {
+            const pillsHtml = seq.numbers.map((num, idx) => {
+                const isBlank = num === null;
+                const displayNum = isBlank ? '' : num;
+                return `
+                    <div class="pill-container">
+                        <div class="pill ${isBlank ? 'blank' : 'filled'}">
+                            ${isBlank ? '' : `<span class="pill-num">${displayNum}</span>`}
+                        </div>
+                        ${idx < seq.numbers.length - 1 ? '<div class="connector"></div>' : ''}
+                    </div>
+                `;
+            }).join('');
+
+            return `
+                <div class="sequence-row">
+                    ${pillsHtml}
+                </div>
+            `;
+        }).join('');
+
+        const html = `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        ${this.getBaseStyles(themeColors)}
+        .sequences-container {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+            flex: 1;
+            padding: 20px 10px;
+            justify-content: space-around;
+        }
+        .sequence-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0;
+        }
+        .pill-container {
+            display: flex;
+            align-items: center;
+        }
+        .pill {
+            width: 90px;
+            height: 56px;
+            border-radius: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 28px;
+            font-weight: 700;
+        }
+        .pill.filled {
+            background: ${themeColors.primary};
+            color: #fff;
+            border: 3px solid ${themeColors.accent};
+        }
+        .pill.blank {
+            background: #fff;
+            border: 3px dashed #9ca3af;
+        }
+        .pill-num {
+            line-height: 1;
+        }
+        .connector {
+            width: 24px;
+            height: 4px;
+            background: ${themeColors.secondary};
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="page">
+        <div class="top-bar">
+            <div class="field">Name: <span class="dash-line"></span></div>
+            <div class="field">Date: <span class="dash-line short"></span></div>
+        </div>
+        <div class="divider"></div>
+        <div class="safe-area">
+            <div class="title-row">
+                ${iconPosition === 'left' ? titleIconHtml : ''}
+                <span class="main">Number Sequencing</span>
+                ${iconPosition === 'right' ? titleIconHtml : ''}
+            </div>
+            <div class="sequences-container">
+                ${sequencesHtml}
+            </div>
+        </div>
+        ${stickerHtml}
+    </div>
+</body>
+</html>`;
+
+        const filename = `number-sequencing-${Date.now()}.png`;
+        const filepath = path.join(OUTPUT_DIR, filename);
+        const page = await this.browser.newPage();
+        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setContent(html, { waitUntil: 'networkidle0' });
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();

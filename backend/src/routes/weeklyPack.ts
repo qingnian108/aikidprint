@@ -371,9 +371,8 @@ router.post('/generate-pages', async (req, res) => {
             const generator = mathGenerators.get('counting-objects');
             if (generator) {
               const data = await generator(page.config);
-              // data.content 是数组，取第一个
-              const content = Array.isArray(data.content) ? data.content[0] : data.content;
-              imageUrl = await imageGenerator.generateCountAndWrite(content);
+              // 传递完整的 data，让 imageGenerator 处理 difficulty
+              imageUrl = await imageGenerator.generateCountAndWrite(data);
             }
             break;
           }
@@ -422,6 +421,24 @@ router.post('/generate-pages', async (req, res) => {
             }
             break;
           }
+          
+          case 'picture-subtraction': {
+            const generator = mathGenerators.get('picture-subtraction');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generatePictureSubtraction(data);
+            }
+            break;
+          }
+          
+          case 'number-sequencing': {
+            const generator = mathGenerators.get('number-sequencing');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generateNumberSequencing(data);
+            }
+            break;
+          }
             
           case 'maze': {
             // 先生成迷宫图片数据，再渲染页面
@@ -438,6 +455,42 @@ router.post('/generate-pages', async (req, res) => {
             if (generator) {
               const data = await generator(page.config);
               imageUrl = await imageGenerator.generatePatternSequencing(data.content);
+            }
+            break;
+          }
+          
+          case 'logic-grid': {
+            const generator = logicGenerators.get('logic-grid');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generateLogicGrid(data.content);
+            }
+            break;
+          }
+          
+          case 'odd-one-out': {
+            const generator = logicGenerators.get('odd-one-out');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generateOddOneOut(data.content);
+            }
+            break;
+          }
+          
+          case 'matching-halves': {
+            const generator = logicGenerators.get('matching-halves');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generateMatchingHalves(data.content);
+            }
+            break;
+          }
+          
+          case 'shape-synthesis': {
+            const generator = logicGenerators.get('shape-synthesis');
+            if (generator) {
+              const data = await generator(page.config);
+              imageUrl = await imageGenerator.generateShapeSynthesis(data.content);
             }
             break;
           }

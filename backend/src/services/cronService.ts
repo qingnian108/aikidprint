@@ -180,6 +180,42 @@ const generateAllPages = async (
           break;
         }
         
+        case 'logic-grid': {
+          const generator = logicGenerators.get('logic-grid');
+          if (generator) {
+            const data = await generator(page.config);
+            imageUrl = await imageGenerator.generateLogicGrid(data.content);
+          }
+          break;
+        }
+        
+        case 'odd-one-out': {
+          const generator = logicGenerators.get('odd-one-out');
+          if (generator) {
+            const data = await generator(page.config);
+            imageUrl = await imageGenerator.generateOddOneOut(data.content);
+          }
+          break;
+        }
+        
+        case 'matching-halves': {
+          const generator = logicGenerators.get('matching-halves');
+          if (generator) {
+            const data = await generator(page.config);
+            imageUrl = await imageGenerator.generateMatchingHalves(data.content);
+          }
+          break;
+        }
+        
+        case 'shape-synthesis': {
+          const generator = logicGenerators.get('shape-synthesis');
+          if (generator) {
+            const data = await generator(page.config);
+            imageUrl = await imageGenerator.generateShapeSynthesis(data.content);
+          }
+          break;
+        }
+        
         case 'shadow-matching': {
           const generator = logicGenerators.get('shadow-matching');
           if (generator) {

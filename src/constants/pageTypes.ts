@@ -135,6 +135,17 @@ export const CATEGORIES: Category[] = [
         description: 'Fill in the missing letters in the alphabet sequence.',
         previewImage: '/previews/alphabet-sequencing.png',
         options: [
+          {
+            id: 'difficulty',
+            type: 'select',
+            label: 'Difficulty',
+            defaultValue: 'easy',
+            options: [
+              { value: 'easy', label: 'Easy (1 missing)' },
+              { value: 'medium', label: 'Medium (1-2 missing)' },
+              { value: 'hard', label: 'Hard (2 missing)' }
+            ]
+          },
           { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       },
@@ -246,6 +257,17 @@ export const CATEGORIES: Category[] = [
         description: 'Connect the numbers in order to complete the path.',
         previewImage: '/previews/number-path.png',
         options: [
+          {
+            id: 'difficulty',
+            type: 'select',
+            label: 'Difficulty',
+            defaultValue: 'easy',
+            options: [
+              { value: 'easy', label: 'Easy (10 dots)' },
+              { value: 'medium', label: 'Medium (20 dots)' },
+              { value: 'hard', label: 'Hard (30 dots)' }
+            ]
+          },
           { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       },
@@ -259,11 +281,12 @@ export const CATEGORIES: Category[] = [
           {
             id: 'difficulty',
             type: 'select',
-            label: 'Range',
+            label: 'Difficulty',
             defaultValue: 'easy',
             options: [
-              { value: 'easy', label: '1 - 5' },
-              { value: 'medium', label: '1 - 10' }
+              { value: 'easy', label: 'Easy (1 - 5)' },
+              { value: 'medium', label: 'Medium (1 - 7)' },
+              { value: 'hard', label: 'Hard (1 - 10)' }
             ]
           }
         ]
@@ -300,6 +323,24 @@ export const CATEGORIES: Category[] = [
         title: 'Count the Shapes',
         description: 'Count different shapes and write the numbers.',
         previewImage: '/previews/count-shapes.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'picture-subtraction',
+        title: 'Picture Subtraction',
+        description: 'Count objects and write the subtraction sentence.',
+        previewImage: '/previews/picture-subtraction.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'number-sequencing',
+        title: 'Number Sequencing',
+        description: 'Fill in the missing numbers in the sequence.',
+        previewImage: '/previews/number-sequencing.png',
         options: [
           { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
@@ -366,6 +407,42 @@ export const CATEGORIES: Category[] = [
         title: 'Pattern Sequencing',
         description: 'Complete the pattern by finding the next item.',
         previewImage: '/previews/pattern-sequencing.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'logic-grid',
+        title: 'Logic Grid',
+        description: 'Complete the missing piece in the grid.',
+        previewImage: '/previews/logic-grid.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'odd-one-out',
+        title: 'Odd One Out',
+        description: 'Circle the one that is different.',
+        previewImage: '/previews/odd-one-out.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'matching-halves',
+        title: 'Matching Halves',
+        description: 'Match the two halves to complete the picture.',
+        previewImage: '/previews/matching-halves.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'shape-synthesis',
+        title: 'Shape Synthesis',
+        description: 'Use these shapes to build an object. What can you make?',
+        previewImage: '/previews/shape-synthesis.png',
         options: [
           { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]

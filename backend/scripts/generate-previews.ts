@@ -12,31 +12,48 @@ const __dirname = path.dirname(__filename);
 
 const API_BASE = 'http://localhost:3000/api';
 
-// 16个板块的配置 - 需要 categoryId 和 pageTypeId
+// 所有板块的配置 - 需要 categoryId 和 pageTypeId
 const PREVIEW_CONFIGS = [
-  // Literacy
+  // Literacy（字母技能）
   { id: 'uppercase-tracing', categoryId: 'literacy', pageTypeId: 'uppercase-tracing', config: { letter: 'A', theme: 'dinosaur' } },
   { id: 'lowercase-tracing', categoryId: 'literacy', pageTypeId: 'lowercase-tracing', config: { letter: 'a', theme: 'dinosaur' } },
   { id: 'letter-recognition', categoryId: 'literacy', pageTypeId: 'letter-recognition', config: { letter: 'A', difficulty: 'easy', theme: 'dinosaur' } },
   { id: 'write-my-name', categoryId: 'literacy', pageTypeId: 'write-my-name', config: { name: 'LEO', theme: 'dinosaur' } },
+  { id: 'alphabet-sequencing', categoryId: 'literacy', pageTypeId: 'alphabet-sequencing', config: { difficulty: 'easy', theme: 'dinosaur' } },
+  { id: 'beginning-sounds', categoryId: 'literacy', pageTypeId: 'beginning-sounds', config: { letterSet: 'A-E', theme: 'dinosaur' } },
+  { id: 'cvc-words', categoryId: 'literacy', pageTypeId: 'cvc-words', config: { wordFamily: 'at', theme: 'dinosaur' } },
+  { id: 'match-upper-lower', categoryId: 'literacy', pageTypeId: 'match-upper-lower', config: { letterSet: 'A-F', theme: 'dinosaur' } },
   
-  // Math
+  // Math（数学技能）
   { id: 'number-tracing', categoryId: 'math', pageTypeId: 'number-tracing', config: { range: '0-4', theme: 'dinosaur' } },
   { id: 'counting-objects', categoryId: 'math', pageTypeId: 'counting-objects', config: { theme: 'dinosaur', difficulty: 'medium' } },
   { id: 'number-path', categoryId: 'math', pageTypeId: 'number-path', config: { theme: 'dinosaur' } },
+  { id: 'which-is-more', categoryId: 'math', pageTypeId: 'which-is-more', config: { difficulty: 'easy', theme: 'dinosaur' } },
+  { id: 'number-bonds', categoryId: 'math', pageTypeId: 'number-bonds', config: { theme: 'dinosaur' } },
+  { id: 'ten-frame', categoryId: 'math', pageTypeId: 'ten-frame', config: { theme: 'dinosaur' } },
+  { id: 'picture-addition', categoryId: 'math', pageTypeId: 'picture-addition', config: { theme: 'dinosaur' } },
+  { id: 'count-shapes', categoryId: 'math', pageTypeId: 'count-shapes', config: { theme: 'dinosaur' } },
+  { id: 'picture-subtraction', categoryId: 'math', pageTypeId: 'picture-subtraction', config: { theme: 'dinosaur' } },
+  { id: 'number-sequencing', categoryId: 'math', pageTypeId: 'number-sequencing', config: { theme: 'dinosaur' } },
   
-  // Logic
+  // Logic（逻辑思维）
   { id: 'maze', categoryId: 'logic', pageTypeId: 'maze', config: { theme: 'dinosaur', difficulty: 'medium' } },
   { id: 'shadow-matching', categoryId: 'logic', pageTypeId: 'shadow-matching', config: { theme: 'dinosaur' } },
   { id: 'sorting', categoryId: 'logic', pageTypeId: 'sorting', config: { theme: 'dinosaur' } },
   { id: 'pattern-compare', categoryId: 'logic', pageTypeId: 'pattern-compare', config: { theme: 'dinosaur' } },
   { id: 'pattern-sequencing', categoryId: 'logic', pageTypeId: 'pattern-sequencing', config: { theme: 'dinosaur' } },
+  { id: 'logic-grid', categoryId: 'logic', pageTypeId: 'logic-grid', config: { theme: 'dinosaur' } },
+  { id: 'odd-one-out', categoryId: 'logic', pageTypeId: 'odd-one-out', config: { theme: 'dinosaur' } },
+  { id: 'matching-halves', categoryId: 'logic', pageTypeId: 'matching-halves', config: { theme: 'dinosaur' } },
+  { id: 'shape-synthesis', categoryId: 'logic', pageTypeId: 'shape-synthesis', config: { theme: 'dinosaur' } },
   
-  // Creativity & Motor (合并了 Fine Motor 和 Creativity)
+  // Creativity & Motor（创意与运笔）
   { id: 'trace-lines', categoryId: 'creativity', pageTypeId: 'trace-lines', config: { theme: 'dinosaur' } },
   { id: 'shape-tracing', categoryId: 'creativity', pageTypeId: 'shape-tracing', config: { theme: 'dinosaur' } },
   { id: 'coloring-page', categoryId: 'creativity', pageTypeId: 'coloring-page', config: { theme: 'dinosaur' } },
   { id: 'creative-prompt', categoryId: 'creativity', pageTypeId: 'creative-prompt', config: { promptType: 'blank_sign', theme: 'dinosaur' } },
+  { id: 'shape-path', categoryId: 'creativity', pageTypeId: 'shape-path', config: { theme: 'dinosaur' } },
+  { id: 'trace-and-draw', categoryId: 'creativity', pageTypeId: 'trace-and-draw', config: { theme: 'dinosaur' } },
 ];
 
 const OUTPUT_DIR = path.join(__dirname, '../../public/previews');

@@ -14,7 +14,7 @@ const __dirname = path.dirname(__filename);
 const AGE_CONFIG: Record<string, {
   letterRange: string[];
   numberRange: string;
-  mazeDifficulty: string;
+  difficulty: 'easy' | 'medium' | 'hard';  // 统一难度
   dotsCount: number;
   includeUppercase: boolean;
   includeLowercase: boolean;
@@ -22,7 +22,7 @@ const AGE_CONFIG: Record<string, {
   '2-3': {
     letterRange: ['A', 'B', 'C', 'D', 'E'],
     numberRange: '0-4',
-    mazeDifficulty: 'easy',
+    difficulty: 'easy',
     dotsCount: 10,
     includeUppercase: true,
     includeLowercase: false
@@ -30,7 +30,7 @@ const AGE_CONFIG: Record<string, {
   '3-4': {
     letterRange: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'],
     numberRange: '0-4',
-    mazeDifficulty: 'easy',
+    difficulty: 'easy',
     dotsCount: 15,
     includeUppercase: true,
     includeLowercase: true
@@ -38,7 +38,7 @@ const AGE_CONFIG: Record<string, {
   '4-5': {
     letterRange: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M'],
     numberRange: '0-4',
-    mazeDifficulty: 'medium',
+    difficulty: 'medium',
     dotsCount: 20,
     includeUppercase: true,
     includeLowercase: true
@@ -46,7 +46,7 @@ const AGE_CONFIG: Record<string, {
   '5-6': {
     letterRange: 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
     numberRange: '5-9',
-    mazeDifficulty: 'hard',
+    difficulty: 'hard',
     dotsCount: 30,
     includeUppercase: true,
     includeLowercase: true
@@ -195,7 +195,7 @@ export async function generateWeeklyPackConfig(
     config: {
       letter: weeklyLetter,
       theme,
-      difficulty: age === '2-3' ? 'easy' : age === '5-6' ? 'hard' : 'medium'
+      difficulty: ageConfig.difficulty
     }
   });
   
@@ -218,7 +218,8 @@ export async function generateWeeklyPackConfig(
     category: 'math',
     title: 'Count and Write',
     config: {
-      theme
+      theme,
+      difficulty: ageConfig.difficulty
     }
   });
   
@@ -230,7 +231,7 @@ export async function generateWeeklyPackConfig(
     title: 'Maze',
     config: {
       theme,
-      difficulty: ageConfig.mazeDifficulty
+      difficulty: ageConfig.difficulty
     }
   });
   
@@ -241,7 +242,8 @@ export async function generateWeeklyPackConfig(
     category: 'logic',
     title: 'Shadow Matching',
     config: {
-      theme
+      theme,
+      difficulty: ageConfig.difficulty
     }
   });
   
@@ -263,11 +265,12 @@ export async function generateWeeklyPackConfig(
     category: 'logic',
     title: 'Pattern Sequencing',
     config: {
-      theme
+      theme,
+      difficulty: ageConfig.difficulty
     }
   });
   
-  // 13. 连线数字 (Dot-to-Dot)
+  // 12. 连线数字 (Dot-to-Dot)
   pages.push({
     order: order++,
     type: 'number-path',
@@ -275,11 +278,12 @@ export async function generateWeeklyPackConfig(
     title: 'Connect the Dots',
     config: {
       theme,
+      difficulty: ageConfig.difficulty,
       maxNumber: ageConfig.dotsCount
     }
   });
   
-  // 14. 线条描红
+  // 13. 线条描红
   pages.push({
     order: order++,
     type: 'trace-lines',
@@ -287,11 +291,11 @@ export async function generateWeeklyPackConfig(
     title: 'Trace Lines',
     config: {
       theme,
-      lineType: 'straight'
+      difficulty: ageConfig.difficulty
     }
   });
   
-  // 15. 形状描红
+  // 14. 形状描红
   pages.push({
     order: order++,
     type: 'shape-tracing',
@@ -299,11 +303,11 @@ export async function generateWeeklyPackConfig(
     title: 'Shape Tracing',
     config: {
       theme,
-      shape: 'circle'
+      difficulty: ageConfig.difficulty
     }
   });
   
-  // 16. 涂色页
+  // 15. 涂色页
   pages.push({
     order: order++,
     type: 'coloring-page',
@@ -314,7 +318,7 @@ export async function generateWeeklyPackConfig(
     }
   });
   
-  // 17. 创意绘画
+  // 16. 创意绘画
   pages.push({
     order: order++,
     type: 'creative-prompt',
@@ -325,6 +329,84 @@ export async function generateWeeklyPackConfig(
       promptType: 'blank_sign'
     }
   });
+  
+  // 17. 图片加法 (3岁以上)
+  if (age !== '2-3') {
+    pages.push({
+      order: order++,
+      type: 'picture-addition',
+      category: 'math',
+      title: 'Picture Addition',
+      config: {
+        theme,
+        difficulty: ageConfig.difficulty
+      }
+    });
+  }
+  
+  // 18. 十框计数
+  pages.push({
+    order: order++,
+    type: 'ten-frame',
+    category: 'math',
+    title: 'Ten Frame Counting',
+    config: {
+      theme,
+      difficulty: ageConfig.difficulty
+    }
+  });
+  
+  // 19. 逻辑网格 (4岁以上)
+  if (age === '4-5' || age === '5-6') {
+    pages.push({
+      order: order++,
+      type: 'logic-grid',
+      category: 'logic',
+      title: 'Logic Grid',
+      config: {
+        theme,
+        difficulty: ageConfig.difficulty
+      }
+    });
+  }
+  
+  // 20. 找不同
+  pages.push({
+    order: order++,
+    type: 'odd-one-out',
+    category: 'logic',
+    title: 'Odd One Out',
+    config: {
+      theme,
+      difficulty: ageConfig.difficulty
+    }
+  });
+  
+  // 21. 匹配两半
+  pages.push({
+    order: order++,
+    type: 'matching-halves',
+    category: 'logic',
+    title: 'Matching Halves',
+    config: {
+      theme,
+      difficulty: ageConfig.difficulty
+    }
+  });
+  
+  // 22. 数字凑数 (4岁以上)
+  if (age === '4-5' || age === '5-6') {
+    pages.push({
+      order: order++,
+      type: 'number-bonds',
+      category: 'math',
+      title: 'Number Bonds',
+      config: {
+        theme,
+        difficulty: ageConfig.difficulty
+      }
+    });
+  }
   
   return {
     childName,
