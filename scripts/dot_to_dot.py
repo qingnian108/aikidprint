@@ -80,6 +80,16 @@ def generate_dot_to_dot(input_path: str, output_path: str = None,
         print(f"[ERROR] Cannot read image: {input_path}")
         return None
     
+    # 放大图片到目标尺寸（至少 800x800），保持比例
+    target_size = 800
+    h, w = img.shape[:2]
+    if max(h, w) < target_size:
+        scale = target_size / max(h, w)
+        new_w = int(w * scale)
+        new_h = int(h * scale)
+        img = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_CUBIC)
+        print(f"   - 图片放大: {w}x{h} -> {new_w}x{new_h}")
+    
     # 转灰度
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     
@@ -134,29 +144,32 @@ def generate_dot_to_dot(input_path: str, output_path: str = None,
     # 创建输出图片 - 复制原图保留内部细节
     output = img.copy()
     
-    # 精确擦除外轮廓线：
-    # 1. 先找到原图中的黑色像素（线条）
-    # 2. 只擦除靠近外轮廓的黑色像素，不影响内部
-    
     # 创建外轮廓区域的 mask（只包含轮廓线附近的窄带）
-    # 加大厚度确保完全覆盖原图的粗线条
     outer_mask = np.zeros(gray.shape, dtype=np.uint8)
     cv2.drawContours(outer_mask, [main_contour], -1, 255, thickness=30)
     
-    # 只在外轮廓区域内，将黑色线条变成 10% 透明度（很淡的灰色）
-    # 10% 不透明度 = 90% 白色混合，颜色值约为 230 (255 * 0.9 + 0 * 0.1)
-    faint_color = 230  # 10% 透明度的灰色
+    # 颜色设置：只处理外轮廓，内部线条保持原色
+    outer_faint_color = 230  # 外轮廓 - 非常淡
+    
     for y in range(output.shape[0]):
         for x in range(output.shape[1]):
-            if outer_mask[y, x] == 255:  # 在外轮廓区域内
-                # 如果是深色像素（线条），变成非常淡的灰色
-                if gray[y, x] < 200:
-                    output[y, x] = [faint_color, faint_color, faint_color]
+            # 只处理外轮廓区域的深色像素
+            if outer_mask[y, x] == 255 and gray[y, x] < 200:
+                output[y, x] = [outer_faint_color, outer_faint_color, outer_faint_color]
+            # 内部线条保持原图颜色不变
     
     # 绘制参数
-    dot_radius = max(5, int(min(img.shape[:2]) / 120))
-    font_scale = max(0.4, min(img.shape[:2]) / 1000)
-    font_thickness = max(1, int(font_scale * 2))
+    dot_radius = max(4, int(min(img.shape[:2]) / 150))  # 缩小圆点
+    # 缩小字体
+    base_font_scale = max(0.35, min(img.shape[:2]) / 1200)  # 缩小基础字体
+    if len(filtered_points) > 10:
+        font_scale = base_font_scale * 0.75  # 缩小到75%
+    else:
+        font_scale = base_font_scale
+    font_thickness = max(1, int(font_scale * 2))  # 减小字体粗细
+    
+    # 数字颜色：深蓝色 (BGR格式)
+    number_color = (139, 90, 43)  # 深蓝色 #2B5A8B
     
     # 计算质心（用于标签位置调整）
     cx = int(np.mean([p[0] for p in filtered_points]))
@@ -190,7 +203,7 @@ def generate_dot_to_dot(input_path: str, output_path: str = None,
         text_y = max(text_size[1] + 5, min(text_y, img.shape[0] - 5))
         
         cv2.putText(output, label, (text_x, text_y),
-                    cv2.FONT_HERSHEY_SIMPLEX, font_scale, (0, 0, 0), font_thickness)
+                    cv2.FONT_HERSHEY_SIMPLEX, font_scale, number_color, font_thickness)
     
     # 生成输出路径
     if output_path is None:

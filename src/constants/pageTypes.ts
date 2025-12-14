@@ -125,7 +125,7 @@ export const CATEGORIES: Category[] = [
         description: 'Practice writing your name with themed decorations.',
         previewImage: '/previews/write-my-name.png',
         options: [
-          { id: 'name', type: 'text', label: 'Name', defaultValue: 'LEO', placeholder: 'Enter name (e.g. LEO)' },
+          { id: 'name', type: 'text', label: 'Name', defaultValue: 'nolan', placeholder: 'Enter name (e.g. nolan)' },
           { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       },
@@ -257,17 +257,6 @@ export const CATEGORIES: Category[] = [
         description: 'Connect the numbers in order to complete the path.',
         previewImage: '/previews/number-path.png',
         options: [
-          {
-            id: 'difficulty',
-            type: 'select',
-            label: 'Difficulty',
-            defaultValue: 'easy',
-            options: [
-              { value: 'easy', label: 'Easy (10 dots)' },
-              { value: 'medium', label: 'Medium (20 dots)' },
-              { value: 'hard', label: 'Hard (30 dots)' }
-            ]
-          },
           { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
       },

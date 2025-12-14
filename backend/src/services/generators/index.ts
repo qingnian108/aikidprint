@@ -656,15 +656,10 @@ async function generateCountAndWrite(config: any) {
 }
 
 export async function generateConnectDots(config: any) {
-    const { pageCount = 1, theme = 'dinosaur', difficulty = 'easy', maxNumber } = config;
+    const { pageCount = 1, theme = 'dinosaur' } = config;
     
-    // 根据难度决定点数
-    const dotCounts: Record<string, number> = {
-        easy: 10,
-        medium: 20,
-        hard: 30
-    };
-    const actualMaxNumber = maxNumber || dotCounts[difficulty] || DEFAULT_MAX_NUMBER;
+    // 固定 30 个点
+    const actualMaxNumber = 30;
     
     // 尝试生成点对点图片
     let dotsImageUrl = '';
@@ -689,10 +684,9 @@ export async function generateConnectDots(config: any) {
         type: 'number-path',
         content: {
             maxNumber: actualMaxNumber,
-            difficulty,
             theme,
             dotsImageUrl,
-            characterName,  // 添加角色名字
+            characterName,
             pageCount: pages
         }
     };

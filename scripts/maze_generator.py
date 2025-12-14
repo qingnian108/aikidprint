@@ -238,7 +238,7 @@ class MazeGenerator:
         lines.append(f'<svg xmlns="http://www.w3.org/2000/svg" '
                     f'width="{svg_width}" height="{svg_height}" '
                     f'viewBox="0 0 {svg_width} {svg_height}">')
-        lines.append(f'<rect width="100%" height="100%" fill="white"/>')
+        # 不添加白色背景，保持透明
         
         # 绘制解答路径
         if show_solution and self.solution_path:

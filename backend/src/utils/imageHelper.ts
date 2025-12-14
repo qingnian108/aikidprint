@@ -657,6 +657,31 @@ export function getThemeColor(theme: string): { primary: string; secondary: stri
 }
 
 /**
+ * 获取主题背景图（从 C_cover_art/{theme}/backgrounds/ 目录）
+ * @param theme 主题名称
+ * @returns 背景图路径，如果不存在则返回空字符串
+ */
+export function getThemeBackground(theme: string): string {
+    const ASSETS_DIR = path.join(PUBLIC_DIR, 'uploads', 'assets');
+    const bgDir = path.join(ASSETS_DIR, 'C_cover_art', theme, 'backgrounds');
+
+    if (!fs.existsSync(bgDir)) {
+        return '';
+    }
+
+    const files = fs.readdirSync(bgDir)
+        .filter(f => f.endsWith('.png') || f.endsWith('.jpg'));
+
+    if (files.length === 0) return '';
+
+    // 随机选择一张背景图
+    const randomIndex = Math.floor(Math.random() * files.length);
+    const selectedFile = files[randomIndex];
+
+    return `/uploads/assets/C_cover_art/${theme}/backgrounds/${selectedFile}`;
+}
+
+/**
  * 随机获取主题标题图标（从 poses/color 目录）
  */
 export function getRandomTitleIcon(theme: string): string {

@@ -52,7 +52,8 @@
   },
   "uploads-letter-A-default": {
     "usedImages": [
-      "/uploads/bigpng/Ant.png"
+      "/uploads/bigpng/Apple.png",
+      "/uploads/bigpng/Airplane.png"
     ],
     "allImages": [
       "/uploads/bigpng/Airplane.png",
@@ -972,7 +973,7 @@
   },
   "uploads-letter-E-default": {
     "usedImages": [
-      "/uploads/bigpng/Envelope.png"
+      "/uploads/bigpng/Egg.png"
     ],
     "allImages": [
       "/uploads/bigpng/Egg.png",

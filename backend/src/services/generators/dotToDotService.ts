@@ -130,20 +130,15 @@ function generatePrompt(theme: string): { prompt: string; characterName: string 
         return generatePrompt('dinosaur');
     }
     
-    // 随机选择变量
+    // 随机选择变量（只保留角色和姿势）
     const character = randomPick(variables.var1);
     const pose = randomPick(variables.var2);
-    const emotion = randomPick(variables.var3);
-    const action = randomPick(variables.var4);
     
     // 提取角色名字
     const characterName = extractCharacterName(character);
     
-    // 组合角色描述
-    let description = `${character} ${pose}, ${emotion}`;
-    if (action) {
-        description += `, ${action}`;
-    }
+    // 组合角色描述（只用角色+姿势）
+    const description = `${character} ${pose}`;
     
     // 拼接固定模板
     const fullPrompt = `${description}, ${FIXED_TEMPLATE}`;
@@ -180,6 +175,8 @@ async function generateImageWithGemini(theme: string): Promise<{ imagePath: stri
         console.log('[Imagen] Skipped (no API key configured)');
         return null;
     }
+    // 标准化主题名
+    const normalizedTheme = THEME_ALIASES[theme.toLowerCase()] || 'dinosaur';
     const { prompt, characterName } = generatePrompt(theme);
     const url = `${API_ENDPOINT}?key=${API_KEY}`;
     
@@ -233,8 +230,8 @@ async function generateImageWithGemini(theme: string): Promise<{ imagePath: stri
                 const inlineData = candidate.content?.parts?.[0]?.inlineData;
                 if (inlineData?.data) {
                     const timestamp = Date.now();
-                    // 简笔画存到 sketches 文件夹
-                    const outputDir = path.join(__dirname, '../../../public/generated/sketches');
+                    // 简笔画按主题分类存到 sketches/{theme}/ 文件夹
+                    const outputDir = path.join(__dirname, '../../../public/generated/sketches', normalizedTheme);
                     const imagePath = path.join(outputDir, `sketch_${timestamp}.png`);
                     if (!fs.existsSync(outputDir)) {
                         fs.mkdirSync(outputDir, { recursive: true });
@@ -257,9 +254,9 @@ async function generateImageWithGemini(theme: string): Promise<{ imagePath: stri
             return null;
         }
         
-        // 简笔画存到 sketches 文件夹
+        // 简笔画按主题分类存到 sketches/{theme}/ 文件夹
         const timestamp = Date.now();
-        const outputDir = path.join(__dirname, '../../../public/generated/sketches');
+        const outputDir = path.join(__dirname, '../../../public/generated/sketches', normalizedTheme);
         const imagePath = path.join(outputDir, `sketch_${timestamp}.png`);
         
         if (!fs.existsSync(outputDir)) {
@@ -343,10 +340,11 @@ function getRandomLineArt(theme: string): { imagePath: string; characterName: st
 }
 
 /**
- * 优先使用已生成的 sketches 目录中的线稿（保留但不再优先使用）
+ * 从 sketches/{theme}/ 目录获取随机线稿（按主题分类）
  */
-function getRandomSketchImage(): string | null {
-    const sketchesDir = path.join(__dirname, '../../../public/generated/sketches');
+function getRandomSketchImage(theme: string): string | null {
+    const normalizedTheme = THEME_ALIASES[theme.toLowerCase()] || 'dinosaur';
+    const sketchesDir = path.join(__dirname, '../../../public/generated/sketches', normalizedTheme);
     if (!fs.existsSync(sketchesDir)) {
         console.error(`[DotToDot] Sketches directory not found: ${sketchesDir}`);
         return null;
@@ -458,10 +456,8 @@ export interface DotToDotResult {
 /**
  * 从主题生成点对点图片
  * 优先级：
- * 1. sketches 目录的已生成线稿（效果最好）
- * 2. Google Gemini API 生成简笔画（备用）
- * 3. A_main_assets/{theme}/line/ 目录的线稿 SVG（备用）
- * 4. bigpng 目录的本地图片（最后备用）
+ * 1. Google Gemini API 生成简笔画（优先）
+ * 2. sketches 目录的已生成线稿（备用）
  * 
  * 返回 { dotsImageUrl, characterName }
  */
@@ -472,45 +468,28 @@ export async function processDotToDotFromTheme(
     let imagePath: string | null = null;
     let characterName: string = 'Animal';  // 默认名字
     
-    // 1. 优先从 sketches 目录选取（效果最好）
-    console.log(`[DotToDot] Trying sketches directory first...`);
-    imagePath = getRandomSketchImage();
-    if (imagePath) {
-        characterName = path.basename(imagePath, path.extname(imagePath));
-        console.log(`[DotToDot] Using sketch: ${imagePath}`);
+    // 1. 优先使用 Gemini API 生成
+    console.log(`[DotToDot] Trying Gemini API first...`);
+    const apiResult = await generateImageWithGemini(theme);
+    if (apiResult) {
+        imagePath = apiResult.imagePath;
+        characterName = apiResult.characterName;
+        console.log(`[DotToDot] Using Gemini API generated sketch: ${imagePath}`);
     }
     
-    // 2. 如果没有 sketches，使用 Gemini API 生成
+    // 2. 如果 API 失败，从 sketches/{theme}/ 目录选取
     if (!imagePath) {
-        console.log(`[DotToDot] No sketches, trying Gemini API...`);
-        const apiResult = await generateImageWithGemini(theme);
-        if (apiResult) {
-            imagePath = apiResult.imagePath;
-            characterName = apiResult.characterName;
-            console.log(`[DotToDot] Using Gemini API generated sketch: ${imagePath}`);
+        console.log(`[DotToDot] API failed, trying sketches/${theme} directory...`);
+        imagePath = getRandomSketchImage(theme);
+        if (imagePath) {
+            characterName = path.basename(imagePath, path.extname(imagePath));
+            console.log(`[DotToDot] Using sketch: ${imagePath}`);
         }
     }
     
-    // 3. 尝试从 A_main_assets/{theme}/line/ 目录选取线稿
+    // 只使用 sketches 目录和 Gemini API，不再使用其他来源
     if (!imagePath) {
-        console.log(`[DotToDot] Trying A_main_assets line art...`);
-        const lineArt = getRandomLineArt(theme);
-        if (lineArt) {
-            imagePath = lineArt.imagePath;
-            characterName = lineArt.characterName;
-            console.log(`[DotToDot] Using line art: ${imagePath}`);
-        }
-    }
-    
-    // 4. 最后备用：bigpng 目录
-    if (!imagePath) {
-        console.log(`[DotToDot] Fallback to bigpng directory`);
-        imagePath = getRandomThemeImage(theme);
-        characterName = theme.charAt(0).toUpperCase() + theme.slice(1);
-    }
-    
-    if (!imagePath) {
-        throw new Error(`Cannot find image for theme: ${theme}`);
+        throw new Error(`Cannot find image for theme: ${theme}. Please ensure sketches directory has images or Gemini API is configured.`);
     }
     
     console.log(`[DotToDot] Final image: ${imagePath}`);

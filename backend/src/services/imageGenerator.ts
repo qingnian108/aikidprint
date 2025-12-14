@@ -2,7 +2,7 @@
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
-import { getLetterImage, getRandomAnimalImages, getRandomDecorImages, getThemeBorders, getThemeCharacter, getThemeColorAssets, getThemeMainLineAssets, getThemeMainColorAssets, isImageFile, getRandomTitleIcon, getThemeColor, getRandomLineArt, getCreativePromptImage } from '../utils/imageHelper.js';
+import { getLetterImage, getRandomAnimalImages, getRandomDecorImages, getThemeBorders, getThemeCharacter, getThemeColorAssets, getThemeMainLineAssets, getThemeMainColorAssets, isImageFile, getRandomTitleIcon, getThemeColor, getRandomLineArt, getCreativePromptImage, getThemeBackground } from '../utils/imageHelper.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -180,209 +180,81 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成贴纸 HTML（密集布局：左右底部三边 + 底部两角）
+     * 生成背景图 HTML 和 CSS（替代贴纸）
      */
-    private getStickersHtml(themeKey: string): string {
-        const borderImages = getThemeBorders(themeKey, 50);
-        const borderPool: string[] = [...borderImages];
-        const baseLen = borderImages.length;
-        if (baseLen > 0) {
-            while (borderPool.length < 50) {
-                borderPool.push(borderImages[borderPool.length % baseLen]);
-            }
-        }
-        // 打乱顺序
-        for (let i = borderPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [borderPool[i], borderPool[j]] = [borderPool[j], borderPool[i]];
-        }
-
-        // 随机偏移函数
-        const randOffset = (base: number, range: number) => base + (Math.random() - 0.5) * range;
-        const randRotate = () => (Math.random() - 0.5) * 30; // ±15度
-
-        // 左侧贴纸位置（10个，从110px开始确保在横线下方）
-        const stickerPlacementsLeft: Array<{ top: number; left: number }> = [];
-        for (let i = 0; i < 10; i++) {
-            stickerPlacementsLeft.push({
-                top: randOffset(110 + i * 95, 10),
-                left: randOffset(-5, 8)
-            });
-        }
-
-        // 右侧贴纸位置（10个）
-        const stickerPlacementsRight: Array<{ top: number; right: number }> = [];
-        for (let i = 0; i < 10; i++) {
-            stickerPlacementsRight.push({
-                top: randOffset(110 + i * 95, 10),
-                right: randOffset(-5, 8)
-            });
-        }
-
-        // 底部贴纸位置（8个）
-        const stickerPlacementsBottom: Array<{ bottom: number; left: number }> = [];
-        for (let i = 0; i < 8; i++) {
-            stickerPlacementsBottom.push({
-                bottom: randOffset(-8, 10),
-                left: randOffset(50 + i * 90, 15)
-            });
-        }
-
-        // 底部两角特殊位置（较大的贴纸）
-        const cornerPlacements = [
-            { bottom: -5, left: -5, size: 55 },   // 左下
-            { bottom: -5, right: -5, size: 55 }   // 右下
-        ];
-
-        let stickerIdx = 0;
-        const getNextSticker = () => borderPool[stickerIdx++ % borderPool.length];
-
-        // 生成左侧贴纸 HTML
-        const stickerHtmlLeft = stickerPlacementsLeft.map((p) => {
-            const src = getNextSticker();
-            const rotate = randRotate();
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="top:${p.top}px;left:${p.left}px;transform:rotate(${rotate}deg);" />`;
-        }).join('');
-
-        // 生成右侧贴纸 HTML
-        const stickerHtmlRight = stickerPlacementsRight.map((p) => {
-            const src = getNextSticker();
-            const rotate = randRotate();
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="top:${p.top}px;right:${p.right}px;transform:rotate(${rotate}deg);" />`;
-        }).join('');
-
-        // 生成底部贴纸 HTML
-        const stickerHtmlBottom = stickerPlacementsBottom.map((p) => {
-            const src = getNextSticker();
-            const rotate = randRotate();
-            return `<img class="border-sticker bottom-sticker" src="http://localhost:3000${src}" style="bottom:${p.bottom}px;left:${p.left}px;transform:rotate(${rotate}deg);" />`;
-        }).join('');
-
-        // 生成底部两角贴纸 HTML（较大）
-        const stickerHtmlCorners = cornerPlacements.map((p) => {
-            const src = getNextSticker();
-            const rotate = randRotate();
-            let posStyle = '';
-            if ('left' in p) posStyle = `bottom:${p.bottom}px;left:${p.left}px;`;
-            else posStyle = `bottom:${p.bottom}px;right:${(p as any).right}px;`;
-            return `<img class="border-sticker corner-sticker" src="http://localhost:3000${src}" style="${posStyle}width:${p.size}px;height:${p.size}px;transform:rotate(${rotate}deg);z-index:5;" />`;
-        }).join('');
-
-        return stickerHtmlLeft + stickerHtmlRight + stickerHtmlBottom + stickerHtmlCorners;
+    private getBackgroundHtml(themeKey: string): { html: string; css: string } {
+        const html = ''; // 不需要额外的 HTML，使用 CSS 伪元素
+        const css = this.getBackgroundCss(themeKey);
+        return { html, css };
     }
 
     /**
-     * 生成密集贴纸 HTML（左右底部三边 + 底部两角）
+     * 生成贴纸 HTML - 已改为返回背景图样式
+     * 使用内联 style 标签注入背景图 CSS
+     */
+    private getStickersHtml(themeKey: string): string {
+        const backgroundImage = getThemeBackground(themeKey);
+        if (!backgroundImage) return '';
+        
+        return `<style>
+        .page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('http://localhost:3000${backgroundImage}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.4;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .top-bar { z-index: 1; }
+        .divider { z-index: 1; }
+        .safe-area { z-index: 1; }
+        </style>`;
+    }
+
+    /**
+     * 获取背景图 CSS（使用 CSS 变量和伪元素实现）
+     * @param themeKey 主题名称
+     * @returns CSS 字符串，包含背景图样式
+     */
+    private getBackgroundCss(themeKey: string): string {
+        const backgroundImage = getThemeBackground(themeKey);
+        if (!backgroundImage) return '';
+        
+        return `
+        .page::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('http://localhost:3000${backgroundImage}');
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.4;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .top-bar { z-index: 1; }
+        .divider { z-index: 1; }
+        .safe-area { z-index: 1; }
+        `;
+    }
+
+    /**
+     * 生成密集贴纸 HTML - 已废弃，返回背景图，使用 getBackgroundHtml 替代
+     * @deprecated 使用 getBackgroundHtml 替代
      */
     private getDenseStickersHtml(themeKey: string): { html: string; css: string } {
-        const borderImages = getThemeBorders(themeKey, 50);
-        const borderPool: string[] = [...borderImages];
-        const baseLen = borderImages.length;
-        if (baseLen > 0) {
-            while (borderPool.length < 50) {
-                borderPool.push(borderImages[borderPool.length % baseLen]);
-            }
-        }
-        // 打乱顺序
-        for (let i = borderPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [borderPool[i], borderPool[j]] = [borderPool[j], borderPool[i]];
-        }
-
-        // 随机偏移函数
-        const randOffset = (base: number, range: number) => base + (Math.random() - 0.5) * range;
-        const randRotate = () => (Math.random() - 0.5) * 30; // ±15度
-
-        // 左侧贴纸位置（10个，从110px开始确保在横线下方）
-        const stickerPlacementsLeft: Array<{ top: number; left: number }> = [];
-        for (let i = 0; i < 10; i++) {
-            stickerPlacementsLeft.push({
-                top: randOffset(110 + i * 95, 10),
-                left: randOffset(-5, 8)
-            });
-        }
-
-        // 右侧贴纸位置（10个）
-        const stickerPlacementsRight: Array<{ top: number; right: number }> = [];
-        for (let i = 0; i < 10; i++) {
-            stickerPlacementsRight.push({
-                top: randOffset(110 + i * 95, 10),
-                right: randOffset(-5, 8)
-            });
-        }
-
-        // 底部贴纸位置（8个）
-        const stickerPlacementsBottom: Array<{ bottom: number; left: number }> = [];
-        for (let i = 0; i < 8; i++) {
-            stickerPlacementsBottom.push({
-                bottom: randOffset(-8, 10),
-                left: randOffset(50 + i * 90, 15)
-            });
-        }
-
-        // 底部两角特殊位置（较大的贴纸）
-        const cornerPlacements = [
-            { bottom: -5, left: -5, size: 55 },   // 左下
-            { bottom: -5, right: -5, size: 55 }   // 右下
-        ];
-
-        let stickerIdx = 0;
-        const getNextSticker = () => borderPool[stickerIdx++ % borderPool.length];
-
-        // 生成左侧贴纸 HTML
-        const stickerHtmlLeft = stickerPlacementsLeft.map((p) => {
-            const src = getNextSticker();
-            const rotate = randRotate();
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="top:${p.top}px;left:${p.left}px;transform:rotate(${rotate}deg);" />`;
-        }).join('');
-
-        // 生成右侧贴纸 HTML
-        const stickerHtmlRight = stickerPlacementsRight.map((p) => {
-            const src = getNextSticker();
-            const rotate = randRotate();
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="top:${p.top}px;right:${p.right}px;transform:rotate(${rotate}deg);" />`;
-        }).join('');
-
-        // 生成底部贴纸 HTML
-        const stickerHtmlBottom = stickerPlacementsBottom.map((p) => {
-            const src = getNextSticker();
-            const rotate = randRotate();
-            return `<img class="border-sticker bottom-sticker" src="http://localhost:3000${src}" style="bottom:${p.bottom}px;left:${p.left}px;transform:rotate(${rotate}deg);" />`;
-        }).join('');
-
-        // 生成底部两角贴纸 HTML（较大）
-        const stickerHtmlCorners = cornerPlacements.map((p) => {
-            const src = getNextSticker();
-            const rotate = randRotate();
-            let posStyle = '';
-            if ('left' in p) posStyle = `bottom:${p.bottom}px;left:${p.left}px;`;
-            else posStyle = `bottom:${p.bottom}px;right:${(p as any).right}px;`;
-            return `<img class="border-sticker corner-sticker" src="http://localhost:3000${src}" style="${posStyle}width:${p.size}px;height:${p.size}px;transform:rotate(${rotate}deg);z-index:5;" />`;
-        }).join('');
-
-        const html = stickerHtmlLeft + stickerHtmlRight + stickerHtmlBottom + stickerHtmlCorners;
-
-        const css = `
-        .border-sticker {
-            position: absolute;
-            width: 42px;
-            height: 42px;
-            object-fit: contain;
-            opacity: 1;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
-            z-index: 2;
-        }
-        .border-sticker.bottom-sticker {
-            width: 38px;
-            height: 38px;
-        }
-        .border-sticker.corner-sticker {
-            width: 55px;
-            height: 55px;
-            z-index: 5;
-        }`;
-
-        return { html, css };
+        return this.getBackgroundHtml(themeKey);
     }
 
     async generateMazePage(data: any): Promise<string> {
@@ -393,64 +265,10 @@ export class ImageGenerator {
         const mazeUrl = content.mazeImageUrl || mazeImageUrl || '';
         const level = String(content.difficulty || difficulty || 'medium');
 
-        // 贴纸与逻辑模板相同
-        const borderImages = getThemeBorders(themeKey, 16);
-        const borderPool: string[] = [...borderImages];
-        const baseLen = borderImages.length;
-        if (baseLen > 0) {
-            while (borderPool.length < 16) {
-                borderPool.push(borderImages[borderPool.length % baseLen]);
-            }
-        }
-        for (let i = borderPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [borderPool[i], borderPool[j]] = [borderPool[j], borderPool[i]];
-        }
+        // 获取背景图（替代贴纸）
+        const { html: backgroundHtml, css: backgroundCss } = this.getBackgroundHtml(themeKey);
 
-        const stickerPlacementsLeft: Array<{ top: string; left: string; rotate: number }> = [
-            { top: '110px', left: '2px', rotate: -6 },
-            { top: '230px', left: '2px', rotate: 4 },
-            { top: '350px', left: '2px', rotate: -3 },
-            { top: '470px', left: '2px', rotate: 6 },
-            { top: '590px', left: '2px', rotate: -4 },
-            { top: '710px', left: '2px', rotate: 5 },
-            { top: '830px', left: '2px', rotate: -5 },
-            { top: '950px', left: '2px', rotate: 3 },
-        ];
-        const stickerPlacementsRight: Array<{ top: string; right: string; rotate: number }> = [
-            { top: '110px', right: '2px', rotate: 6 },
-            { top: '230px', right: '2px', rotate: -4 },
-            { top: '350px', right: '2px', rotate: 5 },
-            { top: '470px', right: '2px', rotate: -5 },
-            { top: '590px', right: '2px', rotate: 4 },
-            { top: '710px', right: '2px', rotate: -4 },
-            { top: '830px', right: '2px', rotate: 6 },
-            { top: '950px', right: '2px', rotate: -3 }
-        ];
-
-        const perSide = Math.min(
-            Math.floor(borderPool.length / 2),
-            stickerPlacementsLeft.length,
-            stickerPlacementsRight.length
-        );
-        const stickersLeft = borderPool.slice(0, perSide);
-        const stickersRight = borderPool.slice(perSide, perSide * 2);
-
-        const stickerHtmlLeft = stickersLeft.map((src: string, idx: number) => {
-            const placement = stickerPlacementsLeft[idx];
-            const pos = `top:${placement.top};left:${placement.left}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtmlRight = stickersRight.map((src: string, idx: number) => {
-            const placement = stickerPlacementsRight[idx];
-            const pos = `top:${placement.top};right:${placement.right}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtml = stickerHtmlLeft + stickerHtmlRight;
-
-        // 随机获取标题图标和主题配�?
+        // 随机获取标题图标和主题配色
         const titleIcon = getRandomTitleIcon(themeKey);
         const themeColors = getThemeColor(themeKey);
         
@@ -644,26 +462,7 @@ export class ImageGenerator {
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            background: #fff;
-        }
-        .maze-box img {
-            width: 100%;
-            height: 100%;
-            max-width: 100%;
-            max-height: 100%;
-            object-fit: contain;
-        }
-        .maze-box {
-            margin: 0 auto;
-            width: min(90%, 700px);
-            aspect-ratio: 1 / 1;
-            border: none;
-            border-radius: 14px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            background: #fff;
+            background: transparent;
             position: relative;
         }
         .maze-box img {
@@ -690,18 +489,12 @@ export class ImageGenerator {
             bottom: ${positions.right.bottom};
             right: ${positions.right.right};
         }
-        .border-sticker {
-            position: absolute;
-            width: 36px;
-            height: 36px;
-            object-fit: contain;
-            opacity: 0.9;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
-        }
+        ${backgroundCss}
     </style>
 </head>
 <body>
     <div class="page">
+        ${backgroundHtml}
         <div class="top-bar">
             <div class="field">Name: <span class="dash-line"></span></div>
             <div class="field">Date: <span class="dash-line short"></span></div>
@@ -722,7 +515,6 @@ export class ImageGenerator {
                 </div>
             </div>
         </div>
-        ${stickerHtml}
     </div>
 </body>
 </html>
@@ -897,75 +689,23 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         
-        // 随机决定图标位置（左或右�?
+        // 随机决定图标位置（左或右）
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
 
         const { image: mainImage, word } = getLetterImage(upperLetter);
         const characterImage = getThemeCharacter(themeKey);
-        const borderImages = getThemeBorders(themeKey, 16);
-        // 保证左右�?8 个：若素材不�?16，则循环补齐�?16，再洗牌
-        const borderPool: string[] = [...borderImages];
-        const baseLen = borderImages.length;
-        if (baseLen > 0) {
-            while (borderPool.length < 16) {
-                borderPool.push(borderImages[borderPool.length % baseLen]);
-            }
-        }
-        for (let i = borderPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [borderPool[i], borderPool[j]] = [borderPool[j], borderPool[i]];
-        }
+        
+        // 获取主题背景图（30% 亮度）
+        const backgroundImage = getThemeBackground(themeKey);
+        const backgroundHtml = backgroundImage 
+            ? `<div class="theme-background" style="background-image: url('http://localhost:3000${backgroundImage}');"></div>` 
+            : '';
 
         // 使用 uploads/letters/uppercase 中的描红 PNG
         const tracingRel = `/uploads/letters/uppercase/${upperLetter}_uppercase_tracing.png`;
         const tracingFull = path.join(__dirname, '../../public', tracingRel);
         const tracingImage = fs.existsSync(tracingFull) ? tracingRel : '';
-
-        // 贴纸放置在安全区域外�?40px 边距�?
-        // 40px 边距大于贴纸�?36px，水平居中放�?band 区域�?40-36)/2 = 2
-        const stickerPlacementsLeft: Array<{ top: string; left: string; rotate: number }> = [
-            { top: '110px', left: '2px', rotate: -6 },
-            { top: '230px', left: '2px', rotate: 4 },
-            { top: '350px', left: '2px', rotate: -3 },
-            { top: '470px', left: '2px', rotate: 6 },
-            { top: '590px', left: '2px', rotate: -4 },
-            { top: '710px', left: '2px', rotate: 5 },
-            { top: '830px', left: '2px', rotate: -5 },
-            { top: '950px', left: '2px', rotate: 3 },
-        ];
-        const stickerPlacementsRight: Array<{ top: string; right: string; rotate: number }> = [
-            { top: '110px', right: '2px', rotate: 6 },
-            { top: '230px', right: '2px', rotate: -4 },
-            { top: '350px', right: '2px', rotate: 5 },
-            { top: '470px', right: '2px', rotate: -5 },
-            { top: '590px', right: '2px', rotate: 4 },
-            { top: '710px', right: '2px', rotate: -4 },
-            { top: '830px', right: '2px', rotate: 6 },
-            { top: '950px', right: '2px', rotate: -3 }
-        ];
-
-        const perSide = Math.min(
-            Math.floor(borderPool.length / 2),
-            stickerPlacementsLeft.length,
-            stickerPlacementsRight.length
-        );
-        const stickersLeft = borderPool.slice(0, perSide);
-        const stickersRight = borderPool.slice(perSide, perSide * 2);
-
-        const stickerHtmlLeft = stickersLeft.map((src: string, idx: number) => {
-            const placement = stickerPlacementsLeft[idx];
-            const pos = `top:${placement.top};left:${placement.left}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtmlRight = stickersRight.map((src: string, idx: number) => {
-            const placement = stickerPlacementsRight[idx];
-            const pos = `top:${placement.top};right:${placement.right}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtml = stickerHtmlLeft + stickerHtmlRight;
 
         const html = `
 <!DOCTYPE html>
@@ -1252,27 +992,33 @@ export class ImageGenerator {
             border-bottom-color: #a2acbb;
             border-bottom-width: 2px;
         }
-        .border-sticker {
+        .theme-background {
             position: absolute;
-            width: 36px;
-            height: 36px;
-            object-fit: contain;
-            opacity: 0.9;
-            filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
-        }
-        .footer {
-            position: absolute;
-            bottom: 16px;
+            top: 0;
             left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 12px;
-            color: #b0b8c4;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            opacity: 0.4;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .top-bar {
+            z-index: 1;
+        }
+        .divider {
+            z-index: 1;
+        }
+        .safe-area {
+            z-index: 1;
         }
     </style>
 </head>
 <body>
     <div class="page">
+        ${backgroundHtml}
         <div class="top-bar">
             <div class="field">Name: <span class="dash-line"></span></div>
             <div class="field">Date: <span class="dash-line short"></span></div>
@@ -1330,7 +1076,6 @@ export class ImageGenerator {
                 </div>
             </div>
         </div>
-        ${stickerHtml}
     </div>
 </body>
 </html>
@@ -1480,7 +1225,7 @@ export class ImageGenerator {
             height: 80px;
             border: 3px solid #000;
             border-radius: 10px;
-            background: #fff;
+            background: transparent;
         }
         .divider {
             position: absolute;
@@ -1661,7 +1406,7 @@ export class ImageGenerator {
         }
         .letter-card .letter {
             font-weight: 900;
-            font-family: 'Comic Sans MS', 'Chalkboard', cursive;
+            font-family: 'Quicksand', sans-serif;
             text-shadow: 2px 2px 0 rgba(255,255,255,0.8);
         }
         .image-card {
@@ -2305,7 +2050,7 @@ export class ImageGenerator {
             height: 40px;
             border: 3px solid ${themeColors.primary};
             border-radius: 8px;
-            background: #fff;
+            background: transparent;
         }
         .divider {
             position: absolute;
@@ -2606,7 +2351,7 @@ export class ImageGenerator {
             display: grid;
             grid-template-columns: repeat(2, 1fr);
             grid-template-rows: repeat(3, auto);
-            gap: 50px 50px;
+            gap: 70px 50px;
             padding: 0 20px;
             align-content: center;
             justify-content: center;
@@ -2643,7 +2388,7 @@ export class ImageGenerator {
             height: 45px;
             border: 2px solid #1f2937;
             border-radius: 6px;
-            background: #fff;
+            background: transparent;
         }
         .divider {
             position: absolute;
@@ -2805,7 +2550,7 @@ export class ImageGenerator {
             height: 55px;
             border: 3px solid #374151;
             border-radius: 8px;
-            background: #fff;
+            background: transparent;
         }
         .divider {
             position: absolute;
@@ -2980,7 +2725,7 @@ export class ImageGenerator {
             height: 450px;
             border: 3px solid #374151;
             border-radius: 16px;
-            background: #fafafa;
+            background: transparent;
             margin-bottom: 25px;
         }
         .shape-item {
@@ -3098,9 +2843,8 @@ export class ImageGenerator {
         };
         const rewardDino = rewardMap[themeKey] || rewardMap['dinosaur'];
 
-        // 使用通用密集贴纸方法
-        const denseStickers = this.getDenseStickersHtml(themeKey);
-        const stickerHtml = denseStickers.html;
+        // 使用背景图替代贴纸
+        const stickerHtml = this.getStickersHtml(themeKey);
 
         // 生成混合字母网格
         let gridCells: string[] = [];
@@ -3309,20 +3053,11 @@ export class ImageGenerator {
             line-height: 1;
             color: #f5a623;
         }
-        ${denseStickers.css}
-        .footer {
-            position: absolute;
-            bottom: 16px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 12px;
-            color: #b0b8c4;
-        }
     </style>
 </head>
 <body>
     <div class="page">
+        ${stickerHtml}
         <div class="top-bar">
             <div class="field">Name: <span class="dash-line"></span></div>
             <div class="field">Date: <span class="dash-line short"></span></div>
@@ -3345,7 +3080,6 @@ export class ImageGenerator {
             </div>
         </div>
         ${stickerHtml}
-        <div class="footer">AI Kid Print · Letter Recognition · ${upperLetter}</div>
     </div>
 </body>
 </html>
@@ -3380,65 +3114,13 @@ export class ImageGenerator {
 
         const { image: mainImage, word } = getLetterImage(lookupLetter);
         const characterImage = getThemeCharacter(themeKey);
-        const borderImages = getThemeBorders(themeKey, 16);
-        const borderPool: string[] = [...borderImages];
-        const baseLen = borderImages.length;
-        if (baseLen > 0) {
-            while (borderPool.length < 16) {
-                borderPool.push(borderImages[borderPool.length % baseLen]);
-            }
-        }
-        for (let i = borderPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [borderPool[i], borderPool[j]] = [borderPool[j], borderPool[i]];
-        }
 
         const tracingRel = `/uploads/letters/lowercase/${lowerLetter}_lowercase_tracing.png`;
         const tracingFull = path.join(__dirname, '../../public', tracingRel);
         const tracingImage = fs.existsSync(tracingFull) ? tracingRel : '';
 
-        const stickerPlacementsLeft: Array<{ top: string; left: string; rotate: number }> = [
-            { top: '110px', left: '2px', rotate: -6 },
-            { top: '230px', left: '2px', rotate: 4 },
-            { top: '350px', left: '2px', rotate: -3 },
-            { top: '470px', left: '2px', rotate: 6 },
-            { top: '590px', left: '2px', rotate: -4 },
-            { top: '710px', left: '2px', rotate: 5 },
-            { top: '830px', left: '2px', rotate: -5 },
-            { top: '950px', left: '2px', rotate: 3 },
-        ];
-        const stickerPlacementsRight: Array<{ top: string; right: string; rotate: number }> = [
-            { top: '110px', right: '2px', rotate: 6 },
-            { top: '230px', right: '2px', rotate: -4 },
-            { top: '350px', right: '2px', rotate: 5 },
-            { top: '470px', right: '2px', rotate: -5 },
-            { top: '590px', right: '2px', rotate: 4 },
-            { top: '710px', right: '2px', rotate: -4 },
-            { top: '830px', right: '2px', rotate: 6 },
-            { top: '950px', right: '2px', rotate: -3 }
-        ];
-
-        const perSide = Math.min(
-            Math.floor(borderPool.length / 2),
-            stickerPlacementsLeft.length,
-            stickerPlacementsRight.length
-        );
-        const stickersLeft = borderPool.slice(0, perSide);
-        const stickersRight = borderPool.slice(perSide, perSide * 2);
-
-        const stickerHtmlLeft = stickersLeft.map((src: string, idx: number) => {
-            const placement = stickerPlacementsLeft[idx];
-            const pos = `top:${placement.top};left:${placement.left}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtmlRight = stickersRight.map((src: string, idx: number) => {
-            const placement = stickerPlacementsRight[idx];
-            const pos = `top:${placement.top};right:${placement.right}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtml = stickerHtmlLeft + stickerHtmlRight;
+        // 使用背景图替代贴纸
+        const stickerHtml = this.getStickersHtml(themeKey);
 
         const html = `
 <!DOCTYPE html>
@@ -3732,15 +3414,6 @@ export class ImageGenerator {
             opacity: 0.9;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.12));
         }
-        .footer {
-            position: absolute;
-            bottom: 16px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 12px;
-            color: #b0b8c4;
-        }
     </style>
 </head>
 <body>
@@ -3826,7 +3499,8 @@ export class ImageGenerator {
         const { theme = 'dinosaur', name = 'LEO' } = content;
         const themeKey = String(theme).toLowerCase();
         const themeColors = getThemeColor(themeKey);
-        const denseStickers = this.getDenseStickersHtml(themeKey);
+        // 使用背景图替代贴纸
+        const stickerHtml = this.getStickersHtml(themeKey);
 
         // 处理名字：转大写，最�?0个字�?
         const displayName = String(name).toUpperCase().replace(/[^A-Z]/g, '').slice(0, 10);
@@ -3990,11 +3664,11 @@ export class ImageGenerator {
         .tracing-text.single {
             justify-content: center;
         }
-        ${denseStickers.css}
     </style>
 </head>
 <body>
     <div class="page">
+        ${stickerHtml}
         <div class="top-bar">
             <div class="field">Name: <span class="dash-line"></span></div>
             <div class="field">Date: <span class="dash-line short"></span></div>
@@ -4036,7 +3710,7 @@ export class ImageGenerator {
                 </div>
             </div>
         </div>
-        ${denseStickers.html}
+        ${stickerHtml}
     </div>
 </body>
 </html>`;
@@ -4067,62 +3741,8 @@ export class ImageGenerator {
         };
         const nums = Array.isArray(numbers) && numbers.length ? numbers : (ranges[range] || ranges['0-4']);
 
-        // 仅生成固定框架与安全区外装饰，安全区内留占位
-        const borderImages = getThemeBorders(themeKey, 16);
-        const borderPool: string[] = [...borderImages];
-        const baseLen = borderImages.length;
-        if (baseLen > 0) {
-            while (borderPool.length < 16) {
-                borderPool.push(borderImages[borderPool.length % baseLen]);
-            }
-        }
-        for (let i = borderPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [borderPool[i], borderPool[j]] = [borderPool[j], borderPool[i]];
-        }
-
-        const stickerPlacementsLeft: Array<{ top: string; left: string; rotate: number }> = [
-            { top: '110px', left: '2px', rotate: -6 },
-            { top: '230px', left: '2px', rotate: 4 },
-            { top: '350px', left: '2px', rotate: -3 },
-            { top: '470px', left: '2px', rotate: 6 },
-            { top: '590px', left: '2px', rotate: -4 },
-            { top: '710px', left: '2px', rotate: 5 },
-            { top: '830px', left: '2px', rotate: -5 },
-            { top: '950px', left: '2px', rotate: 3 },
-        ];
-        const stickerPlacementsRight: Array<{ top: string; right: string; rotate: number }> = [
-            { top: '110px', right: '2px', rotate: 6 },
-            { top: '230px', right: '2px', rotate: -4 },
-            { top: '350px', right: '2px', rotate: 5 },
-            { top: '470px', right: '2px', rotate: -5 },
-            { top: '590px', right: '2px', rotate: 4 },
-            { top: '710px', right: '2px', rotate: -4 },
-            { top: '830px', right: '2px', rotate: 6 },
-            { top: '950px', right: '2px', rotate: -3 }
-        ];
-
-        const perSide = Math.min(
-            Math.floor(borderPool.length / 2),
-            stickerPlacementsLeft.length,
-            stickerPlacementsRight.length
-        );
-        const stickersLeft = borderPool.slice(0, perSide);
-        const stickersRight = borderPool.slice(perSide, perSide * 2);
-
-        const stickerHtmlLeft = stickersLeft.map((src: string, idx: number) => {
-            const placement = stickerPlacementsLeft[idx];
-            const pos = `top:${placement.top};left:${placement.left}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtmlRight = stickersRight.map((src: string, idx: number) => {
-            const placement = stickerPlacementsRight[idx];
-            const pos = `top:${placement.top};right:${placement.right}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtml = stickerHtmlLeft + stickerHtmlRight;
+        // 使用背景图替代贴纸
+        const stickerHtml = this.getStickersHtml(themeKey);
 
         // 主题主素材彩色图标池（随机）
         const themeColorPool = getThemeColorAssets(themeKey, 20);
@@ -4419,7 +4039,7 @@ export class ImageGenerator {
             justify-items: center;
         }
         .trace-cell {
-            font-size: 96px;
+            font-size: 115px;
             font-weight: 800;
             color: rgba(163, 163, 163, 0.2);
             -webkit-text-stroke: 0;
@@ -4503,62 +4123,8 @@ export class ImageGenerator {
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
 
-        // 贴纸：与其他模板一�?
-        const borderImages = getThemeBorders(themeKey, 16);
-        const borderPool: string[] = [...borderImages];
-        const baseLen = borderImages.length;
-        if (baseLen > 0) {
-            while (borderPool.length < 16) {
-                borderPool.push(borderImages[borderPool.length % baseLen]);
-            }
-        }
-        for (let i = borderPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [borderPool[i], borderPool[j]] = [borderPool[j], borderPool[i]];
-        }
-
-        const stickerPlacementsLeft: Array<{ top: string; left: string; rotate: number }> = [
-            { top: '110px', left: '2px', rotate: -6 },
-            { top: '230px', left: '2px', rotate: 4 },
-            { top: '350px', left: '2px', rotate: -3 },
-            { top: '470px', left: '2px', rotate: 6 },
-            { top: '590px', left: '2px', rotate: -4 },
-            { top: '710px', left: '2px', rotate: 5 },
-            { top: '830px', left: '2px', rotate: -5 },
-            { top: '950px', left: '2px', rotate: 3 },
-        ];
-        const stickerPlacementsRight: Array<{ top: string; right: string; rotate: number }> = [
-            { top: '110px', right: '2px', rotate: 6 },
-            { top: '230px', right: '2px', rotate: -4 },
-            { top: '350px', right: '2px', rotate: 5 },
-            { top: '470px', right: '2px', rotate: -5 },
-            { top: '590px', right: '2px', rotate: 4 },
-            { top: '710px', right: '2px', rotate: -4 },
-            { top: '830px', right: '2px', rotate: 6 },
-            { top: '950px', right: '2px', rotate: -3 }
-        ];
-
-        const perSide = Math.min(
-            Math.floor(borderPool.length / 2),
-            stickerPlacementsLeft.length,
-            stickerPlacementsRight.length
-        );
-        const stickersLeft = borderPool.slice(0, perSide);
-        const stickersRight = borderPool.slice(perSide, perSide * 2);
-
-        const stickerHtmlLeft = stickersLeft.map((src: string, idx: number) => {
-            const placement = stickerPlacementsLeft[idx];
-            const pos = `top:${placement.top};left:${placement.left}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtmlRight = stickersRight.map((src: string, idx: number) => {
-            const placement = stickerPlacementsRight[idx];
-            const pos = `top:${placement.top};right:${placement.right}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtml = stickerHtmlLeft + stickerHtmlRight;
+        // 使用背景图替代贴纸
+        const stickerHtml = this.getStickersHtml(themeKey);
 
         const html = `
 <!DOCTYPE html>
@@ -4872,12 +4438,13 @@ export class ImageGenerator {
             align-items: center;
             justify-content: center;
             overflow: hidden;
+            background: transparent;
         }
         .pattern-image {
-            max-width: 100%;
-            max-height: 100%;
+            width: 100%;
+            height: 100%;
             object-fit: contain;
-            border-radius: 12px;
+            border-radius: 0;
         }
         .placeholder {
             color: #94a3b8;
@@ -5185,10 +4752,10 @@ export class ImageGenerator {
             
             <div class="sorting-boxes">
                 <div class="sorting-box big">
-                    <div class="label">Big ${themeName}</div>
+                    <div class="label">Big</div>
                 </div>
                 <div class="sorting-box small">
-                    <div class="label">Small ${themeName}</div>
+                    <div class="label">Small</div>
                 </div>
             </div>
             
@@ -5227,62 +4794,8 @@ export class ImageGenerator {
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
 
-        // 贴纸与其他模板一�?
-        const borderImages = getThemeBorders(themeKey, 16);
-        const borderPool: string[] = [...borderImages];
-        const baseLen = borderImages.length;
-        if (baseLen > 0) {
-            while (borderPool.length < 16) {
-                borderPool.push(borderImages[borderPool.length % baseLen]);
-            }
-        }
-        for (let i = borderPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [borderPool[i], borderPool[j]] = [borderPool[j], borderPool[i]];
-        }
-
-        const stickerPlacementsLeft: Array<{ top: string; left: string; rotate: number }> = [
-            { top: '110px', left: '2px', rotate: -6 },
-            { top: '230px', left: '2px', rotate: 4 },
-            { top: '350px', left: '2px', rotate: -3 },
-            { top: '470px', left: '2px', rotate: 6 },
-            { top: '590px', left: '2px', rotate: -4 },
-            { top: '710px', left: '2px', rotate: 5 },
-            { top: '830px', left: '2px', rotate: -5 },
-            { top: '950px', left: '2px', rotate: 3 },
-        ];
-        const stickerPlacementsRight: Array<{ top: string; right: string; rotate: number }> = [
-            { top: '110px', right: '2px', rotate: 6 },
-            { top: '230px', right: '2px', rotate: -4 },
-            { top: '350px', right: '2px', rotate: 5 },
-            { top: '470px', right: '2px', rotate: -5 },
-            { top: '590px', right: '2px', rotate: 4 },
-            { top: '710px', right: '2px', rotate: -4 },
-            { top: '830px', right: '2px', rotate: 6 },
-            { top: '950px', right: '2px', rotate: -3 }
-        ];
-
-        const perSide = Math.min(
-            Math.floor(borderPool.length / 2),
-            stickerPlacementsLeft.length,
-            stickerPlacementsRight.length
-        );
-        const stickersLeft = borderPool.slice(0, perSide);
-        const stickersRight = borderPool.slice(perSide, perSide * 2);
-
-        const stickerHtmlLeft = stickersLeft.map((src: string, idx: number) => {
-            const placement = stickerPlacementsLeft[idx];
-            const pos = `top:${placement.top};left:${placement.left}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtmlRight = stickersRight.map((src: string, idx: number) => {
-            const placement = stickerPlacementsRight[idx];
-            const pos = `top:${placement.top};right:${placement.right}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtml = stickerHtmlLeft + stickerHtmlRight;
+        // 使用背景图替代贴纸
+        const stickerHtml = this.getStickersHtml(themeKey);
 
         // 选取主题彩色素材
         const colorPool = getThemeColorAssets(themeKey, 40);
@@ -6179,16 +5692,6 @@ export class ImageGenerator {
             margin-bottom: 18px;
             background: white;
         }
-
-        .footer {
-            position: fixed;
-            bottom: 10mm;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 12px;
-            color: #cbd5e1;
-        }
     </style>
 </head>
 <body>
@@ -6238,8 +5741,6 @@ export class ImageGenerator {
         <div class="practice-box"></div>
         <div class="practice-box"></div>
     </div>
-
-    <div class="footer">AI Kid Print ? Learning ${upperLetter}${lowerLetter} ? ${word}</div>
 </body>
 </html>
         `;
@@ -6483,61 +5984,8 @@ export class ImageGenerator {
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" alt="theme icon">` : '';
 
-        const borderImages = getThemeBorders(themeKey, 16);
-        const borderPool: string[] = [...borderImages];
-        const baseLen = borderImages.length;
-        if (baseLen > 0) {
-            while (borderPool.length < 16) {
-                borderPool.push(borderImages[borderPool.length % baseLen]);
-            }
-        }
-        for (let i = borderPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [borderPool[i], borderPool[j]] = [borderPool[j], borderPool[i]];
-        }
-
-        const stickerPlacementsLeft: Array<{ top: string; left: string; rotate: number }> = [
-            { top: '110px', left: '2px', rotate: -6 },
-            { top: '230px', left: '2px', rotate: 4 },
-            { top: '350px', left: '2px', rotate: -3 },
-            { top: '470px', left: '2px', rotate: 6 },
-            { top: '590px', left: '2px', rotate: -4 },
-            { top: '710px', left: '2px', rotate: 5 },
-            { top: '830px', left: '2px', rotate: -5 },
-            { top: '950px', left: '2px', rotate: 3 },
-        ];
-        const stickerPlacementsRight: Array<{ top: string; right: string; rotate: number }> = [
-            { top: '110px', right: '2px', rotate: 6 },
-            { top: '230px', right: '2px', rotate: -4 },
-            { top: '350px', right: '2px', rotate: 5 },
-            { top: '470px', right: '2px', rotate: -5 },
-            { top: '590px', right: '2px', rotate: 4 },
-            { top: '710px', right: '2px', rotate: -4 },
-            { top: '830px', right: '2px', rotate: 6 },
-            { top: '950px', right: '2px', rotate: -3 }
-        ];
-
-        const perSide = Math.min(
-            Math.floor(borderPool.length / 2),
-            stickerPlacementsLeft.length,
-            stickerPlacementsRight.length
-        );
-        const stickersLeft = borderPool.slice(0, perSide);
-        const stickersRight = borderPool.slice(perSide, perSide * 2);
-
-        const stickerHtmlLeft = stickersLeft.map((src: string, idx: number) => {
-            const placement = stickerPlacementsLeft[idx];
-            const pos = `top:${placement.top};left:${placement.left}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtmlRight = stickersRight.map((src: string, idx: number) => {
-            const placement = stickerPlacementsRight[idx];
-            const pos = `top:${placement.top};right:${placement.right}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtml = stickerHtmlLeft + stickerHtmlRight;
+        // 使用背景图替代贴纸
+        const stickerHtml = this.getStickersHtml(themeKey);
 
         const themeIcons = getThemeMainColorAssets(themeKey, 30);
 
@@ -6796,7 +6244,7 @@ export class ImageGenerator {
             gap: 6px;
             align-items: center;
             justify-content: center;
-            background: rgba(255,255,255,0.9);
+            background: transparent;
             overflow: visible;
         }
         .cluster .icon-box.two-rows {
@@ -6834,7 +6282,7 @@ export class ImageGenerator {
             padding: 8px 10px;
             border: none;
             border-radius: 10px;
-            background: rgba(255,255,255,0.9);
+            background: transparent;
             justify-self: end;
         }
         .opt {
@@ -7242,15 +6690,6 @@ export class ImageGenerator {
             height: 60px;
             object-fit: contain;
         }
-        .footer {
-            position: absolute;
-            bottom: 16px;
-            left: 0;
-            right: 0;
-            text-align: center;
-            font-size: 12px;
-            color: #94a3b8;
-        }
     </style>
 </head>
 <body>
@@ -7293,8 +6732,6 @@ export class ImageGenerator {
                 </div>
             `).join('')}
         </div>
-
-        <div class="footer">AI Kid Print ? Learning ${displayName}</div>
     </div>
 </body>
 </html>
@@ -7527,7 +6964,6 @@ export class ImageGenerator {
             }).join('')).join('')}
             ${imageBlock}
         </div>
-        <div class="footer">AI Kid Print ? Letter Hunt ? Target: ${targetLetter} ? Difficulty: ${difficulty}</div>
     </div>
 </body>
 </html>
@@ -7570,62 +7006,8 @@ export class ImageGenerator {
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
 
-        // 贴纸装饰
-        const borderImages = getThemeBorders(themeKey, 16);
-        const borderPool: string[] = [...borderImages];
-        const baseLen = borderImages.length;
-        if (baseLen > 0) {
-            while (borderPool.length < 16) {
-                borderPool.push(borderImages[borderPool.length % baseLen]);
-            }
-        }
-        for (let i = borderPool.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [borderPool[i], borderPool[j]] = [borderPool[j], borderPool[i]];
-        }
-
-        const stickerPlacementsLeft: Array<{ top: string; left: string; rotate: number }> = [
-            { top: '110px', left: '2px', rotate: -6 },
-            { top: '230px', left: '2px', rotate: 4 },
-            { top: '350px', left: '2px', rotate: -3 },
-            { top: '470px', left: '2px', rotate: 6 },
-            { top: '590px', left: '2px', rotate: -4 },
-            { top: '710px', left: '2px', rotate: 5 },
-            { top: '830px', left: '2px', rotate: -5 },
-            { top: '950px', left: '2px', rotate: 3 },
-        ];
-        const stickerPlacementsRight: Array<{ top: string; right: string; rotate: number }> = [
-            { top: '110px', right: '2px', rotate: 6 },
-            { top: '230px', right: '2px', rotate: -4 },
-            { top: '350px', right: '2px', rotate: 5 },
-            { top: '470px', right: '2px', rotate: -5 },
-            { top: '590px', right: '2px', rotate: 4 },
-            { top: '710px', right: '2px', rotate: -4 },
-            { top: '830px', right: '2px', rotate: 6 },
-            { top: '950px', right: '2px', rotate: -3 }
-        ];
-
-        const perSide = Math.min(
-            Math.floor(borderPool.length / 2),
-            stickerPlacementsLeft.length,
-            stickerPlacementsRight.length
-        );
-        const stickersLeft = borderPool.slice(0, perSide);
-        const stickersRight = borderPool.slice(perSide, perSide * 2);
-
-        const stickerHtmlLeft = stickersLeft.map((src: string, idx: number) => {
-            const placement = stickerPlacementsLeft[idx];
-            const pos = `top:${placement.top};left:${placement.left}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtmlRight = stickersRight.map((src: string, idx: number) => {
-            const placement = stickerPlacementsRight[idx];
-            const pos = `top:${placement.top};right:${placement.right}`;
-            return `<img class="border-sticker" src="http://localhost:3000${src}" style="${pos};transform: rotate(${placement.rotate}deg);" />`;
-        }).join('');
-
-        const stickerHtml = stickerHtmlLeft + stickerHtmlRight;
+        // 使用背景图替代贴纸
+        const stickerHtml = this.getStickersHtml(themeKey);
 
         // 生成序列行数�?
         // 规律模式: AB, AAB, ABB, AABB, ABAB
@@ -9647,7 +9029,7 @@ export class ImageGenerator {
             height: 40px;
             border: 2.5px dashed #9ca3af;
             border-radius: 8px;
-            background: #f9fafb;
+            background: transparent;
         }
     </style>
 </head>
@@ -9788,7 +9170,7 @@ export class ImageGenerator {
             border: 3px solid ${themeColors.accent};
         }
         .pill.blank {
-            background: #fff;
+            background: transparent;
             border: 3px dashed #9ca3af;
         }
         .pill-num {
