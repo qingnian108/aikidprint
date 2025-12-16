@@ -42,10 +42,8 @@ const PREVIEW_CONFIGS = [
   { id: 'sorting', categoryId: 'logic', pageTypeId: 'sorting', config: { theme: 'dinosaur' } },
   { id: 'pattern-compare', categoryId: 'logic', pageTypeId: 'pattern-compare', config: { theme: 'dinosaur' } },
   { id: 'pattern-sequencing', categoryId: 'logic', pageTypeId: 'pattern-sequencing', config: { theme: 'dinosaur' } },
-  { id: 'logic-grid', categoryId: 'logic', pageTypeId: 'logic-grid', config: { theme: 'dinosaur' } },
   { id: 'odd-one-out', categoryId: 'logic', pageTypeId: 'odd-one-out', config: { theme: 'dinosaur' } },
   { id: 'matching-halves', categoryId: 'logic', pageTypeId: 'matching-halves', config: { theme: 'dinosaur' } },
-  { id: 'shape-synthesis', categoryId: 'logic', pageTypeId: 'shape-synthesis', config: { theme: 'dinosaur' } },
   
   // Creativity & Motor（创意与运笔）
   { id: 'trace-lines', categoryId: 'creativity', pageTypeId: 'trace-lines', config: { theme: 'dinosaur' } },
@@ -54,6 +52,8 @@ const PREVIEW_CONFIGS = [
   { id: 'creative-prompt', categoryId: 'creativity', pageTypeId: 'creative-prompt', config: { promptType: 'blank_sign', theme: 'dinosaur' } },
   { id: 'shape-path', categoryId: 'creativity', pageTypeId: 'shape-path', config: { theme: 'dinosaur' } },
   { id: 'trace-and-draw', categoryId: 'creativity', pageTypeId: 'trace-and-draw', config: { theme: 'dinosaur' } },
+  { id: 'logic-grid', categoryId: 'creativity', pageTypeId: 'logic-grid', config: { theme: 'dinosaur' } },
+  { id: 'shape-synthesis', categoryId: 'creativity', pageTypeId: 'shape-synthesis', config: { theme: 'dinosaur' } },
 ];
 
 const OUTPUT_DIR = path.join(__dirname, '../../public/previews');

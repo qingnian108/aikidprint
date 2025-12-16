@@ -52,8 +52,9 @@
   },
   "uploads-letter-A-default": {
     "usedImages": [
-      "/uploads/bigpng/Apple.png",
-      "/uploads/bigpng/Airplane.png"
+      "/uploads/bigpng/Ant.png",
+      "/uploads/bigpng/Airplane.png",
+      "/uploads/bigpng/Apple.png"
     ],
     "allImages": [
       "/uploads/bigpng/Airplane.png",
@@ -973,7 +974,8 @@
   },
   "uploads-letter-E-default": {
     "usedImages": [
-      "/uploads/bigpng/Egg.png"
+      "/uploads/bigpng/Egg.png",
+      "/uploads/bigpng/Elephant.png"
     ],
     "allImages": [
       "/uploads/bigpng/Egg.png",
@@ -1474,7 +1476,8 @@
   "uploads-letter-G-default": {
     "usedImages": [
       "/uploads/bigpng/Goat.png",
-      "/uploads/bigpng/Gift.png"
+      "/uploads/bigpng/Gift.png",
+      "/uploads/bigpng/Grape.png"
     ],
     "allImages": [
       "/uploads/bigpng/Gift.png",
@@ -1612,95 +1615,12 @@
   },
   "uploads-letter-M-default": {
     "usedImages": [
-      "/uploads/bigpng/Nature/moon_01.png",
-      "/uploads/bigpng/Nature/mountain_02.png",
-      "/uploads/bigpng/Food/milk_06.png",
-      "/uploads/bigpng/Food/milk_04.png",
-      "/uploads/bigpng/Occupations/mail_carrier_08.png",
-      "/uploads/bigpng/Family Members/mom_02.png",
-      "/uploads/bigpng/Food/milk_07.png",
-      "/uploads/bigpng/Wild Animals/monkey_09.png",
-      "/uploads/bigpng/Food/milk_09.png",
-      "/uploads/bigpng/Nature/mountain_01.png",
-      "/uploads/bigpng/Occupations/mail_carrier_04.png",
-      "/uploads/bigpng/Family Members/mom_01.png",
-      "/uploads/bigpng/Nature/moon_07.png",
-      "/uploads/bigpng/Wild Animals/monkey_10.png",
-      "/uploads/bigpng/Wild Animals/monkey_03.png",
-      "/uploads/bigpng/Family Members/mom_06.png",
-      "/uploads/bigpng/Nature/moon_09.png",
-      "/uploads/bigpng/Occupations/mail_carrier_06.png",
-      "/uploads/bigpng/Family Members/mom_08.png",
-      "/uploads/bigpng/Food/milk_02.png",
-      "/uploads/bigpng/Family Members/mom_05.png",
-      "/uploads/bigpng/Nature/mountain_08.png",
-      "/uploads/bigpng/Food/milk_08.png",
-      "/uploads/bigpng/Food/milk_03.png",
-      "/uploads/bigpng/Nature/moon_06.png",
-      "/uploads/bigpng/Family Members/mom_04.png",
-      "/uploads/bigpng/Occupations/mail_carrier_01.png",
-      "/uploads/bigpng/Nature/moon_10.png"
+      "/uploads/bigpng/Moon.png"
     ],
     "allImages": [
-      "/uploads/bigpng/Family Members/mom_01.png",
-      "/uploads/bigpng/Family Members/mom_02.png",
-      "/uploads/bigpng/Family Members/mom_03.png",
-      "/uploads/bigpng/Family Members/mom_04.png",
-      "/uploads/bigpng/Family Members/mom_05.png",
-      "/uploads/bigpng/Family Members/mom_06.png",
-      "/uploads/bigpng/Family Members/mom_07.png",
-      "/uploads/bigpng/Family Members/mom_08.png",
-      "/uploads/bigpng/Family Members/mom_09.png",
-      "/uploads/bigpng/Food/milk_01.png",
-      "/uploads/bigpng/Food/milk_02.png",
-      "/uploads/bigpng/Food/milk_03.png",
-      "/uploads/bigpng/Food/milk_04.png",
-      "/uploads/bigpng/Food/milk_05.png",
-      "/uploads/bigpng/Food/milk_06.png",
-      "/uploads/bigpng/Food/milk_07.png",
-      "/uploads/bigpng/Food/milk_08.png",
-      "/uploads/bigpng/Food/milk_09.png",
-      "/uploads/bigpng/Food/milk_10.png",
-      "/uploads/bigpng/Nature/moon_01.png",
-      "/uploads/bigpng/Nature/moon_02.png",
-      "/uploads/bigpng/Nature/moon_03.png",
-      "/uploads/bigpng/Nature/moon_04.png",
-      "/uploads/bigpng/Nature/moon_05.png",
-      "/uploads/bigpng/Nature/moon_06.png",
-      "/uploads/bigpng/Nature/moon_07.png",
-      "/uploads/bigpng/Nature/moon_08.png",
-      "/uploads/bigpng/Nature/moon_09.png",
-      "/uploads/bigpng/Nature/moon_10.png",
-      "/uploads/bigpng/Nature/mountain_01.png",
-      "/uploads/bigpng/Nature/mountain_02.png",
-      "/uploads/bigpng/Nature/mountain_03.png",
-      "/uploads/bigpng/Nature/mountain_04.png",
-      "/uploads/bigpng/Nature/mountain_05.png",
-      "/uploads/bigpng/Nature/mountain_06.png",
-      "/uploads/bigpng/Nature/mountain_07.png",
-      "/uploads/bigpng/Nature/mountain_08.png",
-      "/uploads/bigpng/Nature/mountain_09.png",
-      "/uploads/bigpng/Nature/mountain_10.png",
-      "/uploads/bigpng/Occupations/mail_carrier_01.png",
-      "/uploads/bigpng/Occupations/mail_carrier_02.png",
-      "/uploads/bigpng/Occupations/mail_carrier_03.png",
-      "/uploads/bigpng/Occupations/mail_carrier_04.png",
-      "/uploads/bigpng/Occupations/mail_carrier_05.png",
-      "/uploads/bigpng/Occupations/mail_carrier_06.png",
-      "/uploads/bigpng/Occupations/mail_carrier_07.png",
-      "/uploads/bigpng/Occupations/mail_carrier_08.png",
-      "/uploads/bigpng/Occupations/mail_carrier_09.png",
-      "/uploads/bigpng/Occupations/mail_carrier_10.png",
-      "/uploads/bigpng/Wild Animals/monkey_01.png",
-      "/uploads/bigpng/Wild Animals/monkey_02.png",
-      "/uploads/bigpng/Wild Animals/monkey_03.png",
-      "/uploads/bigpng/Wild Animals/monkey_04.png",
-      "/uploads/bigpng/Wild Animals/monkey_05.png",
-      "/uploads/bigpng/Wild Animals/monkey_06.png",
-      "/uploads/bigpng/Wild Animals/monkey_07.png",
-      "/uploads/bigpng/Wild Animals/monkey_08.png",
-      "/uploads/bigpng/Wild Animals/monkey_09.png",
-      "/uploads/bigpng/Wild Animals/monkey_10.png"
+      "/uploads/bigpng/Milk.png",
+      "/uploads/bigpng/Monkey.png",
+      "/uploads/bigpng/Moon.png"
     ]
   },
   "uploads-letter-O-default": {
@@ -2711,30 +2631,11 @@
   },
   "uploads-letter-Z-default": {
     "usedImages": [
-      "/uploads/bigpng/Places/zoo_07.png",
-      "/uploads/bigpng/Places/zoo_05.png"
+      "/uploads/bigpng/zebra.png"
     ],
     "allImages": [
-      "/uploads/bigpng/Places/zoo_01.png",
-      "/uploads/bigpng/Places/zoo_02.png",
-      "/uploads/bigpng/Places/zoo_03.png",
-      "/uploads/bigpng/Places/zoo_04.png",
-      "/uploads/bigpng/Places/zoo_05.png",
-      "/uploads/bigpng/Places/zoo_06.png",
-      "/uploads/bigpng/Places/zoo_07.png",
-      "/uploads/bigpng/Places/zoo_08.png",
-      "/uploads/bigpng/Places/zoo_09.png",
-      "/uploads/bigpng/Places/zoo_10.png",
-      "/uploads/bigpng/Wild Animals/zebra_01.png",
-      "/uploads/bigpng/Wild Animals/zebra_02.png",
-      "/uploads/bigpng/Wild Animals/zebra_03.png",
-      "/uploads/bigpng/Wild Animals/zebra_04.png",
-      "/uploads/bigpng/Wild Animals/zebra_05.png",
-      "/uploads/bigpng/Wild Animals/zebra_06.png",
-      "/uploads/bigpng/Wild Animals/zebra_07.png",
-      "/uploads/bigpng/Wild Animals/zebra_08.png",
-      "/uploads/bigpng/Wild Animals/zebra_09.png",
-      "/uploads/bigpng/Wild Animals/zebra_10.png"
+      "/uploads/bigpng/zebra.png",
+      "/uploads/bigpng/zipper.png"
     ]
   },
   "uploads-letter-J-default": {
@@ -2751,14 +2652,32 @@
   },
   "uploads-letter-K-default": {
     "usedImages": [
-      "/uploads/bigpng/Koala.png",
-      "/uploads/bigpng/Key.png",
-      "/uploads/bigpng/Kite.png"
+      "/uploads/bigpng/Key.png"
     ],
     "allImages": [
       "/uploads/bigpng/Key.png",
       "/uploads/bigpng/Kite.png",
       "/uploads/bigpng/Koala.png"
+    ]
+  },
+  "uploads-letter-Y-default": {
+    "usedImages": [
+      "/uploads/bigpng/Yacht.png"
+    ],
+    "allImages": [
+      "/uploads/bigpng/Yacht.png",
+      "/uploads/bigpng/yak.png",
+      "/uploads/bigpng/yarn.png"
+    ]
+  },
+  "uploads-letter-Q-default": {
+    "usedImages": [
+      "/uploads/bigpng/Quilt.png"
+    ],
+    "allImages": [
+      "/uploads/bigpng/Quail.png",
+      "/uploads/bigpng/Queen.png",
+      "/uploads/bigpng/Quilt.png"
     ]
   }
 }

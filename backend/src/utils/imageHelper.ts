@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { imageRandomizer } from './imageRandomizer.js';
+import sharp from 'sharp';
 
 export interface LetterAsset {
     image: string;
@@ -760,4 +761,69 @@ export function getCreativePromptImage(theme: string, promptType: string): strin
     // 随机选择一个
     const randomFile = files[Math.floor(Math.random() * files.length)];
     return `/uploads/Creative_Prompt/${theme}/${promptType}/${randomFile}`;
+}
+
+/**
+ * 去除图片的白色背景，返回 base64 data URL（不落盘存储）
+ * @param imagePath 原始图片的相对路径或 data URL
+ * @returns base64 data URL 或原始路径（失败时）
+ */
+export async function removeWhiteBackground(imagePath: string): Promise<string> {
+    if (!imagePath) return '';
+
+    try {
+        let image: sharp.Sharp;
+
+        // 支持 data URL 输入
+        if (imagePath.startsWith('data:')) {
+            const base64Data = imagePath.split(',')[1];
+            const buffer = Buffer.from(base64Data, 'base64');
+            image = sharp(buffer);
+            console.log(`[ImageHelper] Processing data URL input`);
+        } else {
+            const fullPath = path.join(PUBLIC_DIR, imagePath);
+            if (!fs.existsSync(fullPath)) {
+                console.warn(`[ImageHelper] Image not found: ${fullPath}`);
+                return imagePath;
+            }
+            image = sharp(fullPath);
+        }
+
+        // 读取图片并处理
+        const { data, info } = await image
+            .ensureAlpha()
+            .raw()
+            .toBuffer({ resolveWithObject: true });
+        
+        // 遍历像素，将接近白色的像素变为透明
+        const threshold = 240; // 白色阈值
+        for (let i = 0; i < data.length; i += 4) {
+            const r = data[i];
+            const g = data[i + 1];
+            const b = data[i + 2];
+            
+            // 如果 RGB 都接近 255（白色），则设置 alpha 为 0（透明）
+            if (r >= threshold && g >= threshold && b >= threshold) {
+                data[i + 3] = 0; // 设置 alpha 通道为透明
+            }
+        }
+        
+        // 转为 base64 data URL，不保存文件
+        const pngBuffer = await sharp(data, {
+            raw: {
+                width: info.width,
+                height: info.height,
+                channels: 4
+            }
+        })
+        .png()
+        .toBuffer();
+        
+        const base64 = pngBuffer.toString('base64');
+        console.log(`[ImageHelper] White background removed (in-memory)`);
+        return `data:image/png;base64,${base64}`;
+    } catch (error) {
+        console.error(`[ImageHelper] Error removing white background:`, error);
+        return imagePath; // 失败时返回原图
+    }
 }

@@ -916,12 +916,31 @@ export const getPrintSettings = async (userId: string): Promise<PrintSettings | 
 };
 
 /**
+ * 根据用户时区检测是否使用 A4 纸张
+ * 欧洲、亚洲、非洲、大洋洲使用 A4，美洲使用 Letter
+ */
+const detectPaperSizeByTimezone = (): 'a4' | 'letter' => {
+  try {
+    const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    // 美洲时区使用 Letter（美国、加拿大、墨西哥等）
+    const letterTimezones = [
+      'America/', 'US/', 'Canada/', 'Pacific/Honolulu'
+    ];
+    const isLetterRegion = letterTimezones.some(tz => timezone.startsWith(tz));
+    return isLetterRegion ? 'letter' : 'a4';
+  } catch {
+    return 'letter'; // 默认 Letter
+  }
+};
+
+/**
  * 获取默认打印设置
+ * 根据用户时区自动选择纸张大小：欧洲/亚洲用 A4，美洲用 Letter
  */
 export const getDefaultPrintSettings = (): Omit<PrintSettings, 'userId' | 'updatedAt'> => {
   return {
     printMode: 'color',
-    paperSize: 'letter',
+    paperSize: detectPaperSizeByTimezone(),
     binderReady: false
   };
 };

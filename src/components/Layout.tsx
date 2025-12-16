@@ -12,8 +12,9 @@ const Layout: React.FC = () => {
 
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'Weekly Pack', path: '/weekly-pack' },
     { name: 'Worksheets', path: '/generator' },
+    { name: 'Weekly Pack', path: '/weekly-pack' },
+    { name: 'Custom Pack', path: '/custom-pack' },
     // { name: 'Library', path: '/library' }, // TODO: 暂时隐藏，页面内容未完成
     { name: 'Pricing', path: '/pricing' },
     { name: 'Account', path: currentUser ? '/dashboard' : '/login' },

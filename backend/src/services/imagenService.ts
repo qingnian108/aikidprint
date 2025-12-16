@@ -1,23 +1,12 @@
 /**
- * Google Gemini 2.5 Flash Image API 服务
+ * Google Gemini Image 服务
  * 用于生成简笔画图片
  */
 
-import fetch from 'node-fetch';
 import * as fs from 'fs';
 import * as path from 'path';
 import { spawn } from 'child_process';
-
-const API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent';
-
-// 从环境变量获取 API Key
-const getApiKey = (): string => {
-    const key = process.env.GOOGLE_API_KEY;
-    if (!key) {
-        throw new Error('GOOGLE_API_KEY 环境变量未设置');
-    }
-    return key;
-};
+import { generateGeminiImage } from './geminiImageService.js';
 
 // 主题对应的 prompt
 const THEME_PROMPTS: Record<string, string> = {
@@ -32,66 +21,14 @@ const THEME_PROMPTS: Record<string, string> = {
 };
 
 /**
- * 调用 Google Gemini API 生成图片
+ * 调用 Gemini API 生成图片
  */
 export async function generateImageWithGemini(theme: string = 'dinosaur'): Promise<string> {
-    const apiKey = getApiKey();
     const prompt = THEME_PROMPTS[theme.toLowerCase()] || THEME_PROMPTS.dinosaur;
-    
-    const url = `${API_ENDPOINT}?key=${apiKey}`;
-    
-    const payload = {
-        contents: [
-            {
-                role: 'user',
-                parts: [
-                    {
-                        text: prompt
-                    }
-                ]
-            }
-        ],
-        generationConfig: {
-            responseModalities: ['IMAGE'],
-            temperature: 0.4
-        }
-    };
-    
-    console.log(`[Imagen] 正在生成 ${theme} 主题图片...`);
-    
-    const response = await fetch(url, {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(payload)
-    });
-    
-    if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(`API 调用失败: ${response.status} - ${errorText}`);
-    }
-    
-    const data = await response.json() as any;
-    
-    // 检查响应
-    if (!data.candidates || data.candidates.length === 0) {
-        throw new Error('API 返回空结果');
-    }
-    
-    const candidate = data.candidates[0];
-    
-    // 检查安全拦截
-    if (candidate.finishReason === 'SAFETY') {
-        throw new Error('图片被安全策略拦截');
-    }
-    
-    // 提取 Base64 图片数据
-    const inlineData = candidate.content?.parts?.[0]?.inlineData;
-    if (!inlineData?.data) {
-        throw new Error('无法解析响应数据');
-    }
-    
+    console.log(`[Imagen] 正在生成 ${theme} 主题图片... (Gemini API)`);
+
+    const base64Data = await generateGeminiImage(prompt, { temperature: 0.4 });
+
     console.log(`[Imagen] 图片生成成功`);
     
     // 简笔画存到 sketches 文件夹
@@ -105,7 +42,7 @@ export async function generateImageWithGemini(theme: string = 'dinosaur'): Promi
     }
     
     // 解码并保存
-    const imageBuffer = Buffer.from(inlineData.data, 'base64');
+    const imageBuffer = Buffer.from(base64Data, 'base64');
     fs.writeFileSync(originalPath, imageBuffer);
     console.log(`[Imagen] 简笔画已保存: ${originalPath}`);
     

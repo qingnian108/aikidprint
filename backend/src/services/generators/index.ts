@@ -705,36 +705,36 @@ function buildLogicBlank(title: string, subtitle = '') {
 }
 
 /**
- * 生成迷宫图片，返回可公开访问的相对路径
+ * 生成迷宫图片，返回 SVG data URL（不落盘存储）
  */
 function generateMazeImage(difficulty: string = 'medium'): string | null {
     const allowed = ['easy', 'medium', 'hard'];
     const level = allowed.includes(difficulty) ? difficulty : 'medium';
     
-    // 脚本路径：项目根目录的 scripts 文件夹
     const scriptPath = path.resolve(__dirname, '../../../../scripts/maze_generator.py');
-    const outDir = path.resolve(__dirname, '../../../public/generated/mazes');
-    const filename = `maze_${level}_${Date.now()}.svg`;
-    const outPath = path.join(outDir, filename);
-
-    console.log(`[Maze] Script path: ${scriptPath}`);
-    console.log(`[Maze] Output path: ${outPath}`);
-
-    if (!fs.existsSync(outDir)) {
-        fs.mkdirSync(outDir, { recursive: true });
-    }
-
     const pythonPath = process.env.PYTHON_PATH || 'E:\\python\\python.exe';
-    const result = spawnSync(pythonPath, [scriptPath, '-d', level, '-o', outPath], { encoding: 'utf-8' });
+    
+    console.log(`[Maze] Generating ${level} maze (in-memory)...`);
+
+    // 使用 --stdout 参数，直接获取 SVG 内容
+    const result = spawnSync(pythonPath, [scriptPath, '-d', level, '--stdout'], { encoding: 'utf-8' });
+    
     if (result.status !== 0) {
-        console.error('[Maze] python generate error:', result.stderr || result.stdout);
+        console.error('[Maze] python generate error:', result.stderr);
         return null;
     }
-    if (!fs.existsSync(outPath)) {
-        console.error('[Maze] output not found:', outPath);
+    
+    const svgContent = result.stdout.trim();
+    if (!svgContent || !svgContent.startsWith('<svg')) {
+        console.error('[Maze] invalid SVG output');
         return null;
     }
-    return `/generated/mazes/${filename}`;
+    
+    // 转为 base64 data URL
+    const base64 = Buffer.from(svgContent, 'utf-8').toString('base64');
+    console.log(`[Maze] Generated ${level} maze (${svgContent.length} chars)`);
+    
+    return `data:image/svg+xml;base64,${base64}`;
 }
 
 const generateMaze = async (config: any) => {
@@ -1043,10 +1043,8 @@ export const logicGenerators = new Map<string, Function>([
     ['sorting', generateSortingData],
     ['pattern-compare', generatePatternCompare],
     ['pattern-sequencing', generatePatternSequencing],
-    ['logic-grid', generateLogicGrid],
     ['odd-one-out', generateOddOneOut],
-    ['matching-halves', generateMatchingHalves],
-    ['shape-synthesis', generateShapeSynthesis]
+    ['matching-halves', generateMatchingHalves]
 ]);
 
 // ==================== FINE MOTOR ====================
@@ -1107,7 +1105,9 @@ export const creativityGenerators = new Map<string, Function>([
     ['coloring-page', generateColoringPage],
     ['creative-prompt', generateCreativePrompt],
     ['trace-and-draw', generateTraceAndDraw],
-    ['shape-path', generateShapePath]
+    ['shape-path', generateShapePath],
+    ['logic-grid', generateLogicGrid],
+    ['shape-synthesis', generateShapeSynthesis]
 ]);
 
 // Trace and Draw 生成器

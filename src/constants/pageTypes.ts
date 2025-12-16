@@ -401,15 +401,6 @@ export const CATEGORIES: Category[] = [
         ]
       },
       {
-        id: 'logic-grid',
-        title: 'Logic Grid',
-        description: 'Complete the missing piece in the grid.',
-        previewImage: '/previews/logic-grid.png',
-        options: [
-          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
-        ]
-      },
-      {
         id: 'odd-one-out',
         title: 'Odd One Out',
         description: 'Circle the one that is different.',
@@ -423,15 +414,6 @@ export const CATEGORIES: Category[] = [
         title: 'Matching Halves',
         description: 'Match the two halves to complete the picture.',
         previewImage: '/previews/matching-halves.png',
-        options: [
-          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
-        ]
-      },
-      {
-        id: 'shape-synthesis',
-        title: 'Shape Synthesis',
-        description: 'Use these shapes to build an object. What can you make?',
-        previewImage: '/previews/shape-synthesis.png',
         options: [
           { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]
@@ -506,6 +488,24 @@ export const CATEGORIES: Category[] = [
         title: 'Shape Path',
         description: 'Trace along the shapes from start to finish.',
         previewImage: '/previews/shape-path.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'logic-grid',
+        title: 'Logic Grid',
+        description: 'Complete the missing piece in the grid.',
+        previewImage: '/previews/logic-grid.png',
+        options: [
+          { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
+        ]
+      },
+      {
+        id: 'shape-synthesis',
+        title: 'Shape Synthesis',
+        description: 'Use these shapes to build an object. What can you make?',
+        previewImage: '/previews/shape-synthesis.png',
         options: [
           { id: 'theme', type: 'select', label: 'Theme', defaultValue: 'dinosaur', options: THEME_OPTIONS }
         ]

@@ -216,6 +216,110 @@ def generate_dot_to_dot(input_path: str, output_path: str = None,
     return output_path
 
 
+def generate_dot_to_dot_base64(input_path: str, num_points: int = 50, angle_threshold: int = 20) -> str:
+    """
+    生成点对点图并返回 base64 编码（不保存文件）
+    """
+    import base64
+    
+    # 读取图片
+    img = cv2.imread(input_path)
+    if img is None:
+        print(f"[ERROR] Cannot read image: {input_path}", file=sys.stderr)
+        return ""
+    
+    # 放大图片到目标尺寸
+    target_size = 800
+    h, w = img.shape[:2]
+    if max(h, w) < target_size:
+        scale = target_size / max(h, w)
+        new_w = int(w * scale)
+        new_h = int(h * scale)
+        img = cv2.resize(img, (new_w, new_h), interpolation=cv2.INTER_CUBIC)
+        print(f"   - 图片放大: {w}x{h} -> {new_w}x{new_h}", file=sys.stderr)
+    
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    _, binary = cv2.threshold(gray, 127, 255, cv2.THRESH_BINARY_INV)
+    contours, _ = cv2.findContours(binary, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_NONE)
+    
+    if not contours:
+        print("[ERROR] No contours found", file=sys.stderr)
+        return ""
+    
+    main_contour = max(contours, key=cv2.contourArea)
+    contour_points = main_contour.reshape(-1, 2)
+    total_length = cv2.arcLength(main_contour, closed=True)
+    
+    cumulative_length = [0]
+    for i in range(1, len(contour_points)):
+        dist = np.linalg.norm(contour_points[i] - contour_points[i-1])
+        cumulative_length.append(cumulative_length[-1] + dist)
+    cumulative_length = np.array(cumulative_length)
+    
+    step = total_length / num_points
+    sampled_points = []
+    for i in range(num_points):
+        target_length = i * step
+        idx = np.searchsorted(cumulative_length, target_length)
+        idx = min(idx, len(contour_points) - 1)
+        sampled_points.append(contour_points[idx].tolist())
+    
+    filtered_points = sampled_points
+    for _ in range(2):
+        filtered_points = filter_points_on_angle(filtered_points, angle_threshold)
+    
+    min_points = max(10, num_points // 5)
+    if len(filtered_points) < min_points:
+        step = len(sampled_points) // min_points
+        filtered_points = sampled_points[::step][:min_points]
+    
+    print(f"   - 初始采样: {num_points} 点", file=sys.stderr)
+    print(f"   - 角度过滤后: {len(filtered_points)} 点", file=sys.stderr)
+    
+    output = img.copy()
+    outer_mask = np.zeros(gray.shape, dtype=np.uint8)
+    cv2.drawContours(outer_mask, [main_contour], -1, 255, thickness=30)
+    outer_faint_color = 230
+    
+    for y in range(output.shape[0]):
+        for x in range(output.shape[1]):
+            if outer_mask[y, x] == 255 and gray[y, x] < 200:
+                output[y, x] = [outer_faint_color, outer_faint_color, outer_faint_color]
+    
+    dot_radius = max(4, int(min(img.shape[:2]) / 150))
+    base_font_scale = max(0.35, min(img.shape[:2]) / 1200)
+    font_scale = base_font_scale * 0.75 if len(filtered_points) > 10 else base_font_scale
+    font_thickness = max(1, int(font_scale * 2))
+    number_color = (139, 90, 43)
+    
+    cx = int(np.mean([p[0] for p in filtered_points]))
+    cy = int(np.mean([p[1] for p in filtered_points]))
+    
+    for i, point in enumerate(filtered_points):
+        x, y = int(point[0]), int(point[1])
+        cv2.circle(output, (x, y), dot_radius, (0, 0, 0), -1)
+        
+        label = str(i + 1)
+        text_size = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, font_scale, font_thickness)[0]
+        
+        offset = dot_radius + 5
+        text_x = x + offset if x > cx else x - offset - text_size[0]
+        text_y = y - offset if y < cy else y + offset + text_size[1]
+        
+        text_x = max(5, min(text_x, img.shape[1] - text_size[0] - 5))
+        text_y = max(text_size[1] + 5, min(text_y, img.shape[0] - 5))
+        
+        cv2.putText(output, label, (text_x, text_y),
+                    cv2.FONT_HERSHEY_SIMPLEX, font_scale, number_color, font_thickness)
+    
+    # 编码为 PNG 并转 base64
+    _, buffer = cv2.imencode('.png', output)
+    base64_str = base64.b64encode(buffer).decode('utf-8')
+    
+    print(f"[OK] Generated base64 ({len(base64_str)} chars)", file=sys.stderr)
+    return base64_str
+
+
 def main():
     if len(sys.argv) < 2:
         print(__doc__)
@@ -227,7 +331,13 @@ def main():
     num_points = int(sys.argv[3]) if len(sys.argv) > 3 else 50
     angle_threshold = int(sys.argv[4]) if len(sys.argv) > 4 else 20
     
-    generate_dot_to_dot(input_path, output_path, num_points, angle_threshold)
+    # 如果 output_path 是 "--stdout"，输出 base64 到 stdout
+    if output_path == "--stdout":
+        base64_str = generate_dot_to_dot_base64(input_path, num_points, angle_threshold)
+        if base64_str:
+            print(base64_str)  # 输出到 stdout
+    else:
+        generate_dot_to_dot(input_path, output_path, num_points, angle_threshold)
 
 
 if __name__ == "__main__":

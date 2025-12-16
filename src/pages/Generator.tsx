@@ -83,8 +83,23 @@ const Generator: React.FC = () => {
     if (!pagesRef.current) return;
     setExporting(true);
     try {
-      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-      const pageWidth = 210;
+      // 获取用户打印设置
+      const { getPrintSettings, getDefaultPrintSettings } = await import('../services/firestoreService');
+      let printSettings = getDefaultPrintSettings();
+      if (currentUser) {
+        try {
+          const userSettings = await getPrintSettings(currentUser.uid);
+          if (userSettings) printSettings = userSettings;
+        } catch (e) {
+          console.log('使用默认打印设置');
+        }
+      }
+
+      const isA4 = printSettings.paperSize === 'a4';
+      const pageWidth = isA4 ? 210 : 215.9;
+      const pageHeight = isA4 ? 297 : 279.4;
+
+      const pdf = new jsPDF({ orientation: 'portrait', unit: 'mm', format: isA4 ? 'a4' : 'letter' });
       const pageElements = pagesRef.current.querySelectorAll<HTMLElement>('[data-pdf-page]');
 
       for (let i = 0; i < pageElements.length; i++) {
@@ -94,7 +109,7 @@ const Generator: React.FC = () => {
           scale: 2,
           width: Math.ceil(rect.width),
           height: Math.ceil(rect.height),
-          windowWidth: Math.max(Math.ceil(rect.width), 1200), // force desktop breakpoint for grid
+          windowWidth: Math.max(Math.ceil(rect.width), 1200),
           windowHeight: Math.max(Math.ceil(rect.height), 1400),
           scrollX: -window.scrollX,
           scrollY: -window.scrollY,
@@ -103,10 +118,27 @@ const Generator: React.FC = () => {
         });
         const imgData = canvas.toDataURL('image/png');
         const imgProps = pdf.getImageProperties(imgData);
-        const imgHeight = (imgProps.height * pageWidth) / imgProps.width;
+        
+        // Letter 图片适配不同纸张：
+        // - Letter 纸：以宽度为准，完美适配
+        // - A4 纸：以高度为准，左右均匀裁剪
+        const imgRatio = imgProps.width / imgProps.height;
+        let imgWidth: number, imgHeight: number, x: number, y: number;
+        
+        if (isA4) {
+          imgHeight = pageHeight;
+          imgWidth = pageHeight * imgRatio;
+          x = (pageWidth - imgWidth) / 2;
+          y = 0;
+        } else {
+          imgWidth = pageWidth;
+          imgHeight = pageWidth / imgRatio;
+          x = 0;
+          y = 0;
+        }
 
         if (i > 0) pdf.addPage();
-        pdf.addImage(imgData, 'PNG', 0, 0, pageWidth, imgHeight);
+        pdf.addImage(imgData, 'PNG', x, y, imgWidth, imgHeight);
       }
 
       pdf.save('ai-kid-print.pdf');

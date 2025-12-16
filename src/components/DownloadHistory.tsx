@@ -191,19 +191,22 @@ const DownloadHistory: React.FC = () => {
           img.src = imageUrl;
         });
 
+        // Letter 图片适配不同纸张：
+        // - Letter 纸：以宽度为准，完美适配
+        // - A4 纸：以高度为准，左右均匀裁剪
         const imgRatio = img.width / img.height;
-        const pageRatio = contentWidth / pageHeight;
-
+        const isA4 = !isLetter;
         let imgWidth: number, imgHeight: number, x: number, y: number;
-        if (imgRatio > pageRatio) {
-          imgWidth = contentWidth;
-          imgHeight = contentWidth / imgRatio;
-          x = binderMargin;
-          y = (pageHeight - imgHeight) / 2;
-        } else {
+        
+        if (isA4) {
           imgHeight = pageHeight;
           imgWidth = pageHeight * imgRatio;
           x = binderMargin + (contentWidth - imgWidth) / 2;
+          y = 0;
+        } else {
+          imgWidth = contentWidth;
+          imgHeight = contentWidth / imgRatio;
+          x = binderMargin;
           y = 0;
         }
 

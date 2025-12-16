@@ -95,35 +95,44 @@ const NamePreview: React.FC = () => {
         img.src = generatedImageUrl;
       });
 
-      // 创建 PDF (A4 尺寸)
+      // 获取用户打印设置
+      const { getPrintSettings, getDefaultPrintSettings } = await import('../services/firestoreService');
+      let printSettings = getDefaultPrintSettings();
+      try {
+        const userSettings = await getPrintSettings(currentUser.uid);
+        if (userSettings) printSettings = userSettings;
+      } catch (e) {
+        console.log('使用默认打印设置');
+      }
+
+      const isA4 = printSettings.paperSize === 'a4';
+      const pageWidth = isA4 ? 210 : 215.9;
+      const pageHeight = isA4 ? 297 : 279.4;
+
+      // 创建 PDF
       const pdf = new jsPDF({
         orientation: 'portrait',
         unit: 'mm',
-        format: 'a4'
+        format: isA4 ? 'a4' : 'letter'
       });
 
-      // A4 尺寸: 210mm x 297mm
-      const pageWidth = 210;
-      const pageHeight = 297;
-
-      // 计算图片在 PDF 中的尺寸，保持比例
+      // Letter 图片适配不同纸张：
+      // - Letter 纸：以宽度为准，完美适配
+      // - A4 纸：以高度为准，左右均匀裁剪
       const imgRatio = img.width / img.height;
-      const pageRatio = pageWidth / pageHeight;
-
-      let imgWidth, imgHeight;
-      if (imgRatio > pageRatio) {
-        // 图片更宽，以宽度为准
-        imgWidth = pageWidth;
-        imgHeight = pageWidth / imgRatio;
-      } else {
-        // 图片更高，以高度为准
+      let imgWidth: number, imgHeight: number, x: number, y: number;
+      
+      if (isA4) {
         imgHeight = pageHeight;
         imgWidth = pageHeight * imgRatio;
+        x = (pageWidth - imgWidth) / 2;
+        y = 0;
+      } else {
+        imgWidth = pageWidth;
+        imgHeight = pageWidth / imgRatio;
+        x = 0;
+        y = 0;
       }
-
-      // 居中放置
-      const x = (pageWidth - imgWidth) / 2;
-      const y = (pageHeight - imgHeight) / 2;
 
       // 添加图片到 PDF
       pdf.addImage(img, 'PNG', x, y, imgWidth, imgHeight);

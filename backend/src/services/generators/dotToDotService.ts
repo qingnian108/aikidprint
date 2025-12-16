@@ -9,15 +9,12 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { fileURLToPath } from 'url';
 import sharp from 'sharp';
+import { generateGeminiImage } from '../geminiImageService.js';
+import { cleanupFolder } from '../../utils/cacheManager.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Google Gemini API 配置（临时关闭，除非显式开启开关）
-// 使用 Generative Language API 端点（支持 API Key 鉴权）
-const API_ENDPOINT = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-image:generateContent';
-const API_KEY = process.env.GOOGLE_API_KEY || '';
-const USE_IMAGEN_API = process.env.DOTS_USE_API === 'true';
 const DOTS_POINT_COUNT = Math.max(10, Math.min(60, Number(process.env.DOTS_POINT_COUNT) || 20));
 
 // 固定万能模板（永远附加在提示词后面）
@@ -166,109 +163,36 @@ const THEME_IMAGE_DIRS: Record<string, string> = {
 };
 
 /**
- * 调用 Google Gemini API 生成图片
+ * 调用 Gemini API 生成图片
  * 返回 { imagePath, characterName } 或 null
  */
 async function generateImageWithGemini(theme: string): Promise<{ imagePath: string; characterName: string } | null> {
-    // 直接调用 API，不再检查 USE_IMAGEN_API 开关
-    if (!API_KEY) {
-        console.log('[Imagen] Skipped (no API key configured)');
-        return null;
-    }
     // 标准化主题名
     const normalizedTheme = THEME_ALIASES[theme.toLowerCase()] || 'dinosaur';
     const { prompt, characterName } = generatePrompt(theme);
-    const url = `${API_ENDPOINT}?key=${API_KEY}`;
-    
-    // Gemini 2.5 Flash Image API 格式
-    const payload = {
-        contents: [
-            {
-                parts: [
-                    {
-                        text: prompt
-                    }
-                ]
-            }
-        ],
-        generationConfig: {
-            responseModalities: ['IMAGE'],
-            temperature: 0.4
-        }
-    };
-    
-    console.log(`[Imagen] Calling Google Gemini API...`);
+
+    console.log(`[Imagen] Calling Gemini API...`);
     console.log(`[Imagen] Theme: ${theme}`);
     console.log(`[Imagen] Prompt: ${prompt.substring(0, 100)}...`);
-    
+
     try {
-        const response = await fetch(url, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(payload)
-        });
-        
-        if (!response.ok) {
-            const errorText = await response.text();
-            console.error(`[Imagen] API error: ${response.status} - ${errorText.substring(0, 200)}`);
-            return null;
-        }
-        
-        const data = await response.json() as any;
-        
-        // Imagen 3 响应格式
-        if (!data.predictions || data.predictions.length === 0) {
-            // 尝试 Gemini 格式
-            if (data.candidates && data.candidates.length > 0) {
-                const candidate = data.candidates[0];
-                if (candidate.finishReason === 'SAFETY') {
-                    console.error('[Imagen] Blocked by safety filter');
-                    return null;
-                }
-                const inlineData = candidate.content?.parts?.[0]?.inlineData;
-                if (inlineData?.data) {
-                    const timestamp = Date.now();
-                    // 简笔画按主题分类存到 sketches/{theme}/ 文件夹
-                    const outputDir = path.join(__dirname, '../../../public/generated/sketches', normalizedTheme);
-                    const imagePath = path.join(outputDir, `sketch_${timestamp}.png`);
-                    if (!fs.existsSync(outputDir)) {
-                        fs.mkdirSync(outputDir, { recursive: true });
-                    }
-                    const imageBuffer = Buffer.from(inlineData.data, 'base64');
-                    fs.writeFileSync(imagePath, imageBuffer);
-                    console.log(`[Imagen] Sketch saved: ${imagePath}`);
-                    return { imagePath, characterName };
-                }
-            }
-            console.error('[Imagen] Empty response');
-            return null;
-        }
-        
-        // Imagen 3 格式
-        const prediction = data.predictions[0];
-        const imageData = prediction.bytesBase64Encoded;
-        if (!imageData) {
-            console.error('[Imagen] No image data in response');
-            return null;
-        }
-        
-        // 简笔画按主题分类存到 sketches/{theme}/ 文件夹
+        const base64 = await generateGeminiImage(prompt, { temperature: 0.4 });
+
         const timestamp = Date.now();
+        // 简笔画按主题分类存到 sketches/{theme}/ 文件夹
         const outputDir = path.join(__dirname, '../../../public/generated/sketches', normalizedTheme);
         const imagePath = path.join(outputDir, `sketch_${timestamp}.png`);
-        
         if (!fs.existsSync(outputDir)) {
             fs.mkdirSync(outputDir, { recursive: true });
         }
-        
-        const imageBuffer = Buffer.from(imageData, 'base64');
+        const imageBuffer = Buffer.from(base64, 'base64');
         fs.writeFileSync(imagePath, imageBuffer);
-        
         console.log(`[Imagen] Sketch saved: ${imagePath}`);
-        return { imagePath, characterName };
         
+        // 清理旧缓存，每个主题只保留最新 20 张
+        cleanupFolder(outputDir, 20);
+        
+        return { imagePath, characterName };
     } catch (error) {
         console.error(`[Imagen] Error: ${error}`);
         return null;
@@ -360,14 +284,15 @@ function getRandomSketchImage(theme: string): string | null {
 
 /**
  * 将 SVG 转换为 PNG（Python 的 cv2 不支持 SVG）
+ * 使用系统临时目录，处理完后自动清理
  */
 async function convertSvgToPng(svgPath: string): Promise<string> {
     const timestamp = Date.now();
-    const outputDir = path.join(__dirname, '../../../public/generated/temp');
-    const pngPath = path.join(outputDir, `svg_converted_${timestamp}.png`);
+    const tempDir = path.join(process.env.TEMP || process.env.TMP || '/tmp', 'dot-to-dot');
+    const pngPath = path.join(tempDir, `svg_converted_${timestamp}.png`);
     
-    if (!fs.existsSync(outputDir)) {
-        fs.mkdirSync(outputDir, { recursive: true });
+    if (!fs.existsSync(tempDir)) {
+        fs.mkdirSync(tempDir, { recursive: true });
     }
     
     console.log(`[DotToDot] Converting SVG to PNG: ${svgPath}`);
@@ -379,12 +304,26 @@ async function convertSvgToPng(svgPath: string): Promise<string> {
         .png()
         .toFile(pngPath);
     
-    console.log(`[DotToDot] SVG converted to PNG: ${pngPath}`);
+    console.log(`[DotToDot] SVG converted to PNG (temp): ${pngPath}`);
     return pngPath;
 }
 
 /**
- * 调用 Python 脚本处理点对点图
+ * 删除临时文件（静默失败）
+ */
+function cleanupTempFile(filePath: string): void {
+    try {
+        if (fs.existsSync(filePath)) {
+            fs.unlinkSync(filePath);
+            console.log(`[DotToDot] Cleaned up temp file: ${filePath}`);
+        }
+    } catch {
+        // 静默忽略清理失败
+    }
+}
+
+/**
+ * 调用 Python 脚本处理点对点图，返回 base64 data URL（不落盘存储）
  */
 export async function processDotToDot(
     inputPath: string,
@@ -393,53 +332,59 @@ export async function processDotToDot(
 ): Promise<string> {
     // 如果是 SVG 文件，先转换为 PNG
     let actualInputPath = inputPath;
+    let tempPngPath: string | null = null;
+
     if (inputPath.toLowerCase().endsWith('.svg')) {
         actualInputPath = await convertSvgToPng(inputPath);
+        tempPngPath = actualInputPath;
     }
-    
+
     return new Promise((resolve, reject) => {
-        const timestamp = Date.now();
-        // 点点图存到 dots 文件夹
-        const outputDir = path.join(__dirname, '../../../public/generated/dots');
-        const outputPath = path.join(outputDir, `dots_${timestamp}.png`);
-        
-        if (!fs.existsSync(outputDir)) {
-            fs.mkdirSync(outputDir, { recursive: true });
-        }
-        
         const scriptPath = path.join(__dirname, '../../../../scripts/dot_to_dot.py');
         const pythonPath = process.env.PYTHON_PATH || 'E:\\python\\python.exe';
-        
-        console.log(`[DotToDot] Processing...`);
+
+        console.log(`[DotToDot] Processing (in-memory)...`);
         console.log(`[DotToDot] Input: ${actualInputPath}`);
-        console.log(`[DotToDot] Output: ${outputPath}`);
-        
-        const args = [scriptPath, actualInputPath, outputPath, String(numPoints), String(angleThreshold)];
+
+        // 使用 --stdout 参数，输出 base64 到 stdout
+        const args = [scriptPath, actualInputPath, '--stdout', String(numPoints), String(angleThreshold)];
         const proc = spawn(pythonPath, args);
-        
+
         let stdout = '';
         let stderr = '';
-        
+
         proc.stdout.on('data', (data) => {
             stdout += data.toString();
-            console.log(`[DotToDot] ${data.toString().trim()}`);
         });
-        
+
         proc.stderr.on('data', (data) => {
             stderr += data.toString();
-            console.error(`[DotToDot Error] ${data.toString().trim()}`);
+            // stderr 包含日志信息，打印出来
+            const lines = data.toString().trim().split('\n');
+            lines.forEach((line: string) => {
+                if (line.trim()) console.log(`[DotToDot] ${line}`);
+            });
         });
-        
+
         proc.on('close', (code) => {
-            if (code === 0 && fs.existsSync(outputPath)) {
-                console.log(`[DotToDot] Done: ${outputPath}`);
-                resolve(`/generated/dots/dots_${timestamp}.png`);
+            // 清理临时文件
+            if (tempPngPath) {
+                cleanupTempFile(tempPngPath);
+            }
+
+            if (code === 0 && stdout.trim()) {
+                const base64 = stdout.trim();
+                console.log(`[DotToDot] Done (${base64.length} chars)`);
+                resolve(`data:image/png;base64,${base64}`);
             } else {
-                reject(new Error(`Python script failed (code=${code}): ${stderr || stdout}`));
+                reject(new Error(`Python script failed (code=${code}): ${stderr}`));
             }
         });
-        
+
         proc.on('error', (err) => {
+            if (tempPngPath) {
+                cleanupTempFile(tempPngPath);
+            }
             reject(new Error(`Cannot start Python: ${err.message}`));
         });
     });

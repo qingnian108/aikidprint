@@ -286,9 +286,10 @@ def main():
                        choices=['dfs', 'kruskal', 'prim', 'bfs'],
                        help='生成算法（默认根据难度自动选择）')
     parser.add_argument('-s', '--size', type=int, default=None, help='迷宫大小（覆盖难度设置）')
-    parser.add_argument('-o', '--output', default='maze.svg', help='输出文件')
+    parser.add_argument('-o', '--output', default=None, help='输出文件（不指定则输出到 stdout）')
     parser.add_argument('--solution', action='store_true', help='显示解答路径')
     parser.add_argument('-c', '--cell-size', type=int, default=25, help='单元格大小')
+    parser.add_argument('--stdout', action='store_true', help='输出到 stdout（用于 Node.js 调用）')
     
     args = parser.parse_args()
     
@@ -301,15 +302,20 @@ def main():
     
     svg = maze.to_svg(args.cell_size, show_solution=args.solution)
     
-    with open(args.output, 'w', encoding='utf-8') as f:
-        f.write(svg)
-    
-    print(f"[Maze] Generated: {args.output}")
-    print(f"   - Size: {size} x {size}")
-    print(f"   - Difficulty: {args.difficulty}")
-    print(f"   - Algorithm: {algorithm}")
-    if args.solution:
-        print(f"   - Solution: shown")
+    # 如果指定 --stdout 或没有指定输出文件，则输出到 stdout
+    if args.stdout or args.output is None:
+        print(svg)
+    else:
+        with open(args.output, 'w', encoding='utf-8') as f:
+            f.write(svg)
+        
+        import sys
+        print(f"[Maze] Generated: {args.output}", file=sys.stderr)
+        print(f"   - Size: {size} x {size}", file=sys.stderr)
+        print(f"   - Difficulty: {args.difficulty}", file=sys.stderr)
+        print(f"   - Algorithm: {algorithm}", file=sys.stderr)
+        if args.solution:
+            print(f"   - Solution: shown", file=sys.stderr)
 
 
 if __name__ == '__main__':

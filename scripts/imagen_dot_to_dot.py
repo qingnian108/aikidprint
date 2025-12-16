@@ -26,7 +26,7 @@ from dot_to_dot import generate_dot_to_dot
 
 # 默认配置
 DEFAULT_PROMPT = "Generate a simple line drawing of a cute baby dinosaur, black outline only, white background, coloring book style, no shading, minimal details"
-API_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-exp:generateContent"
+API_ENDPOINT = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3-pro-image-preview:generateContent"
 
 # Number Path canvas 尺寸（根据 imageGenerator.ts）
 CANVAS_WIDTH = 678

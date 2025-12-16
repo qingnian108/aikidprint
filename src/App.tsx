@@ -13,6 +13,8 @@ import NamePreview from './pages/NamePreview';
 import Subscribe from './pages/Subscribe';
 import WeeklyPack from './pages/WeeklyPack';
 import WeeklyPackPreview from './pages/WeeklyPackPreview';
+import CustomPack from './pages/CustomPack';
+import CustomPackPreview from './pages/CustomPackPreview';
 import Library from './pages/Library';
 import Pricing from './pages/Pricing';
 import DashboardNew from './pages/DashboardNew';
@@ -46,6 +48,8 @@ const App: React.FC = () => {
               {/* Main Feature Routes */}
               <Route path="weekly-pack" element={<WeeklyPack />} />
               <Route path="weekly-pack/preview/:packId" element={<WeeklyPackPreview />} />
+              <Route path="custom-pack" element={<CustomPack />} />
+              <Route path="custom-pack/preview/:packId" element={<CustomPackPreview />} />
               <Route path="library" element={<Library />} />
 
               <Route path="pricing" element={<Pricing />} />

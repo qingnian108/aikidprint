@@ -202,7 +202,7 @@ export const generateWorksheetContent = async (config: WorksheetConfig): Promise
         try {
           const response = await retryWithBackoff(async () => {
             return await ai.models.generateContent({
-              model: 'gemini-2.0-flash-exp',
+              model: 'gemini-3-pro-image-preview',
               contents: {
                 parts: [{ text: imagePrompt }]
               }
@@ -263,7 +263,7 @@ export const generateWorksheetContent = async (config: WorksheetConfig): Promise
 
       const response = await retryWithBackoff(async () => {
         return await ai.models.generateContent({
-          model: 'gemini-2.0-flash-exp',
+          model: 'gemini-3-pro-image-preview',
           contents: prompt,
           config: {
             systemInstruction: systemInstruction,

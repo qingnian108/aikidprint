@@ -1,8 +1,8 @@
-﻿import puppeteer from 'puppeteer';
+import puppeteer from 'puppeteer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
-import { getLetterImage, getRandomAnimalImages, getRandomDecorImages, getThemeBorders, getThemeCharacter, getThemeColorAssets, getThemeMainLineAssets, getThemeMainColorAssets, isImageFile, getRandomTitleIcon, getThemeColor, getRandomLineArt, getCreativePromptImage, getThemeBackground } from '../utils/imageHelper.js';
+import { getLetterImage, getRandomAnimalImages, getRandomDecorImages, getThemeBorders, getThemeCharacter, getThemeColorAssets, getThemeMainLineAssets, getThemeMainColorAssets, isImageFile, getRandomTitleIcon, getThemeColor, getRandomLineArt, getCreativePromptImage, getThemeBackground, removeWhiteBackground } from '../utils/imageHelper.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -26,7 +26,10 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成通用的页面基础样式
+     * ����ͨ�õ�ҳ��������?
+     * top-bar: top: 2px (Name/Date �����ƶ� 2px)
+     * divider: top: 62px (�ָ���λ��)
+     * safe-area: top: 69px (��������)
      */
     private getBaseStyles(themeColors: { primary: string; secondary: string; accent: string; light: string }): string {
         return `
@@ -56,8 +59,8 @@ export class ImageGenerator {
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             margin: 0;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
@@ -65,13 +68,13 @@ export class ImageGenerator {
         }
         .page {
             position: relative;
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             overflow: hidden;
         }
         .top-bar {
             position: absolute;
-            top: 0;
+            top: 16px;
             left: 24px;
             right: 24px;
             height: auto;
@@ -101,7 +104,7 @@ export class ImageGenerator {
         .dash-line.short { width: 180px; }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -111,7 +114,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 24px 18px 16px;
@@ -163,8 +166,8 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成带图标的标题 HTML
-     * 图标随机出现在标题左侧或右侧
+     * ���ɴ�ͼ��ı���?HTML
+     * ͼ����������ڱ��������Ҳ�?
      */
     private getTitleHtml(title: string, titleIcon: string): string {
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
@@ -180,17 +183,17 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成背景图 HTML 和 CSS（替代贴纸）
+     * ���ɱ���ͼ HTML �� CSS�������ֽ��?
      */
     private getBackgroundHtml(themeKey: string): { html: string; css: string } {
-        const html = ''; // 不需要额外的 HTML，使用 CSS 伪元素
+        const html = ''; // ����Ҫ�����?HTML��ʹ�� CSS αԪ��
         const css = this.getBackgroundCss(themeKey);
         return { html, css };
     }
 
     /**
-     * 生成贴纸 HTML - 已改为返回背景图样式
-     * 使用内联 style 标签注入背景图 CSS
+     * ������ֽ HTML - �Ѹ�Ϊ���ر���ͼ��ʽ
+     * ʹ������ style ��ǩע�뱳��ͼ CSS
      */
     private getStickersHtml(themeKey: string): string {
         const backgroundImage = getThemeBackground(themeKey);
@@ -208,7 +211,7 @@ export class ImageGenerator {
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            opacity: 0.4;
+            opacity: 0.3;
             z-index: 0;
             pointer-events: none;
         }
@@ -219,9 +222,9 @@ export class ImageGenerator {
     }
 
     /**
-     * 获取背景图 CSS（使用 CSS 变量和伪元素实现）
-     * @param themeKey 主题名称
-     * @returns CSS 字符串，包含背景图样式
+     * ��ȡ����ͼ CSS��ʹ�� CSS ������αԪ��ʵ�֣�
+     * @param themeKey ��������
+     * @returns CSS �ַ�������������ͼ��ʽ
      */
     private getBackgroundCss(themeKey: string): string {
         const backgroundImage = getThemeBackground(themeKey);
@@ -239,7 +242,7 @@ export class ImageGenerator {
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            opacity: 0.4;
+            opacity: 0.3;
             z-index: 0;
             pointer-events: none;
         }
@@ -250,8 +253,8 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成密集贴纸 HTML - 已废弃，返回背景图，使用 getBackgroundHtml 替代
-     * @deprecated 使用 getBackgroundHtml 替代
+     * �����ܼ���ֽ HTML - �ѷ��������ر���ͼ��ʹ�� getBackgroundHtml ���?
+     * @deprecated ʹ�� getBackgroundHtml ���?
      */
     private getDenseStickersHtml(themeKey: string): { html: string; css: string } {
         return this.getBackgroundHtml(themeKey);
@@ -265,18 +268,18 @@ export class ImageGenerator {
         const mazeUrl = content.mazeImageUrl || mazeImageUrl || '';
         const level = String(content.difficulty || difficulty || 'medium');
 
-        // 获取背景图（替代贴纸）
+        // ��ȡ����ͼ�������ֽ��?
         const { html: backgroundHtml, css: backgroundCss } = this.getBackgroundHtml(themeKey);
 
-        // 随机获取标题图标和主题配色
+        // �����ȡ����ͼ���������ɫ
         const titleIcon = getRandomTitleIcon(themeKey);
         const themeColors = getThemeColor(themeKey);
         
-        // 随机决定图标位置（左或右�?
+        // �������ͼ��λ�ã������??
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
 
-        // 迷宫入口/出口图标（根据主题选择�?
+        // �Թ����?����ͼ�꣨��������ѡ��??
         const mazeIconsMap: Record<string, { start: string; end: string }> = {
             dinosaur: {
                 start: '/uploads/assets/A_main_assets/dinosaur/color/dinosaur_000_color.png',
@@ -307,10 +310,10 @@ export class ImageGenerator {
         const cornerLeft = mazeIcons.start;
         const cornerRight = mazeIcons.end;
 
-        // 某些主题的左上角图标需要翻转（对称），某些不需�?
-        const flipLeftIcon = themeKey !== 'space'; // 太空主题不翻�?
+        // ĳЩ��������Ͻ�ͼ����Ҫ��ת���Գƣ���ĳЩ����??
+        const flipLeftIcon = themeKey !== 'space'; // ̫�����ⲻ��??
 
-        // 根据难度调整图标位置（迷宫大小不同，入口出口位置也不同）
+        // �����Ѷȵ���ͼ��λ�ã��Թ���С��ͬ����ڳ���λ��Ҳ��ͬ��?
         const cornerPositions: Record<string, { left: { top: string; left: string }; right: { bottom: string; right: string } }> = {
             easy: {
                 left: { top: '310px', left: '80px' },
@@ -359,8 +362,8 @@ export class ImageGenerator {
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             margin: 0;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
@@ -368,13 +371,13 @@ export class ImageGenerator {
         }
         .page {
             position: relative;
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             overflow: hidden;
         }
         .top-bar {
             position: absolute;
-            top: 0;
+            top: 16px;
             left: 24px;
             right: 24px;
             height: auto;
@@ -404,7 +407,7 @@ export class ImageGenerator {
         .dash-line.short { width: 180px; }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -414,7 +417,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 24px 18px 16px;
@@ -511,7 +514,7 @@ export class ImageGenerator {
             ${cornerRight ? `<img class="corner-img corner-right" src="http://localhost:3000${cornerRight}" />` : ''}
             <div class="maze-wrapper">
                 <div class="maze-box">
-                    ${mazeUrl ? `<img src="http://localhost:3000${mazeUrl}" alt="maze">` : '<div style="color:#94a3b8;font-size:16px;">Maze will appear here</div>'}
+                    ${mazeUrl ? `<img src="${mazeUrl.startsWith('data:') ? mazeUrl : 'http://localhost:3000' + mazeUrl}" alt="maze">` : '<div style="color:#94a3b8;font-size:16px;">Maze will appear here</div>'}
                 </div>
             </div>
         </div>
@@ -524,7 +527,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -540,7 +543,7 @@ export class ImageGenerator {
             ? (data as any).content
             : [data?.content || data || {}];
         
-        // 获取主题颜色
+        // ��ȡ������ɫ
         const theme = pages[0]?.theme || 'dinosaur';
         const themeKey = String(theme).toLowerCase();
         const themeColors = getThemeColor(themeKey);
@@ -603,14 +606,14 @@ export class ImageGenerator {
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            min-height: 1123px;
+            width: 816px;
+            min-height: 1056px;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
         }
         .page {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             padding: 32px 32px 46px;
             page-break-after: always;
         }
@@ -671,7 +674,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -689,20 +692,20 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         
-        // 随机决定图标位置（左或右）
+        // �������ͼ��λ�ã�����ң�
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
 
         const { image: mainImage, word } = getLetterImage(upperLetter);
         const characterImage = getThemeCharacter(themeKey);
         
-        // 获取主题背景图（30% 亮度）
+        // ��ȡ���ⱳ��ͼ��30% ���ȣ�
         const backgroundImage = getThemeBackground(themeKey);
         const backgroundHtml = backgroundImage 
             ? `<div class="theme-background" style="background-image: url('http://localhost:3000${backgroundImage}');"></div>` 
             : '';
 
-        // 使用 uploads/letters/uppercase 中的描红 PNG
+        // ʹ�� uploads/letters/uppercase �е����?PNG
         const tracingRel = `/uploads/letters/uppercase/${upperLetter}_uppercase_tracing.png`;
         const tracingFull = path.join(__dirname, '../../public', tracingRel);
         const tracingImage = fs.existsSync(tracingFull) ? tracingRel : '';
@@ -739,8 +742,8 @@ export class ImageGenerator {
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             margin: 0;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
@@ -748,13 +751,13 @@ export class ImageGenerator {
         }
         .page {
             position: relative;
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             overflow: hidden;
         }
         .top-bar {
             position: absolute;
-            top: 0;
+            top: 16px;
             left: 24px;
             right: 24px;
             height: auto;
@@ -784,7 +787,7 @@ export class ImageGenerator {
         .dash-line.short { width: 180px; }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -794,7 +797,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 24px 18px 16px;
@@ -1001,7 +1004,7 @@ export class ImageGenerator {
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            opacity: 0.4;
+            opacity: 0.3;
             z-index: 0;
             pointer-events: none;
         }
@@ -1085,7 +1088,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -1095,8 +1098,8 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成 Alphabet Sequencing 页面
-     * 填写缺失的字母完成字母序列
+     * ���� Alphabet Sequencing ҳ��
+     * ��дȱʧ����ĸ�����ĸ����?
      */
     async generateAlphabetSequencing(data: any): Promise<string> {
         await this.initialize();
@@ -1110,7 +1113,7 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
-        // 生成行 HTML
+        // ������ HTML
         const rowsHtml = rows.map((row: any) => {
             const cellsHtml = row.sequence.map((letter: string | null) => {
                 if (letter === null) {
@@ -1140,7 +1143,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 20px 0 10px 0;
@@ -1229,7 +1232,7 @@ export class ImageGenerator {
         }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -1265,7 +1268,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
         
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'networkidle0' });
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -1275,8 +1278,8 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成 Beginning Sounds 页面
-     * 匹配图片和首字母 - 左侧字母卡片，右侧图片卡片，中间连线
+     * ���� Beginning Sounds ҳ��
+     * ƥ��ͼƬ������ĸ - �����ĸ��Ƭ���Ҳ�ͼƬ��Ƭ���м�����?
      */
     async generateBeginningSounds(data: any): Promise<string> {
         await this.initialize();
@@ -1290,45 +1293,45 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
-        // 固定5个字母的布局参数
+        // �̶�5����ĸ�Ĳ��ֲ���
         const cardSize = 110;
         const cardGap = 27;
         const fontSize = 72;
         const imageSize = 90;
         const columnGap = 220;
         
-        // 卡片背景颜色
+        // ��Ƭ������ɫ
         const cardColors = [
-            '#E3F2FD', // 浅蓝
-            '#F3E5F5', // 浅紫
-            '#FFF3E0', // 浅橙
-            '#E8F5E9', // 浅绿
-            '#FFF8E1', // 浅黄
-            '#FCE4EC', // 浅粉
-            '#E0F7FA', // 浅青
-            '#FBE9E7', // 浅珊瑚
+            '#E3F2FD', // ǳ��
+            '#F3E5F5', // ǳ��
+            '#FFF3E0', // ǳ��
+            '#E8F5E9', // ǳ��
+            '#FFF8E1', // ǳ��
+            '#FCE4EC', // ǳ��
+            '#E0F7FA', // ǳ��
+            '#FBE9E7', // ǳɺ��
         ];
         
-        // 字母对应的颜色（用于字母本身）
+        // ��ĸ��Ӧ����ɫ��������ĸ������
         const letterColors = [
-            '#F48FB1', // 粉红
-            '#CE93D8', // 紫色
-            '#80CBC4', // 青绿
-            '#A5D6A7', // 绿色
-            '#FFE082', // 黄色
-            '#FFAB91', // 橙色
-            '#90CAF9', // 蓝色
-            '#B39DDB', // 淡紫
+            '#F48FB1', // �ۺ�
+            '#CE93D8', // ��ɫ
+            '#80CBC4', // ����
+            '#A5D6A7', // ��ɫ
+            '#FFE082', // ��ɫ
+            '#FFAB91', // ��ɫ
+            '#90CAF9', // ��ɫ
+            '#B39DDB', // ����
         ];
         
-        // 生成左侧字母卡片 HTML
+        // ���������ĸ���?HTML
         const leftCardsHtml = items.map((item: any, index: number) => `
             <div class="card letter-card" style="background: ${cardColors[index % cardColors.length]}; width: ${cardSize}px; height: ${cardSize}px;">
                 <span class="letter" style="color: ${letterColors[index % letterColors.length]}; font-size: ${fontSize}px;">${item.letter}</span>
             </div>
         `).join('');
         
-        // 生成右侧图片卡片 HTML（使用打乱后的顺序）
+        // �����Ҳ�ͼƬ��Ƭ HTML��ʹ�ô��Һ��˳��?
         const rightCardsHtml = shuffledItems.map((item: any, index: number) => `
             <div class="card image-card" style="background: ${cardColors[(index + 3) % cardColors.length]}; width: ${cardSize}px; height: ${cardSize}px;">
                 <img class="card-image" src="http://localhost:3000${item.image}" alt="${item.word}" style="width: ${imageSize}px; height: ${imageSize}px;" />
@@ -1345,7 +1348,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 24px 0 16px 0;
@@ -1417,7 +1420,7 @@ export class ImageGenerator {
         }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -1460,7 +1463,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
         
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'networkidle0' });
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -1470,8 +1473,8 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成 CVC Words 页面
-     * 简单的 CVC 单词练习 - 按照规范，中间安全区留空
+     * ���� CVC Words ҳ��
+     * �򵥵� CVC ������ϰ - ���չ淶���м䰲ȫ������
      */
     async generateCVCWordsPage(data: any): Promise<string> {
         await this.initialize();
@@ -1485,17 +1488,17 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
-        // 卡片背景颜色
+        // ��Ƭ������ɫ
         const cardBgColors = [
-            '#DBEAFE', // 浅蓝
-            '#FCE7F3', // 浅粉
-            '#CFFAFE', // 浅青
-            '#D1FAE5', // 浅绿
-            '#E9D5FF', // 浅紫
-            '#FEF3C7', // 浅黄
+            '#DBEAFE', // ǳ��
+            '#FCE7F3', // ǳ��
+            '#CFFAFE', // ǳ��
+            '#D1FAE5', // ǳ��
+            '#E9D5FF', // ǳ��
+            '#FEF3C7', // ǳ��
         ];
         
-        // 可用的 CVC 单词和对应的图片文件名（首字母大写）
+        // ���õ� CVC ���ʺͶ�Ӧ��ͼƬ�ļ���������ĸ��д��
         const availableCvcWords = [
             { word: 'cat', image: 'Cat' },
             { word: 'dog', image: 'Dog' },
@@ -1511,17 +1514,17 @@ export class ImageGenerator {
             { word: 'car', image: 'Car' },
         ];
         
-        // 获取单词对应的图片
+        // ��ȡ���ʶ�Ӧ��ͼƬ
         const getWordImage = (word: string) => {
             const found = availableCvcWords.find(w => w.word === word.toLowerCase());
             if (found) {
                 return `/uploads/bigpng/${found.image}.png`;
             }
-            // 默认尝试首字母大写
+            // Ĭ�ϳ�������ĸ��д
             return `/uploads/bigpng/${word.charAt(0).toUpperCase() + word.slice(1)}.png`;
         };
         
-        // 随机选择6个单词
+        // ���ѡ��?������
         const shuffled = [...availableCvcWords].sort(() => Math.random() - 0.5);
         const displayWords = shuffled.slice(0, 6).map(w => w.word);
         
@@ -1556,7 +1559,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 20px 0 10px 0;
@@ -1637,9 +1640,9 @@ export class ImageGenerator {
         }
         .divider {
             position: absolute;
-            top: 60px;
-            left: 16px;
-            width: calc(100% - 32px);
+            top: 62px;
+            left: 0;
+            width: 100%;
             height: 1.5px;
             background: ${themeColors.primary};
             opacity: 0.85;
@@ -1675,7 +1678,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
         
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'networkidle0' });
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -1685,8 +1688,8 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成 Match Uppercase & Lowercase 页面
-     * 大小写字母配对 - 左边大写顺序，右边小写打乱
+     * ���� Match Uppercase & Lowercase ҳ��
+     * ��Сд��ĸ���?- ��ߴ�д˳���ұ�Сд����?
      */
     async generateMatchUpperLower(data: any): Promise<string> {
         await this.initialize();
@@ -1700,16 +1703,16 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
-        // 默认字母集
+        // Ĭ����ĸ��
         const defaultUppercase = ['A', 'B', 'C', 'D', 'E', 'F'];
         const displayUppercase = uppercase.length > 0 ? uppercase : defaultUppercase;
         
-        // 打乱小写字母顺序
+        // ����Сд��ĸ˳��
         const defaultLowercase = displayUppercase.map((l: string) => l.toLowerCase());
         const displayLowercase = lowercase.length > 0 ? lowercase : 
             [...defaultLowercase].sort(() => Math.random() - 0.5);
         
-        // 根据字母数量动态调整间距和大小
+        // ������ĸ������̬�������ʹ�С
         const letterCount = displayUppercase.length;
         let boxSize: number;
         let fontSize: number;
@@ -1717,33 +1720,33 @@ export class ImageGenerator {
         let columnGap: number;
         
         if (letterCount <= 4) {
-            // 4个字母：大方框，大间距
+            // 4����ĸ���󷽿򣬴���
             boxSize = 100;
             fontSize = 56;
             rowGap = 40;
             columnGap = 300;
         } else if (letterCount <= 6) {
-            // 6个字母：中等
+            // 6����ĸ���е�
             boxSize = 85;
             fontSize = 48;
             rowGap = 28;
             columnGap = 280;
         } else {
-            // 8个字母：紧凑
+            // 8����ĸ������
             boxSize = 70;
             fontSize = 40;
             rowGap = 16;
             columnGap = 260;
         }
         
-        // 生成左侧大写字母 HTML（带方框）
+        // ��������д��ĸ HTML��������
         const leftLettersHtml = displayUppercase.map((letter: string) => `
             <div class="letter-box" style="width: ${boxSize}px; height: ${boxSize}px; border-color: ${themeColors.primary};">
                 <span class="letter" style="font-size: ${fontSize}px;">${letter}</span>
             </div>
         `).join('');
         
-        // 生成右侧小写字母 HTML（带方框）
+        // �����Ҳ�Сд��ĸ HTML��������
         const rightLettersHtml = displayLowercase.map((letter: string) => `
             <div class="letter-box" style="width: ${boxSize}px; height: ${boxSize}px; border-color: ${themeColors.secondary};">
                 <span class="letter" style="font-size: ${fontSize}px;">${letter}</span>
@@ -1760,7 +1763,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 20px 0 10px 0;
@@ -1818,9 +1821,9 @@ export class ImageGenerator {
         }
         .divider {
             position: absolute;
-            top: 60px;
-            left: 16px;
-            width: calc(100% - 32px);
+            top: 62px;
+            left: 0;
+            width: 100%;
             height: 1.5px;
             background: ${themeColors.primary};
             opacity: 0.85;
@@ -1861,7 +1864,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
         
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'networkidle0' });
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -1871,8 +1874,8 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成 Which is More? 页面
-     * 比较两组物体数量 - 3行，每行左右两组图片，每组放在方框里
+     * ���� Which is More? ҳ��
+     * �Ƚ������������� - 3�У�ÿ����������ͼƬ��ÿ����ڷ�����?
      */
     async generateWhichIsMore(data: any): Promise<string> {
         await this.initialize();
@@ -1886,7 +1889,7 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
-        // 根据难度设置数量范围
+        // �����Ѷ�����������Χ
         const difficultyConfig: Record<string, number> = {
             easy: 5,
             medium: 7,
@@ -1895,7 +1898,7 @@ export class ImageGenerator {
         const maxCount = difficultyConfig[difficulty] || 5;
         const minCount = 1;
         
-        // 从主题文件夹获取图片
+        // �������ļ��л�ȡͼƬ
         const mainAssetsDir = path.join(__dirname, '../../public/uploads/assets/A_main_assets', themeKey, 'color');
         let themeImages: string[] = [];
         
@@ -1912,19 +1915,19 @@ export class ImageGenerator {
             ];
         }
         
-        // 随机选择3个不同的图片用于3行
+        // ���ѡ��?����ͬ��ͼƬ����3��
         const shuffled = [...themeImages].sort(() => Math.random() - 0.5);
         const selectedImages = shuffled.slice(0, 3);
         while (selectedImages.length < 3) {
             selectedImages.push(themeImages[selectedImages.length % themeImages.length]);
         }
         
-        // 生成3行比较数据
+        // ����3�бȽ�����
         const rows = [];
         for (let i = 0; i < 3; i++) {
             const leftCount = Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
             let rightCount = Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
-            // 确保左右数量不同
+            // ȷ������������ͬ
             while (rightCount === leftCount) {
                 rightCount = Math.floor(Math.random() * (maxCount - minCount + 1)) + minCount;
             }
@@ -1935,9 +1938,9 @@ export class ImageGenerator {
             });
         }
         
-        // 生成行 HTML - 每组图片放在方框里，图片排列成网格
+        // ������ HTML - ÿ��ͼƬ���ڷ����ͼƬ���г�����
         const rowsHtml = rows.map((row, idx) => {
-            // 根据数量决定每行显示几个图片
+            // ������������ÿ����ʾ����ͼƬ
             const itemsPerRow = row.leftCount <= 5 ? row.leftCount : 5;
             const leftImages = Array(row.leftCount).fill(0).map(() => 
                 `<img class="item-img" src="http://localhost:3000${row.image}" />`
@@ -1976,7 +1979,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 20px 0 10px 0;
@@ -2054,9 +2057,9 @@ export class ImageGenerator {
         }
         .divider {
             position: absolute;
-            top: 60px;
-            left: 16px;
-            width: calc(100% - 32px);
+            top: 62px;
+            left: 0;
+            width: 100%;
             height: 1.5px;
             background: ${themeColors.primary};
             opacity: 0.85;
@@ -2090,7 +2093,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
         
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'networkidle0' });
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -2100,7 +2103,7 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成 Number Bonds to 10 页面
+     * ���� Number Bonds to 10 ҳ��
      */
     async generateNumberBonds(data: any): Promise<string> {
         await this.initialize();
@@ -2187,7 +2190,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 24px 18px 16px;
@@ -2236,7 +2239,7 @@ export class ImageGenerator {
         }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -2272,7 +2275,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'networkidle0' });
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -2282,7 +2285,7 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成 Ten Frame Counting 页面
+     * ���� Ten Frame Counting ҳ��
      */
     async generateTenFrame(data: any): Promise<string> {
         await this.initialize();
@@ -2296,14 +2299,14 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
-        // 生成6个十格框题目
+        // ����6��ʮ������?
         const problems = [];
         for (let i = 0; i < 6; i++) {
             const count = Math.floor(Math.random() * 10) + 1; // 1-10
             problems.push(count);
         }
         
-        // 生成十格框 HTML - 5列2行，每个格子有边框
+        // ����ʮ���?HTML - 5��2�У�ÿ�������б߿�
         const generateTenFrameHtml = (count: number) => {
             let cells = '';
             for (let i = 0; i < 10; i++) {
@@ -2330,7 +2333,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 20px 0 10px 0;
@@ -2392,9 +2395,9 @@ export class ImageGenerator {
         }
         .divider {
             position: absolute;
-            top: 60px;
-            left: 16px;
-            width: calc(100% - 32px);
+            top: 62px;
+            left: 0;
+            width: 100%;
             height: 1.5px;
             background: ${themeColors.primary};
             opacity: 0.85;
@@ -2427,7 +2430,7 @@ export class ImageGenerator {
         const filename = `ten-frame-${Date.now()}.png`;
         const filepath = path.join(OUTPUT_DIR, filename);
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'networkidle0' });
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -2436,7 +2439,7 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成 Picture Addition 页面
+     * ���� Picture Addition ҳ��
      */
     async generatePictureAddition(data: any): Promise<string> {
         await this.initialize();
@@ -2450,7 +2453,7 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
-        // 从主题文件夹获取图片
+        // �������ļ��л�ȡͼƬ
         const mainAssetsDir = path.join(__dirname, '../../public/uploads/assets/A_main_assets', themeKey, 'color');
         let themeImages: string[] = [];
         try {
@@ -2460,7 +2463,7 @@ export class ImageGenerator {
             themeImages = ['/uploads/assets/A_main_assets/dinosaur/color/dinosaur_000_color.png'];
         }
         
-        // 生成6道加法题，每边最多3个
+        // ����6���ӷ��⣬ÿ�����?��
         const problems = [];
         for (let i = 0; i < 6; i++) {
             const a = Math.floor(Math.random() * 3) + 1; // 1-3
@@ -2469,7 +2472,7 @@ export class ImageGenerator {
             problems.push({ a, b, sum: a + b, image });
         }
         
-        // 生成居中的图片组（使用flexbox居中）
+        // ���ɾ��е�ͼƬ�飨ʹ��flexbox���У�
         const generateCenteredImages = (count: number, imageSrc: string) => {
             const images = Array(count).fill(0).map(() => `<img class="add-img" src="http://localhost:3000${imageSrc}" />`).join('');
             return images;
@@ -2499,7 +2502,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 20px 0 10px 0;
@@ -2554,9 +2557,9 @@ export class ImageGenerator {
         }
         .divider {
             position: absolute;
-            top: 60px;
-            left: 16px;
-            width: calc(100% - 32px);
+            top: 62px;
+            left: 0;
+            width: 100%;
             height: 1.5px;
             background: ${themeColors.primary};
             opacity: 0.85;
@@ -2589,7 +2592,7 @@ export class ImageGenerator {
         const filename = `picture-addition-${Date.now()}.png`;
         const filepath = path.join(OUTPUT_DIR, filename);
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'networkidle0' });
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -2598,7 +2601,7 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成 Count the Shapes 页面
+     * ���� Count the Shapes ҳ��
      */
     async generateCountShapes(data: any): Promise<string> {
         await this.initialize();
@@ -2612,7 +2615,7 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
-        // 形状定义
+        // ��״����
         const shapes = [
             { name: 'circle', svg: '<circle cx="20" cy="20" r="18" fill="COLOR" stroke="#333" stroke-width="2"/>', color: '#F87171' },
             { name: 'square', svg: '<rect x="2" y="2" width="36" height="36" fill="COLOR" stroke="#333" stroke-width="2"/>', color: '#60A5FA' },
@@ -2621,20 +2624,20 @@ export class ImageGenerator {
             { name: 'heart', svg: '<path d="M20 35 C5 25 2 15 8 8 C14 2 20 8 20 12 C20 8 26 2 32 8 C38 15 35 25 20 35Z" fill="COLOR" stroke="#333" stroke-width="2"/>', color: '#F472B6' },
         ];
         
-        // 为每种形状生成随机数量 (5-9)
+        // Ϊÿ����״�����������?(5-9)
         const shapeCounts: { shape: typeof shapes[0], count: number }[] = shapes.map(s => ({
             shape: s,
             count: Math.floor(Math.random() * 5) + 5
         }));
         
-        // 生成不重叠的随机分布形状
+        // ���ɲ��ص�������ֲ����?
         const allShapes: { shape: typeof shapes[0], x: number, y: number, rotation: number }[] = [];
-        const shapeSize = 45; // 形状大小
-        const padding = 10; // 形状之间的最小间距
+        const shapeSize = 45; // ��״��С
+        const padding = 10; // ��״֮�����С���
         const boxWidth = 600;
         const boxHeight = 410;
         
-        // 检查新位置是否与已有形状重叠
+        // �����λ���Ƿ���������״�ص�?
         const isOverlapping = (newX: number, newY: number) => {
             for (const existing of allShapes) {
                 const dx = newX - existing.x;
@@ -2647,7 +2650,7 @@ export class ImageGenerator {
             return false;
         };
         
-        // 为每个形状找到不重叠的位置
+        // Ϊÿ����״�ҵ����ص���λ��
         shapeCounts.forEach(sc => {
             for (let i = 0; i < sc.count; i++) {
                 let x, y;
@@ -2668,7 +2671,7 @@ export class ImageGenerator {
                 });
             }
         });
-        // 打乱顺序
+        // ����˳��
         allShapes.sort(() => Math.random() - 0.5);
         
         const shapesHtml = allShapes.map(s => {
@@ -2696,7 +2699,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 20px 0 10px 0;
@@ -2750,9 +2753,9 @@ export class ImageGenerator {
         }
         .divider {
             position: absolute;
-            top: 60px;
-            left: 16px;
-            width: calc(100% - 32px);
+            top: 62px;
+            left: 0;
+            width: 100%;
             height: 1.5px;
             background: ${themeColors.primary};
             opacity: 0.85;
@@ -2790,7 +2793,7 @@ export class ImageGenerator {
         const filename = `count-shapes-${Date.now()}.png`;
         const filepath = path.join(OUTPUT_DIR, filename);
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'networkidle0' });
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -2822,7 +2825,7 @@ export class ImageGenerator {
                 : difficulty === 'medium'
                     ? 60
                     : 70; // default/easy
-        const rewardStars = Array.from({ length: 5 }).map(() => '<span class="reward-star">⭐</span>').join('');
+        const rewardStars = Array.from({ length: 5 }).map(() => '<span class="reward-star">�?/span>').join('');
         const pointingMap: Record<string, string> = {
             dinosaur: '/uploads/assets/B_character_ip/dinosaur/poses/color/dinosaur_pointing_pose.png',
             vehicles: '/uploads/assets/B_character_ip/vehicles/poses/color/vehicles_car_pointing_pose.png',
@@ -2832,7 +2835,7 @@ export class ImageGenerator {
             safari: '/uploads/assets/B_character_ip/safari/poses/color/safari_lion_pointing_pose.png'
         };
         const magnifierIcon = pointingMap[themeKey] || pointingMap['dinosaur'];
-        // 使用通用�?themeColors.accent 作为标题颜色
+        // ʹ��ͨ��??themeColors.accent ��Ϊ������ɫ
         const rewardMap: Record<string, string> = {
             dinosaur: '/uploads/assets/B_character_ip/dinosaur/poses/color/dinosaur_happy_pose.png',
             vehicles: '/uploads/assets/B_character_ip/vehicles/poses/color/vehicles_car_happy_pose.png',
@@ -2843,36 +2846,36 @@ export class ImageGenerator {
         };
         const rewardDino = rewardMap[themeKey] || rewardMap['dinosaur'];
 
-        // 使用背景图替代贴纸
+        // ʹ�ñ���ͼ������?
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 生成混合字母网格
+        // ���ɻ����ĸ����?
         let gridCells: string[] = [];
         if (Array.isArray(cells) && cells.length > 0) {
             gridCells = cells.slice(0, gridSize * gridSize);
         } else {
-            // 自动生成混合字母网格
+            // �Զ����ɻ����ĸ����?
             const totalCells = gridSize * gridSize;
-            // 根据难度决定目标字母的数量
+            // �����ѶȾ���Ŀ����ĸ������
             const targetCount = difficulty === 'hard' ? Math.floor(totalCells * 0.25) 
                               : difficulty === 'medium' ? Math.floor(totalCells * 0.35)
                               : Math.floor(totalCells * 0.4); // easy
             
-            // 生成干扰字母（排除目标字母）
+            // ���ɸ�����ĸ���ų�Ŀ����ĸ��
             const allLetters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').filter(l => l !== upperLetter);
             
-            // 填充目标字母
+            // ���Ŀ�����?
             for (let i = 0; i < targetCount; i++) {
                 gridCells.push(upperLetter);
             }
             
-            // 填充干扰字母
+            // ��������ĸ
             for (let i = targetCount; i < totalCells; i++) {
                 const randomLetter = allLetters[Math.floor(Math.random() * allLetters.length)];
                 gridCells.push(randomLetter);
             }
             
-            // 打乱顺序
+            // ����˳��
             for (let i = gridCells.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [gridCells[i], gridCells[j]] = [gridCells[j], gridCells[i]];
@@ -2916,17 +2919,17 @@ export class ImageGenerator {
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             margin: 0;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
             position: relative;
         }
-        .page { position: relative; width: 794px; height: 1123px; overflow: hidden; }
+        .page { position: relative; width: 816px; height: 1056px; overflow: hidden; }
         .top-bar {
             position: absolute;
-            top: 0;
+            top: 16px;
             left: 24px;
             right: 24px;
             height: auto;
@@ -2956,7 +2959,7 @@ export class ImageGenerator {
         .dash-line.short { width: 180px; }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -2966,7 +2969,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 24px 18px 16px;
@@ -3024,32 +3027,32 @@ export class ImageGenerator {
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: ${fontSize}px;     /* 难度动态字号：easy 70 / medium 60 / hard 50 */
+            font-size: ${fontSize}px;     /* �Ѷȶ�̬�ֺţ�easy 70 / medium 60 / hard 50 */
             font-weight: 900;
             letter-spacing: 0.3px;
-            color: ${themeColors.primary};              /* 主题色填充 */
-            -webkit-text-stroke: 0;      /* 取消描边 */
+            color: ${themeColors.primary};              /* ����ɫ���?*/
+            -webkit-text-stroke: 0;      /* ȡ�����?*/
             line-height: 1;
         }
         .reward-row {
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 28px;
+            gap: 20px;
             margin-top: auto;
         }
         .reward-dino {
-            width: 120px;
-            height: 120px;
+            width: 90px;
+            height: 90px;
             object-fit: contain;
         }
         .reward-stars {
             display: flex;
             align-items: center;
-            gap: 22px;
+            gap: 16px;
         }
         .reward-star {
-            font-size: 48px;
+            font-size: 36px;
             line-height: 1;
             color: #f5a623;
         }
@@ -3089,7 +3092,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -3108,7 +3111,7 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         
-        // 随机决定图标位置（左或右�?
+        // �������ͼ��λ�ã������??
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
 
@@ -3119,7 +3122,7 @@ export class ImageGenerator {
         const tracingFull = path.join(__dirname, '../../public', tracingRel);
         const tracingImage = fs.existsSync(tracingFull) ? tracingRel : '';
 
-        // 使用背景图替代贴纸
+        // ʹ�ñ���ͼ������?
         const stickerHtml = this.getStickersHtml(themeKey);
 
         const html = `
@@ -3154,8 +3157,8 @@ export class ImageGenerator {
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             margin: 0;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
@@ -3163,13 +3166,13 @@ export class ImageGenerator {
         }
         .page {
             position: relative;
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             overflow: hidden;
         }
         .top-bar {
             position: absolute;
-            top: 0;
+            top: 16px;
             left: 24px;
             right: 24px;
             height: auto;
@@ -3199,7 +3202,7 @@ export class ImageGenerator {
         .dash-line.short { width: 180px; }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -3209,7 +3212,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 24px 18px 16px;
@@ -3484,7 +3487,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -3499,46 +3502,46 @@ export class ImageGenerator {
         const { theme = 'dinosaur', name = 'LEO' } = content;
         const themeKey = String(theme).toLowerCase();
         const themeColors = getThemeColor(themeKey);
-        // 使用背景图替代贴纸
+        // ʹ�ñ���ͼ������?
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 处理名字：转大写，最�?0个字�?
+        // �������֣�ת��д����??0����??
         const displayName = String(name).toUpperCase().replace(/[^A-Z]/g, '').slice(0, 10);
         const nameLength = displayName.length || 1;
         
-        // 根据字母数量计算图片高度，确保不超出安全区宽度（�?80px可用�?
-        // 安全区宽度约680px，减去间�?8px * (n-1))和左右padding(20px)
+        // ������ĸ��������ͼƬ�߶ȣ�ȷ����������ȫ�����ȣ�??80px����??
+        // ��ȫ������Լ680px����ȥ��??8px * (n-1))������padding(20px)
         const availableWidth = 680 - 20 - (nameLength - 1) * 8;
         const letterHeight = Math.min(140, Math.floor(availableWidth / nameLength));
 
-        // 生成大字母图片HTML（从 uploads/letters/uppercase 取图片）
+        // ���ɴ���ĸͼƬHTML���� uploads/letters/uppercase ȡͼƬ��
         const bigLettersHtml = displayName.split('').map(letter => {
             const letterImagePath = `/uploads/letters/uppercase/${letter}_uppercase_tracing.png`;
             return `<img class="big-letter-img" src="http://localhost:3000${letterImagePath}" alt="${letter}" />`;
         }).join('');
 
-        // 获取主题彩色图案（从 A_main_assets/{theme}/color/main/ 随机取一张）
+        // ��ȡ�����ɫͼ������?A_main_assets/{theme}/color/main/ ���ȡһ�ţ�?
         const colorAssets = getThemeMainColorAssets(themeKey, 1);
         const characterImage = colorAssets[0] || '';
 
-        // 根据名字长度决定每行显示1个还�?个名�?
-        // 如果名字超过5个字母，每行只显�?个名�?
+        // �������ֳ��Ⱦ���ÿ����ʾ1����??����??
+        // ������ֳ���?����ĸ��ÿ��ֻ��??����??
         const namesPerLine = nameLength > 5 ? 1 : 2;
         const tracingClass = namesPerLine === 1 ? 'tracing-text single' : 'tracing-text';
         const tracingContent = namesPerLine === 1 
             ? `<span>${displayName}</span>` 
             : `<span>${displayName}</span><span>${displayName}</span>`;
 
-        // 根据字母数量动态计算letter-spacing，确保不超出安全�?
-        // 每行可用宽度�?00px（两个名字时），每个字母�?5px�?
-        // letter-spacing = (可用宽度 - 字母�?* 字母宽度) / (字母�?- 1)
+        // ������ĸ������̬����letter-spacing��ȷ����������ȫ??
+        // ÿ�п��ÿ���??00px����������ʱ����ÿ����ĸ??5px??
+        // letter-spacing = (���ÿ��� - ��ĸ??* ��ĸ����) / (��ĸ??- 1)
         const getLetterSpacing = (len: number, perLine: number): number => {
             if (len <= 1) return 0;
-            const availableWidth = perLine === 1 ? 600 : 280; // 单个名字时可用更多空�?
-            const charWidth = 55; // 每个字母�?5px
+            const availableWidth = perLine === 1 ? 600 : 280; // ��������ʱ���ø����??
+            const charWidth = 55; // ÿ����ĸ??5px
             const totalCharWidth = len * charWidth;
             const spacing = Math.floor((availableWidth - totalCharWidth) / (len - 1));
-            return Math.max(2, Math.min(spacing, 25)); // 限制�?-25px之间
+            return Math.max(2, Math.min(spacing, 25)); // ����??-25px֮��
         };
         const letterSpacing = getLetterSpacing(nameLength, namesPerLine);
 
@@ -3560,7 +3563,7 @@ export class ImageGenerator {
             gap: 0;
             width: 100%;
         }
-        /* 顶部大字母区�?- 自动缩放不超出安全区 */
+        /* ��������ĸ��??- �Զ����Ų�������ȫ�� */
         .big-letters-section {
             display: flex;
             justify-content: center;
@@ -3576,7 +3579,7 @@ export class ImageGenerator {
             object-fit: contain;
             flex-shrink: 1;
         }
-        /* 中间角色图片区域 - 居中 */
+        /* �м��ɫͼƬ����?- ���� */
         .character-section {
             flex: 1;
             display: flex;
@@ -3591,7 +3594,7 @@ export class ImageGenerator {
             height: auto;
             object-fit: contain;
         }
-        /* 练习区域 - 参考大写字母描红样�?*/
+        /* ��ϰ���� - �ο���д��ĸ�����??*/
         .practice {
             margin-top: 10px;
             margin-left: -18px;
@@ -3676,15 +3679,15 @@ export class ImageGenerator {
         <div class="divider"></div>
         <div class="safe-area">
             <div class="content-wrapper">
-                <!-- 顶部大字母图片 -->
+                <!-- ��������ĸͼƬ -->
                 <div class="big-letters-section">
                     ${bigLettersHtml}
                 </div>
-                <!-- 中间角色图片 -->
+                <!-- �м��ɫͼ�?-->
                 <div class="character-section">
                     ${characterImage ? `<img class="character-image" src="http://localhost:3000${characterImage}" alt="character" />` : ''}
                 </div>
-                <!-- 练习区 - 参考大写字母描红样式 -->
+                <!-- ��ϰ�� - �ο���д��ĸ������?-->
                 <div class="practice">
                     <div class="practice-title">Practice Writing:</div>
                     <div class="practice-lines">
@@ -3718,7 +3721,7 @@ export class ImageGenerator {
         const filename = `write-my-name-${Date.now()}.png`;
         const filepath = path.join(OUTPUT_DIR, filename);
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -3734,17 +3737,17 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
 
-        // 使用通用�?titleIcon �?themeColors
+        // ʹ��ͨ��??titleIcon ??themeColors
         const ranges: Record<string, number[]> = {
             '0-4': [0,1,2,3,4],
             '5-9': [5,6,7,8,9]
         };
         const nums = Array.isArray(numbers) && numbers.length ? numbers : (ranges[range] || ranges['0-4']);
 
-        // 使用背景图替代贴纸
+        // ʹ�ñ���ͼ������?
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 主题主素材彩色图标池（随机）
+        // �������زĲ�ɫͼ��أ������
         const themeColorPool = getThemeColorAssets(themeKey, 20);
         const defaultIcon = `/uploads/assets/A_main_assets/${themeKey}/color/${themeKey}_000_color.png`;
 
@@ -3830,7 +3833,7 @@ export class ImageGenerator {
                         }
                     } else {
                         icons = `<div class="icon-group" style="position: relative; display: block; width:100%; height:100%; justify-content:center; align-items:center;">
-                            <span class="icon-emoji">🦕</span>
+                            <span class="icon-emoji">??</span>
                         </div>`;
                     }
                 }
@@ -3867,7 +3870,7 @@ export class ImageGenerator {
             `;
         };
 
-        // 单页渲染
+        // ��ҳ��Ⱦ
         const pagesHtml = buildPage(nums);
 
         const html = `
@@ -3902,18 +3905,18 @@ export class ImageGenerator {
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            min-height: 1123px;
+            width: 816px;
+            min-height: 1056px;
             margin: 0;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
             position: relative;
         }
-        .page { position: relative; width: 794px; height: 1123px; overflow: hidden; page-break-after: always; }
+        .page { position: relative; width: 816px; height: 1056px; overflow: hidden; page-break-after: always; }
         .page-break { page-break-after: always; }
         .top-bar {
             position: absolute;
-            top: 0;
+            top: 16px;
             left: 24px;
             right: 24px;
             height: auto;
@@ -3943,7 +3946,7 @@ export class ImageGenerator {
         .dash-line.short { width: 180px; }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -3953,7 +3956,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 24px 18px 16px;
@@ -3968,20 +3971,20 @@ export class ImageGenerator {
         .nt-title {
             display: inline-flex;
             align-items: center;
-            gap: 12px;
-            font-size: 38px;
+            gap: 10px;
+            font-size: 32px;
             font-weight: 800;
             color: ${themeColors.accent};
             text-align: center;
-            margin-bottom: 12px;
+            margin-bottom: 8px;
             border: none;
             border-radius: 0;
             padding: 0;
             background: transparent;
         }
         .nt-title img {
-            width: 68px;
-            height: 68px;
+            width: 55px;
+            height: 55px;
             object-fit: contain;
         }
         .rows {
@@ -3990,42 +3993,42 @@ export class ImageGenerator {
             justify-content: flex-start;
             width: 100%;
             flex: 1;
-            padding: 24px 0 12px;
-            gap: 18px;
+            padding: 16px 0 8px;
+            gap: 12px;
         }
         .row {
             display: grid;
-            grid-template-columns: 140px 1fr 120px; /* 左侧数字区加宽以放大数字 */
+            grid-template-columns: 110px 1fr 100px;
             align-items: stretch;
-            min-height: 160px;
-            padding: 0 16px;
-            border-radius: 16px;
+            min-height: 130px;
+            padding: 0 12px;
+            border-radius: 14px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.06);
         }
         .left-box {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 16px 8px;
+            padding: 10px 6px;
         }
         .left-num-img {
-            width: 110px;
-            height: 110px;
+            width: 85px;
+            height: 85px;
             object-fit: contain;
             filter: drop-shadow(0 1px 1px rgba(0,0,0,0.08));
         }
         .left-num-text {
-            font-size: 104px;
+            font-size: 80px;
             font-weight: 900;
             color: ${themeColors.accent};
-            -webkit-text-stroke: 4px #0b0b0b;
+            -webkit-text-stroke: 3px #0b0b0b;
             line-height: 1;
         }
         .middle-box {
             background: #ffffff;
             border: 2px solid #f5d77b;
             border-radius: 0;
-            padding: 12px 14px;
+            padding: 8px 10px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -4033,13 +4036,13 @@ export class ImageGenerator {
         }
         .trace-inner {
             display: grid;
-            grid-template-columns: repeat(4, minmax(56px, 1fr));
-            gap: 14px;
+            grid-template-columns: repeat(4, minmax(45px, 1fr));
+            gap: 10px;
             width: 100%;
             justify-items: center;
         }
         .trace-cell {
-            font-size: 115px;
+            font-size: 90px;
             font-weight: 800;
             color: rgba(163, 163, 163, 0.2);
             -webkit-text-stroke: 0;
@@ -4050,28 +4053,28 @@ export class ImageGenerator {
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 6px;
+            padding: 4px;
             height: 100%;
             max-height: 100%;
-            width: 110px;
-            max-width: 110px;
+            width: 90px;
+            max-width: 90px;
             margin: 0 auto;
             box-sizing: border-box;
             overflow: hidden;
             border: none;
-            border-radius: 10px;
+            border-radius: 8px;
         }
         .icon-group {
             display: grid;
-            gap: 6px;
+            gap: 4px;
             justify-items: center;
             align-items: center;
             width: 100%;
             height: 100%;
         }
         .icon-img {
-            width: 36px;
-            height: 36px;
+            width: 28px;
+            height: 28px;
             object-fit: contain;
             margin: 0;
         }
@@ -4102,7 +4105,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -4119,11 +4122,11 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         
-        // 随机决定图标位置（左或右�?
+        // �������ͼ��λ�ã������??
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
 
-        // 使用背景图替代贴纸
+        // ʹ�ñ���ͼ������?
         const stickerHtml = this.getStickersHtml(themeKey);
 
         const html = `
@@ -4158,8 +4161,8 @@ export class ImageGenerator {
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             margin: 0;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
@@ -4167,13 +4170,13 @@ export class ImageGenerator {
         }
         .page {
             position: relative;
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             overflow: hidden;
         }
         .top-bar {
             position: absolute;
-            top: 0;
+            top: 16px;
             left: 24px;
             right: 24px;
             height: auto;
@@ -4203,7 +4206,7 @@ export class ImageGenerator {
         .dash-line.short { width: 180px; }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -4213,7 +4216,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 24px 18px 16px;
@@ -4273,7 +4276,7 @@ export class ImageGenerator {
                 ${iconPosition === 'right' ? titleIconHtml : ''}
                 ${subtitle ? `<div class="sub">${subtitle}</div>` : ''}
             </div>
-            <!-- 留空安全区供后续填充逻辑内容 -->
+            <!-- ���հ�ȫ������������߼�����?-->
         </div>
         ${stickerHtml}
     </div>
@@ -4285,7 +4288,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -4302,17 +4305,17 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         
-        // 随机决定图标位置（左或右�?
+        // �������ͼ��λ�ã������??
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
 
-        // 贴纸
+        // ��ֽ
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 图片内容区域
+        // ͼƬ��������
         const imageHtml = patternImageUrl 
             ? `<img class="pattern-image" src="http://localhost:3000${patternImageUrl}" />`
-            : `<div class="placeholder">找不同图片生成中...</div>`;
+            : `<div class="placeholder">�Ҳ�ͬͼƬ������...</div>`;
 
         const html = `
 <!DOCTYPE html>
@@ -4346,8 +4349,8 @@ export class ImageGenerator {
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             margin: 0;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
@@ -4355,13 +4358,13 @@ export class ImageGenerator {
         }
         .page {
             position: relative;
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             overflow: hidden;
         }
         .top-bar {
             position: absolute;
-            top: 0;
+            top: 16px;
             left: 24px;
             right: 24px;
             height: auto;
@@ -4391,7 +4394,7 @@ export class ImageGenerator {
         .dash-line.short { width: 180px; }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -4401,7 +4404,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 16px 12px;
@@ -4490,7 +4493,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -4507,31 +4510,31 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         
-        // 随机决定图标位置（左或右�?
+        // �������ͼ��λ�ã������??
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
 
-        // 获取主题名称（首字母大写�?
+        // ��ȡ�������ƣ�����ĸ��д??
         const themeName = themeKey.charAt(0).toUpperCase() + themeKey.slice(1);
 
-        // 获取8张主题彩色素材（�?color/main 子文件夹�?
+        // ��ȡ8�������ɫ�زģ�??color/main ���ļ���??
         const themeAssets = getThemeMainColorAssets(themeKey, 8);
         
-        // 随机分配�?张大图，4张小�?
+        // �������??�Ŵ�ͼ��4��С??
         const shuffledAssets = [...themeAssets].sort(() => Math.random() - 0.5);
         const bigItems = shuffledAssets.slice(0, 4);
         const smallItems = shuffledAssets.slice(4, 8);
         
-        // 合并并打乱顺序用于显�?
+        // �ϲ�������˳��������??
         const allItems = [
             ...bigItems.map(src => ({ src, size: 'big' })),
             ...smallItems.map(src => ({ src, size: 'small' }))
         ].sort(() => Math.random() - 0.5);
 
-        // 贴纸
+        // ��ֽ
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 生成待分类物品的 HTML（分�?2 行，每行 4 个）
+        // ���ɴ�������Ʒ�� HTML����??2 �У�ÿ�� 4 ����
         const row1Items = allItems.slice(0, 4);
         const row2Items = allItems.slice(4, 8);
         
@@ -4582,8 +4585,8 @@ export class ImageGenerator {
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             margin: 0;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
@@ -4591,13 +4594,13 @@ export class ImageGenerator {
         }
         .page {
             position: relative;
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             overflow: hidden;
         }
         .top-bar {
             position: absolute;
-            top: 0;
+            top: 16px;
             left: 24px;
             right: 24px;
             height: auto;
@@ -4627,7 +4630,7 @@ export class ImageGenerator {
         .dash-line.short { width: 180px; }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -4637,7 +4640,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 24px 18px 16px;
@@ -4773,7 +4776,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -4790,14 +4793,14 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         
-        // 随机决定图标位置（左或右�?
+        // �������ͼ��λ�ã������??
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
 
-        // 使用背景图替代贴纸
+        // ʹ�ñ���ͼ������?
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 选取主题彩色素材
+        // ѡȡ�����ɫ�ز�?
         const colorPool = getThemeColorAssets(themeKey, 40);
         const shuffled = [...colorPool];
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -4860,8 +4863,8 @@ export class ImageGenerator {
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             margin: 0;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
@@ -4869,13 +4872,13 @@ export class ImageGenerator {
         }
         .page {
             position: relative;
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             overflow: hidden;
         }
         .top-bar {
             position: absolute;
-            top: 0;
+            top: 16px;
             left: 24px;
             right: 24px;
             height: auto;
@@ -4905,7 +4908,7 @@ export class ImageGenerator {
         .dash-line.short { width: 180px; }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -4915,7 +4918,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 24px 18px 16px;
@@ -5013,7 +5016,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -5029,12 +5032,12 @@ export class ImageGenerator {
             ? (data as any).content
             : [data?.content || data || {}];
 
-        // 获取主题颜色
+        // ��ȡ������ɫ
         const theme = pages[0]?.theme || 'dinosaur';
         const themeKey = String(theme).toLowerCase();
         const themeColors = getThemeColor(themeKey);
 
-        // Ϊÿҳ׼��ȱʡͼ�أ����������?
+        // ??????????????????????
         const defaultIcons = getRandomDecorImages(20);
 
         const pagesHtml = pages.map((pageData: any) => {
@@ -5133,14 +5136,14 @@ export class ImageGenerator {
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            min-height: 1123px;
+            width: 816px;
+            min-height: 1056px;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
         }
         .page {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             padding: 42px 32px 32px;
             page-break-after: always;
         }
@@ -5214,7 +5217,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -5230,11 +5233,11 @@ export class ImageGenerator {
         const themeKey = String(theme || 'dinosaur').toLowerCase();
         const maxNumber = Math.max(1, Math.min(50, parseInt(data?.maxNumber) || 10));
 
-        // 随机获取标题图标和主题配�?
+        // �����ȡ����ͼ���������??
         const titleIcon = getRandomTitleIcon(themeKey);
         const themeColors = getThemeColor(themeKey);
         
-        // 随机决定图标位置（左或右�?
+        // �������ͼ��λ�ã������??
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
 
@@ -5253,17 +5256,23 @@ export class ImageGenerator {
         const pages = Math.max(1, Math.min(5, parseInt(pageCount) || 1));
         const pagesContent = Array.from({ length: pages }, () => makeDots(maxNumber));
 
-        // 使用通用方法生成贴纸
+        // ʹ��ͨ�÷���������ֽ
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 获取点对点图片和角色名字
-        const dotsImageUrl = data.dotsImageUrl || '';
+        // ��ȡ��Ե�ͼƬ�ͽ�ɫ����?
+        let dotsImageUrl = data.dotsImageUrl || '';
         const characterName = data.characterName || '';
 
+        // ����е�Ե�ͼƬ����ȥ����ɫ����
+        if (dotsImageUrl) {
+            dotsImageUrl = await removeWhiteBackground(dotsImageUrl);
+        }
+
         const pagesHtml = pagesContent.map((dotsArr: any[], pageIdx: number) => {
-            // 如果有点对点图片，显示在 canvas �?
+            // ����е�Ե�ͼƬ����ʾ�� canvas �У�֧�� data URL ����ͨ·����
+            const imgSrc = dotsImageUrl.startsWith('data:') ? dotsImageUrl : `http://localhost:3000${dotsImageUrl}`;
             const canvasContent = dotsImageUrl 
-                ? `<img src="http://localhost:3000${dotsImageUrl}" style="width: 100%; height: 100%; object-fit: contain;" />`
+                ? `<img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: contain;" />`
                 : '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999; font-size: 18px;">Connect the dots</div>';
 
             const canvasWithName = `<div class="dots-frame">${canvasContent}</div>`;
@@ -5323,22 +5332,22 @@ export class ImageGenerator {
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
             position: relative;
         }
         .page {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             position: relative;
             overflow: hidden;
             page-break-after: always;
         }
         .top-bar {
             position: absolute;
-            top: 0;
+            top: 16px;
             left: 24px;
             right: 24px;
             height: auto;
@@ -5368,7 +5377,7 @@ export class ImageGenerator {
         .dash-line.short { width: 180px; }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -5378,7 +5387,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 28px 20px 18px;
@@ -5411,7 +5420,7 @@ export class ImageGenerator {
             object-fit: contain;
         }
         .title-bottom {
-            margin-top: 12px;
+            margin-top: 16px;
         }
         .subtitle {
             text-align: center;
@@ -5426,13 +5435,13 @@ export class ImageGenerator {
             width: 100%;
             border: none;
             border-radius: 16px;
-            background: #fff;
+            background: transparent;
             overflow: hidden;
         }
         .dots-frame {
             position: absolute;
             inset: 12px;
-            border: none; /* 移除内层黑框 */
+            border: none;
             border-radius: 14px;
             overflow: hidden;
         }
@@ -5486,7 +5495,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -5550,8 +5559,8 @@ export class ImageGenerator {
         }
         
         body {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             padding: 30px;
             background: white;
             font-family: 'Quicksand', sans-serif;
@@ -5749,7 +5758,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
 
         await page.evaluateHandle('document.fonts.ready');
@@ -5773,7 +5782,7 @@ export class ImageGenerator {
                 ? (data as any)
                 : [data || {}];
 
-        // 获取主题颜色
+        // ��ȡ������ɫ
         const theme = contentArray[0]?.theme || 'dinosaur';
         const themeKey = String(theme).toLowerCase();
         const themeColors = getThemeColor(themeKey);
@@ -5867,14 +5876,14 @@ export class ImageGenerator {
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            min-height: 1123px;
+            width: 816px;
+            min-height: 1056px;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
         }
         .page {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             padding: 42px 32px 32px;
             page-break-after: always;
         }
@@ -5951,7 +5960,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -5963,14 +5972,14 @@ export class ImageGenerator {
     async generateCountAndWrite(data: any): Promise<string> {
         await this.initialize();
 
-        // 从 content 数组的第一个元素中获取 theme 和 difficulty
+        // �� content ����ĵ�һ��Ԫ���л��?theme �� difficulty
         const contentArray = Array.isArray(data?.content) ? data.content : [data?.content || data || {}];
         const firstContent = contentArray[0] || {};
         const { theme = 'dinosaur', difficulty = 'easy' } = firstContent;
         const themeKey = String(theme || 'dinosaur').toLowerCase();
         const themeColors = getThemeColor(themeKey);
         
-        // 根据难度设置数字范围
+        // �����Ѷ��������ַ�Χ
         const difficultyConfig: Record<string, { min: number; max: number }> = {
             easy: { min: 1, max: 5 },
             medium: { min: 1, max: 8 },
@@ -5980,11 +5989,11 @@ export class ImageGenerator {
         console.log(`[CountAndWrite] difficulty: ${difficulty}, range: ${range.min}-${range.max}`);
         const titleIcon = getRandomTitleIcon(themeKey);
         
-        // 随机决定图标位置（左或右）
+        // �������ͼ��λ�ã�����ң�
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" alt="theme icon">` : '';
 
-        // 使用背景图替代贴纸
+        // ʹ�ñ���ͼ������?
         const stickerHtml = this.getStickersHtml(themeKey);
 
         const themeIcons = getThemeMainColorAssets(themeKey, 30);
@@ -6009,38 +6018,38 @@ export class ImageGenerator {
             const titleText = 'Counting Objects';
             const titleIcon = titleIconMap[themeKey] || titleIconMap['dinosaur'];
             const rowsHtml = items.map((item: any, idx: number) => {
-                // 右侧 3 个数字：根据难度范围随机生成且升序
+                // �Ҳ� 3 �����֣������Ѷȷ�Χ�������������?
                 const optionsSet = new Set<number>();
                 while (optionsSet.size < 3) {
                     optionsSet.add(Math.floor(Math.random() * (range.max - range.min + 1)) + range.min);
                 }
                 const options = Array.from(optionsSet).sort((a, b) => a - b);
-                // 左侧图标数量：从右侧三个数字里随机挑一个
+                // ���ͼ�����������Ҳ����������������һ��
                 const correctIndex = Math.floor(Math.random() * options.length);
                 const count = Math.min(range.max, options[correctIndex]);
 
-                // 动态缩放和布局，数量多时分两排并缩小
+                // ��̬���źͲ��֣�������ʱ�����Ų���С
                 const needTwoRows = count > 5;
                 let size: number;
                 if (needTwoRows) {
-                    // 两排时：根据数量调整大小
+                    // ����ʱ����������������С
                     size = count <= 8 ? 48 : count <= 10 ? 42 : 36;
                 } else {
-                    // 单排时：根据数量调整大小
+                    // ����ʱ����������������С
                     size = count <= 3 ? 70 : count <= 4 ? 60 : 55;
                 }
                 const randomIcon = () => (themeIcons.length ? themeIcons[Math.floor(Math.random() * themeIcons.length)] : '');
                 
-                // 生成图标数组
+                // ����ͼ������
                 const iconElements = Array.from({ length: count }, () => {
                     const iconSrc = randomIcon();
                     const iconTag = iconSrc
                         ? `<img src="http://localhost:3000${iconSrc}" alt="icon" style="width:${size}px;height:${size}px;">`
-                        : `<span class="emoji" style="font-size:${size}px;">🦕</span>`;
+                        : `<span class="emoji" style="font-size:${size}px;">??</span>`;
                     return `<span class="icon" style="width:${size}px;height:${size}px;">${iconTag}</span>`;
                 });
                 
-                // 如果需要两排，分成上下两排
+                // �����Ҫ���ţ��ֳ���������?
                 let iconsHtml: string;
                 if (needTwoRows) {
                     const halfCount = Math.ceil(count / 2);
@@ -6052,7 +6061,7 @@ export class ImageGenerator {
                 }
                 const icons = iconsHtml;
 
-                // 右侧数字升序展示，正确项随机落位
+                // �Ҳ���������չʾ����ȷ��������?
                 const optionsHtml = options.map(n => `<div class="opt${n === count ? ' correct' : ''}">${n}</div>`).join('');
 
                         return `
@@ -6117,22 +6126,22 @@ export class ImageGenerator {
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            min-height: 1123px;
+            width: 816px;
+            min-height: 1056px;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
             position: relative;
         }
         .page {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             position: relative;
             overflow: hidden;
             page-break-after: always;
         }
         .top-bar {
             position: absolute;
-            top: 0;
+            top: 16px;
             left: 24px;
             right: 24px;
             height: auto;
@@ -6162,7 +6171,7 @@ export class ImageGenerator {
         .dash-line.short { width: 180px; }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -6172,7 +6181,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 28px 20px 18px;
@@ -6209,7 +6218,7 @@ export class ImageGenerator {
             display: flex;
             flex-direction: column;
             gap: 16px;
-            border-top: 1.5px solid #0f172a; /* 顶部单条黑线 */
+            border-top: 1.5px solid #0f172a; /* ������������ */
             padding-top: 6px;
         }
         .row {
@@ -6218,9 +6227,9 @@ export class ImageGenerator {
             grid-template-columns: auto 1fr;
             align-items: center;
             gap: 8px;
-            padding: 10px 4px 10px 12px; /* 右侧缩至 4px，贴近安全区 */
-            border: none; /* 去掉大黑�?*/
-            border-bottom: 1.5px solid #0f172a; /* 单条分隔�?*/
+            padding: 10px 4px 10px 12px; /* �Ҳ����� 4px��������ȫ�� */
+            border: none; /* ȥ�����??*/
+            border-bottom: 1.5px solid #0f172a; /* �����ָ�??*/
             border-radius: 0;
             background: transparent;
             width: 100%;
@@ -6323,7 +6332,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -6340,12 +6349,12 @@ export class ImageGenerator {
                 ? data
                 : [data || {}];
 
-        // 获取主题颜色
+        // ��ȡ������ɫ
         const theme = contentArray[0]?.theme || 'dinosaur';
         const themeKey = String(theme).toLowerCase();
         const themeColors = getThemeColor(themeKey);
 
-        // �̶�ʹ�ñ�������ṩ�ľ�̬Ŀ¼�����⻷������ָ����Ч�����������
+        // ?????????????????????????????????????��???????????
         const fontBase = `http://localhost:${process.env.PORT || 3000}`;
 
         const pagesHtml = contentArray.map((pageData: any) => {
@@ -6419,15 +6428,15 @@ export class ImageGenerator {
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            min-height: 1123px;
+            width: 816px;
+            min-height: 1056px;
             padding: 0;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
         }
         .page {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             padding: 48px 32px 32px;
             page-break-after: always;
         }
@@ -6491,7 +6500,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -6503,7 +6512,7 @@ export class ImageGenerator {
     async generateCustomName(data: any): Promise<string> {
         await this.initialize();
 
-        // 获取主题颜色
+        // ��ȡ������ɫ
         const theme = data?.theme || 'dinosaur';
         const themeKey = String(theme).toLowerCase();
         const themeColors = getThemeColor(themeKey);
@@ -6564,8 +6573,8 @@ export class ImageGenerator {
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             padding: 28px;
             background: white;
             font-family: 'Quicksand', sans-serif;
@@ -6699,7 +6708,7 @@ export class ImageGenerator {
         </div>
         <div class="header">
             <div class="title">? ${upperName} ?</div>
-            <div class="subtitle">?? ?? ?? Little ${displayName}��s Name Practice ?? ?? ??</div>
+            <div class="subtitle">?? ?? ?? Little ${displayName}??s Name Practice ?? ?? ??</div>
         </div>
 
         <div class="section">
@@ -6741,7 +6750,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
 
@@ -6754,7 +6763,7 @@ export class ImageGenerator {
     async generateLetterHunt(data: any): Promise<string> {
         await this.initialize();
 
-        // 获取主题颜色
+        // ��ȡ������ɫ
         const theme = data?.theme || 'dinosaur';
         const themeKey = String(theme).toLowerCase();
         const themeColors = getThemeColor(themeKey);
@@ -6771,7 +6780,7 @@ export class ImageGenerator {
             Math.random() < 0.35 ? targetLetter : String.fromCharCode(65 + Math.floor(Math.random() * 26))
         );
 
-        // ��������ͼƬռ 3x3
+        // ??????????? 3x3
         const totalSlots = availableLetters.length + (mainImage ? 9 : 0);
         const gridSize = gridSizeInput || Math.max(6, Math.ceil(Math.sqrt(totalSlots)));
         const cells: { row: number; col: number }[] = [];
@@ -6789,7 +6798,7 @@ export class ImageGenerator {
             imageOrigin = { row, col };
         }
 
-        // ���˵���ͼƬռ�õĸ���
+        // ????????????????
         const freeCells = cells.filter(cell => {
             if (!imageOrigin) return true;
             return !(
@@ -6798,13 +6807,13 @@ export class ImageGenerator {
             );
         });
 
-        // ���ҿ��ø���
+        // ??????????
         for (let i = freeCells.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [freeCells[i], freeCells[j]] = [freeCells[j], freeCells[i]];
         }
 
-        // �ض���ĸ�������������?
+        // ????????????????????
         const lettersTrimmed = availableLetters.slice(0, freeCells.length);
 
         const gridLetters: (string | null)[][] = Array.from({ length: gridSize }, () =>
@@ -6863,8 +6872,8 @@ export class ImageGenerator {
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             padding: 32px;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
@@ -6954,7 +6963,7 @@ export class ImageGenerator {
         </div>
         <div class="play-area">
             ${gridLetters.map((row, rIdx) => row.map((cell, cIdx) => {
-                // image�����ÿհ�ռλ��ͼƬ���Զ�λ����
+                // image?????????��?????????��????
                 if (imageOrigin &&
                     rIdx >= imageOrigin.row && rIdx < imageOrigin.row + 3 &&
                     cIdx >= imageOrigin.col && cIdx < imageOrigin.col + 3) {
@@ -6973,7 +6982,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -6983,87 +6992,87 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成 Pattern Sequencing（图案序列）练习页
-     * 每行展示一个重复的图案序列，孩子需要识别规律并在空白框中填入下一个图�?
+     * ���� Pattern Sequencing��ͼ�����У���ϰҳ
+     * ÿ��չʾһ���ظ���ͼ�����У�������Ҫʶ����ɲ��ڿհ׿���������һ���??
      */
     async generatePatternSequencing(data: any): Promise<string> {
         await this.initialize();
 
-        // 支持两种数据格式：直接传参或通过 content 传参
+        // ֧���������ݸ�ʽ��ֱ�Ӵ��λ�ͨ�� content ����
         const content = data?.content || data || {};
         const { theme = 'dinosaur', rowCount = 4 } = content;
         const themeKey = String(theme || 'dinosaur').toLowerCase();
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
 
-        // 获取主题素材
+        // ��ȡ�����ز�
         const colorAssets = getThemeColorAssets(themeKey, 20);
         if (colorAssets.length < 2) {
-            throw new Error(`主题 ${themeKey} 的素材不足，需要至�?个`);
+            throw new Error(`���� ${themeKey} ���زĲ��㣬��Ҫ��??��`);
         }
 
-        // 随机决定图标位置
+        // �������ͼ��λ��?
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
 
-        // 使用背景图替代贴纸
+        // ʹ�ñ���ͼ������?
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 生成序列行数�?
-        // 规律模式: AB, AAB, ABB, AABB, ABAB
+        // ������������??
+        // ����ģʽ: AB, AAB, ABB, AABB, ABAB
         const patterns = ['AB', 'AAB', 'ABB', 'AABB', 'ABAB'];
         const rows: Array<{ images: string[]; pattern: string }> = [];
 
-        // 打乱素材池，确保每行使用不同的图案对
+        // �����زĳأ�ȷ��ÿ��ʹ�ò�ͬ��ͼ����
         const shuffledAssets = [...colorAssets].sort(() => Math.random() - 0.5);
         
         for (let i = 0; i < rowCount; i++) {
-            // 每行使用不同的两个素材（按顺序取，避免重复）
+            // ÿ��ʹ�ò�ͬ�������زģ���˳��ȡ�������ظ���
             const assetA = shuffledAssets[(i * 2) % shuffledAssets.length];
             const assetB = shuffledAssets[(i * 2 + 1) % shuffledAssets.length];
 
-            // 随机选择规律模式
+            // ���ѡ�����ģʽ
             const pattern = patterns[Math.floor(Math.random() * patterns.length)];
             const sequence: string[] = [];
             let repeatCount = 0;
 
-            // 根据模式生成序列 - 固定显示6个图�?
+            // ����ģʽ�������� - �̶���ʾ6��ͼ??
             switch (pattern) {
                 case 'AB':
-                    // A B A B A B -> 显示6�?
+                    // A B A B A B -> ��ʾ6??
                     for (let j = 0; j < 3; j++) {
                         sequence.push(assetA, assetB);
                     }
                     break;
                 case 'AAB':
-                    // A A B A A B -> 显示6�?
+                    // A A B A A B -> ��ʾ6??
                     for (let j = 0; j < 2; j++) {
                         sequence.push(assetA, assetA, assetB);
                     }
                     break;
                 case 'ABB':
-                    // A B B A B B -> 显示6�?
+                    // A B B A B B -> ��ʾ6??
                     for (let j = 0; j < 2; j++) {
                         sequence.push(assetA, assetB, assetB);
                     }
                     break;
                 case 'AABB':
-                    // A A B B A A -> 显示6�?
+                    // A A B B A A -> ��ʾ6??
                     sequence.push(assetA, assetA, assetB, assetB, assetA, assetA);
                     break;
                 case 'ABAB':
-                    // A B A B A B -> 显示6个（与AB相同但作为独立模式）
+                    // A B A B A B -> ��ʾ6������AB��ͬ����Ϊ����ģʽ��
                     sequence.push(assetA, assetB, assetA, assetB, assetA, assetB);
                     break;
             }
 
-            // 固定�?个图�?
+            // �̶�??��ͼ??
             const displayImages = sequence.slice(0, 6);
 
             rows.push({ images: displayImages, pattern });
         }
 
-        // 生成�?HTML - 6个图�?+ 1个空白框（无问号�?
+        // ����??HTML - 6��ͼ??+ 1���հ׿����ʺ�??
         const rowsHtml = rows.map((row, idx) => {
             const imagesHtml = row.images.map(img => 
                 `<img class="seq-item" src="http://localhost:3000${img}" />`
@@ -7112,8 +7121,8 @@ export class ImageGenerator {
         }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body {
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             margin: 0;
             background: #ffffff;
             font-family: 'Quicksand', sans-serif;
@@ -7121,13 +7130,13 @@ export class ImageGenerator {
         }
         .page {
             position: relative;
-            width: 794px;
-            height: 1123px;
+            width: 816px;
+            height: 1056px;
             overflow: hidden;
         }
         .top-bar {
             position: absolute;
-            top: 0;
+            top: 16px;
             left: 24px;
             right: 24px;
             height: auto;
@@ -7157,7 +7166,7 @@ export class ImageGenerator {
         .dash-line.short { width: 180px; }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -7167,7 +7176,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 24px 18px 16px;
@@ -7217,6 +7226,7 @@ export class ImageGenerator {
             padding: 16px 8px;
             background: ${themeColors.light};
             border-radius: 16px;
+            border: 2px solid ${themeColors.primary};
         }
         .seq-number {
             font-size: 24px;
@@ -7246,7 +7256,7 @@ export class ImageGenerator {
             font-size: 32px;
             font-weight: 700;
             color: ${themeColors.secondary};
-            background: rgba(255,255,255,0.8);
+            background: transparent;
             flex-shrink: 0;
         }
         .border-sticker {
@@ -7287,7 +7297,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -7297,8 +7307,8 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成 3x3 Logic Grid 页面
-     * 3x3 逻辑网格 - 找出缺失的图形
+     * ���� 3x3 Logic Grid ҳ��
+     * 3x3 �߼����� - �ҳ�ȱʧ��ͼ��
      */
     async generateLogicGrid(data: any): Promise<string> {
         await this.initialize();
@@ -7312,11 +7322,11 @@ export class ImageGenerator {
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         
-        // 形状和颜色
+        // ��״����ɫ
         const shapes = ['circle', 'square', 'triangle'];
-        const colors = ['#4A90D9', '#4CAF50', '#FF9800']; // 蓝、绿、橙
+        const colors = ['#4A90D9', '#4CAF50', '#FF9800']; // �����̡���
         
-        // 生成一个有效的 3x3 拉丁方阵
+        // ����һ����Ч�� 3x3 ��������
         const shapeOrder = [...shapes].sort(() => Math.random() - 0.5);
         const colorOrder = [...colors].sort(() => Math.random() - 0.5);
         
@@ -7331,12 +7341,12 @@ export class ImageGenerator {
             }
         }
         
-        // 缺失位置（右下角）
+        // ȱʧλ�ã����½ǣ�
         const missingRow = 2;
         const missingCol = 2;
         const answer = { ...grid[missingRow][missingCol] };
         
-        // 生成形状 SVG
+        // ������״ SVG
         const getShapeSvg = (shape: string, color: string, size: number = 80) => {
             switch (shape) {
                 case 'circle':
@@ -7350,7 +7360,7 @@ export class ImageGenerator {
             }
         };
         
-        // 生成网格 HTML - 使用更大的尺寸
+        // �������� HTML - ʹ�ø���ĳߴ�?
         const gridHtml = grid.map((row, rowIdx) => {
             const cellsHtml = row.map((cell, colIdx) => {
                 if (rowIdx === missingRow && colIdx === missingCol) {
@@ -7380,10 +7390,10 @@ export class ImageGenerator {
             display: flex;
             flex-direction: column;
             gap: 12px;
-            background: ${themeColors.light};
+            background: transparent;
             padding: 28px;
             border-radius: 20px;
-            border: 4px solid ${themeColors.primary};
+            border: none;
         }
         .grid-row {
             display: flex;
@@ -7392,7 +7402,7 @@ export class ImageGenerator {
         .grid-cell {
             width: 180px;
             height: 180px;
-            background: white;
+            background: transparent;
             border: 4px solid ${themeColors.secondary};
             border-radius: 16px;
             display: flex;
@@ -7400,13 +7410,14 @@ export class ImageGenerator {
             justify-content: center;
         }
         .grid-cell.missing {
-            background: ${themeColors.light};
+            background: transparent;
             border: 4px dashed ${themeColors.accent};
         }
         .question-mark {
             font-size: 96px;
             font-weight: 800;
             color: ${themeColors.accent};
+            opacity: 0.1;
         }
     </style>
 </head>
@@ -7439,7 +7450,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -7449,8 +7460,8 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成 Odd One Out 页面
-     * 找出不同的一个
+     * ���� Odd One Out ҳ��
+     * �ҳ���ͬ��һ��
      */
     async generateOddOneOut(data: any): Promise<string> {
         await this.initialize();
@@ -7464,33 +7475,33 @@ export class ImageGenerator {
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         
-        // 获取主题素材
+        // ��ȡ�����ز�
         const colorAssets = getThemeColorAssets(themeKey, 30);
         const shuffled = [...colorAssets].sort(() => Math.random() - 0.5);
         
-        // 生成 5 行，每行 4 个物品（3 个相同，1 个不同）
+        // ���� 5 �У�ÿ�� 4 ����Ʒ��3 ����ͬ��1 ����ͬ��
         const rows: Array<{ items: string[]; oddIndex: number }> = [];
         
         for (let i = 0; i < 5; i++) {
             const mainItem = shuffled[i * 2] || shuffled[0];
             const oddItem = shuffled[i * 2 + 1] || shuffled[1];
             
-            // 创建 4 个物品：3 个相同 + 1 个不同
+            // ���� 4 ����Ʒ��3 ����ͬ + 1 ����ͬ
             const items = [mainItem, mainItem, mainItem, oddItem];
             
-            // 打乱顺序
+            // ����˳��
             for (let j = items.length - 1; j > 0; j--) {
                 const k = Math.floor(Math.random() * (j + 1));
                 [items[j], items[k]] = [items[k], items[j]];
             }
             
-            // 找到 odd 的位置
+            // �ҵ� odd ��λ��
             const oddIndex = items.indexOf(oddItem);
             
             rows.push({ items, oddIndex });
         }
         
-        // 生成行 HTML
+        // ������ HTML
         const rowsHtml = rows.map((row, idx) => {
             const itemsHtml = row.items.map(item => 
                 `<div class="item-cell"><img src="http://localhost:3000${item}" /></div>`
@@ -7514,41 +7525,41 @@ export class ImageGenerator {
         .content-area {
             display: flex;
             flex-direction: column;
-            gap: 16px;
+            gap: 14px;
             flex: 1;
             justify-content: center;
-            padding: 10px 0;
+            padding: 6px 0;
         }
         .odd-row {
             display: flex;
             align-items: center;
-            gap: 16px;
-            padding: 16px 12px;
+            gap: 12px;
+            padding: 10px 10px;
             background: ${themeColors.light};
-            border-radius: 16px;
+            border-radius: 12px;
         }
         .row-number {
-            font-size: 24px;
+            font-size: 20px;
             font-weight: 700;
             color: ${themeColors.accent};
-            min-width: 40px;
+            min-width: 32px;
         }
         .items-container {
             display: flex;
-            gap: 20px;
+            gap: 14px;
             flex: 1;
             justify-content: center;
         }
         .item-cell {
-            width: 130px;
-            height: 130px;
-            background: white;
-            border: 3px solid ${themeColors.secondary};
-            border-radius: 16px;
+            width: 105px;
+            height: 105px;
+            background: transparent;
+            border: 2px solid ${themeColors.secondary};
+            border-radius: 12px;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 8px;
+            padding: 6px;
         }
         .item-cell img {
             max-width: 100%;
@@ -7584,7 +7595,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -7594,8 +7605,8 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成 Matching Halves 页面
-     * 匹配两半
+     * ���� Matching Halves ҳ��
+     * ƥ������
      */
     async generateMatchingHalves(data: any): Promise<string> {
         await this.initialize();
@@ -7609,16 +7620,16 @@ export class ImageGenerator {
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         
-        // 获取主题素材
+        // ��ȡ�����ز�
         const colorAssets = getThemeColorAssets(themeKey, 10);
         const shuffled = [...colorAssets].sort(() => Math.random() - 0.5);
         const selected = shuffled.slice(0, 5);
         
-        // 左侧固定顺序，右侧打乱
+        // ���̶�˳���Ҳ����?
         const leftItems = selected.map((item, idx) => ({ item, id: idx }));
         const rightItems = [...leftItems].sort(() => Math.random() - 0.5);
         
-        // 生成左侧 HTML（显示图片的左半部分，数字在右边靠近中间）
+        // �������?HTML����ʾͼƬ����벿�֣��������ұ߿����м�?
         const leftHtml = leftItems.map((item, idx) => `
             <div class="half-item left-item">
                 <div class="half-image">
@@ -7628,7 +7639,7 @@ export class ImageGenerator {
             </div>
         `).join('');
         
-        // 生成右侧 HTML（显示图片的右半部分，字母在左边靠近中间）
+        // �����Ҳ� HTML����ʾͼƬ���Ұ벿�֣���ĸ����߿����м�?
         const rightHtml = rightItems.map((item, idx) => `
             <div class="half-item right-item">
                 <div class="half-letter">${String.fromCharCode(65 + idx)}</div>
@@ -7696,11 +7707,11 @@ export class ImageGenerator {
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            background: white;
+            background: transparent;
             border-radius: 12px;
             border: 3px solid ${themeColors.secondary};
         }
-        /* 左半部分图片：只显示图片左边一半，居中在方框内 */
+        /* ��벿��ͼƬ��ֻ��ʾͼƬ���һ�룬�����ڷ����� */
         .left-half-img {
             height: 95px;
             max-height: 95px;
@@ -7709,7 +7720,7 @@ export class ImageGenerator {
             object-fit: contain;
             clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
         }
-        /* 右半部分图片：只显示图片右边一半，居中在方框内 */
+        /* �Ұ벿��ͼƬ��ֻ��ʾͼƬ�ұ�һ�룬�����ڷ����� */
         .right-half-img {
             height: 95px;
             max-height: 95px;
@@ -7750,7 +7761,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -7760,8 +7771,8 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成 Shape Synthesis 页面
-     * 形状合成 - 用基本形状创造物体
+     * ���� Shape Synthesis ҳ��
+     * ��״�ϳ� - �û�����״��������
      */
     async generateShapeSynthesis(data: any): Promise<string> {
         await this.initialize();
@@ -7775,18 +7786,18 @@ export class ImageGenerator {
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         
-        // 可用的基本形状及其颜色
+        // ���õĻ�����״������ɫ
         const availableShapes = [
-            { shape: 'circle', color: '#E53935' },      // 红色圆形
-            { shape: 'triangle', color: '#1E88E5' },    // 蓝色三角形
-            { shape: 'square', color: '#43A047' },      // 绿色正方形
-            { shape: 'rectangle', color: '#FB8C00' },   // 橙色矩形
-            { shape: 'semicircle', color: '#8E24AA' },  // 紫色半圆
-            { shape: 'diamond', color: '#FDD835' },     // 黄色菱形
-            { shape: 'oval', color: '#00ACC1' }         // 青色椭圆
+            { shape: 'circle', color: '#E53935' },      // ��ɫԲ��
+            { shape: 'triangle', color: '#1E88E5' },    // ��ɫ������
+            { shape: 'square', color: '#43A047' },      // ��ɫ������
+            { shape: 'rectangle', color: '#FB8C00' },   // ��ɫ����
+            { shape: 'semicircle', color: '#8E24AA' },  // ��ɫ��Բ
+            { shape: 'diamond', color: '#FDD835' },     // ��ɫ����
+            { shape: 'oval', color: '#00ACC1' }         // ��ɫ��Բ
         ];
         
-        // 生成形状 SVG
+        // ������״ SVG
         const getShapeSvg = (shape: string, color: string) => {
             const size = 50;
             switch (shape) {
@@ -7809,7 +7820,7 @@ export class ImageGenerator {
             }
         };
         
-        // 生成形状工具栏 HTML
+        // ������״������ HTML
         const shapesHtml = availableShapes.map(s => 
             `<div class="shape-item">${getShapeSvg(s.shape, s.color)}</div>`
         ).join('');
@@ -7895,7 +7906,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
 
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -7905,8 +7916,8 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成 Shape Path 页面
-     * 形状路径练习 - 沿着形状从起点走到终点
+     * ���� Shape Path ҳ��
+     * ��״·����ϰ - ������״������ߵ��յ�?
      */
     async generateShapePath(data: any): Promise<string> {
         await this.initialize();
@@ -7920,17 +7931,17 @@ export class ImageGenerator {
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         
-        // 形状类型
+        // ��״����
         const shapes = ['circle', 'square', 'triangle'];
         
-        // 生成 5x5 的网格（5列5行），确保三种形状出现概率相等
-        // 总共 25 个格子，每种形状至少 8 个，剩余 1 个随机
+        // ���� 5x5 ������5��5�У���ȷ��������״���ָ������?
+        // �ܹ� 25 �����ӣ�ÿ����״���� 8 ����ʣ�� 1 �����?
         const shapePool: string[] = [];
         for (let i = 0; i < 8; i++) {
             shapePool.push('circle', 'square', 'triangle');
         }
-        shapePool.push(shapes[Math.floor(Math.random() * shapes.length)]); // 第25个随机
-        // 洗牌
+        shapePool.push(shapes[Math.floor(Math.random() * shapes.length)]); // ��25�����?
+        // ϴ��
         for (let i = shapePool.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
             [shapePool[i], shapePool[j]] = [shapePool[j], shapePool[i]];
@@ -7946,11 +7957,11 @@ export class ImageGenerator {
             grid.push(rowShapes);
         }
         
-        // 生成蛇形路径坐标（5x5网格）
+        // ��������·�����꣨5x5����
         const pathCoords: { row: number; col: number }[] = [];
         let currentRow = 0;
         let currentCol = 0;
-        let direction = 1; // 1 = 向右, -1 = 向左
+        let direction = 1; // 1 = ����, -1 = ����
         
         pathCoords.push({ row: currentRow, col: currentCol });
         
@@ -7969,12 +7980,12 @@ export class ImageGenerator {
             if (currentRow >= 4 && currentCol === 4) break;
         }
         
-        // 检查两个坐标是否相邻（在路径上连续）
+        // ������������Ƿ����ڣ���·����������?
         const getPathIndex = (row: number, col: number) => {
             return pathCoords.findIndex(p => p.row === row && p.col === col);
         };
         
-        // 生成形状 SVG（所有形状都是实线）
+        // ������״ SVG��������״����ʵ�ߣ�
         const renderShape = (shape: string, isStart: boolean, isEnd: boolean) => {
             const strokeWidth = 2.5;
             const stroke = '#1f2937';
@@ -8023,28 +8034,28 @@ export class ImageGenerator {
             }
         };
         
-        // 生成路径连接线（虚线）
+        // ����·�������ߣ����ߣ�
         const generatePathLines = () => {
-            const cellSize = 120; // 单元格大小
+            const cellSize = 120; // ��Ԫ����?
             const lines: string[] = [];
             
             for (let i = 0; i < pathCoords.length - 1; i++) {
                 const current = pathCoords[i];
                 const next = pathCoords[i + 1];
                 
-                // 计算起点和终点位置（相对于网格容器）
+                // ���������յ�λ�ã����������������?
                 const x1 = current.col * cellSize + cellSize / 2;
                 const y1 = current.row * cellSize + cellSize / 2;
                 const x2 = next.col * cellSize + cellSize / 2;
                 const y2 = next.row * cellSize + cellSize / 2;
                 
-                // 水平连接
+                // ˮƽ����
                 if (current.row === next.row) {
                     const startX = Math.min(x1, x2) + 45;
                     const endX = Math.max(x1, x2) - 45;
                     lines.push(`<line x1="${startX}" y1="${y1}" x2="${endX}" y2="${y2}" stroke="#1f2937" stroke-width="2" stroke-dasharray="4,4"/>`);
                 }
-                // 垂直连接
+                // ��ֱ����
                 else if (current.col === next.col) {
                     const startY = Math.min(y1, y2) + 45;
                     const endY = Math.max(y1, y2) - 45;
@@ -8055,7 +8066,7 @@ export class ImageGenerator {
             return `<svg class="path-lines" width="${5 * cellSize}" height="${5 * cellSize}" style="position: absolute; top: 0; left: 0; pointer-events: none;">${lines.join('')}</svg>`;
         };
         
-        // 生成网格 HTML
+        // �������� HTML
         const gridHtml = grid.map((rowShapes, rowIdx) => {
             const cellsHtml = rowShapes.map((shape, colIdx) => {
                 const isStart = rowIdx === 0 && colIdx === 0;
@@ -8078,7 +8089,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 24px 18px 16px;
@@ -8137,7 +8148,7 @@ export class ImageGenerator {
         }
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -8176,7 +8187,7 @@ export class ImageGenerator {
         const filepath = path.join(OUTPUT_DIR, filename);
         
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'networkidle0' });
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -8186,7 +8197,7 @@ export class ImageGenerator {
     }
 
     /**
-     * Trace and Draw - 上方描红形状，下方自由绘画
+     * Trace and Draw - �Ϸ������״���·����ɻ�?
      */
     async generateTraceAndDraw(data: any): Promise<string> {
         await this.initialize();
@@ -8199,28 +8210,26 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 描红形状 - 房子和树（参考图片）
+        // ������?- ���Ӻ������ο�ͼƬ��
         const tracingShapes = `
             <div class="shape-item house">
                 <svg width="260" height="280" viewBox="0 0 260 280">
-                    <!-- 房子屋顶（高三角形） -->
+                    <!-- �����ݶ����������Σ� -->
                     <polygon points="130,5 250,110 10,110" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,3"/>
-                    <!-- 房子主体 -->
+                    <!-- �������� -->
                     <rect x="25" y="110" width="210" height="165" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,3"/>
-                    <!-- 左窗户 -->
+                    <!-- �󴰻� -->
                     <rect x="45" y="140" width="55" height="55" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,3"/>
-                    <!-- 门（中间） -->
+                    <!-- �ţ��м䣩 -->
                     <rect x="125" y="175" width="50" height="100" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,3"/>
                 </svg>
             </div>
             <div class="shape-item tree">
                 <svg width="160" height="280" viewBox="0 0 160 280">
-                    <!-- 树冠（圆形） -->
+                    <!-- ���ڣ�Բ�Σ� -->
                     <circle cx="80" cy="75" r="65" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,3"/>
-                    <!-- 树干（从圆形底部开始） -->
+                    <!-- ���ɣ���Բ�εײ���ʼ�� -->
                     <rect x="55" y="140" width="50" height="135" fill="none" stroke="#9ca3af" stroke-width="2" stroke-dasharray="4,3"/>
-                    <!-- 用白色遮盖圆形和树干重叠部分 -->
-                    <rect x="54" y="140" width="52" height="10" fill="white" stroke="none"/>
                 </svg>
             </div>
         `;
@@ -8233,7 +8242,7 @@ export class ImageGenerator {
         ${this.getBaseStyles(themeColors)}
         .divider {
             position: absolute;
-            top: 60px;
+            top: 62px;
             left: -24px;
             width: calc(100% + 48px);
             height: 1.5px;
@@ -8243,7 +8252,7 @@ export class ImageGenerator {
         .safe-area {
             position: absolute;
             left: 40px;
-            top: 67px;
+            top: 69px;
             width: calc(100% - 80px);
             height: calc(100% - 107px);
             padding: 24px 18px 16px;
@@ -8300,13 +8309,13 @@ export class ImageGenerator {
             flex: 1;
             border: 2.5px solid ${themeColors.primary};
             border-radius: 16px;
-            background: #fff;
+            background: transparent;
             min-height: 420px;
             position: relative;
         }
         .draw-hint {
             position: absolute;
-            top: 12px;
+            top: 16px;
             left: 16px;
             font-size: 15px;
             font-weight: 600;
@@ -8348,7 +8357,7 @@ export class ImageGenerator {
         const filename = `trace-and-draw-${Date.now()}.png`;
         const filepath = path.join(OUTPUT_DIR, filename);
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'networkidle0' });
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -8439,9 +8448,9 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成线条描红页面
-     * 每行：左侧主题图�?+ 中间描线 + 右侧主题图案
-     * 4�?种线条：直线、波浪线、锯齿线、曲�?
+     * �����������ҳ��?
+     * ÿ�У���������??+ �м����� + �Ҳ�����ͼ��
+     * 4??��������ֱ�ߡ������ߡ�����ߡ���??
      */
     async generateTraceLines(data: any): Promise<string> {
         await this.initialize();
@@ -8454,19 +8463,19 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 获取主题彩色素材�?个：4个左�?+ 4个右侧）
+        // ��ȡ�����ɫ�ز�??����4����??+ 4���Ҳࣩ
         const colorAssets = getThemeColorAssets(themeKey, 8);
         const shuffledAssets = [...colorAssets].sort(() => Math.random() - 0.5);
 
-        // 4种线条类型的 SVG 路径
+        // 4���������͵� SVG ·��
         const lineTypes = [
-            { path: 'M 0 40 L 300 40', name: 'straight' },  // 直线
-            { path: 'M 0 40 Q 75 0 150 40 Q 225 80 300 40', name: 'wavy' },  // 波浪�?
-            { path: 'M 0 70 L 50 10 L 100 70 L 150 10 L 200 70 L 250 10 L 300 70', name: 'zigzag' },  // 锯齿�?
-            { path: 'M 0 70 Q 100 70 150 30 Q 200 0 300 10', name: 'curved' }  // 曲线
+            { path: 'M 0 40 L 300 40', name: 'straight' },  // ֱ��
+            { path: 'M 0 40 Q 75 0 150 40 Q 225 80 300 40', name: 'wavy' },  // ����??
+            { path: 'M 0 70 L 50 10 L 100 70 L 150 10 L 200 70 L 250 10 L 300 70', name: 'zigzag' },  // ���??
+            { path: 'M 0 70 Q 100 70 150 30 Q 200 0 300 10', name: 'curved' }  // ����
         ];
 
-        // 生成4�?HTML
+        // ����4??HTML
         const rowsHtml = lineTypes.map((line, idx) => {
             const leftImg = shuffledAssets[idx] || shuffledAssets[0];
             const rightImg = shuffledAssets[idx + 4] || shuffledAssets[1];
@@ -8543,7 +8552,7 @@ export class ImageGenerator {
         const filename = `trace-lines-${Date.now()}.png`;
         const filepath = path.join(OUTPUT_DIR, filename);
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -8552,10 +8561,10 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成形状描红页面
-     * 2x2网格：圆形、正方形、三角形、星�?
-     * 每个区域：大形状 + 下方小形状供描画
-     * 底部：自由绘画区�?
+     * ������״���ҳ��?
+     * 2x2����Բ�Ρ������Ρ������Ρ���??
+     * ÿ�����򣺴���״ + �·�С��״���軭
+     * �ײ������ɻ滭��??
      */
     async generateShapeTracing(data: any): Promise<string> {
         await this.initialize();
@@ -8568,36 +8577,36 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 获取4个主题装饰图案（四角�?
+        // ��ȡ4������װ��ͼ�����Ľ�??
         const colorAssets = getThemeColorAssets(themeKey, 4);
 
-        // 4种形状配置：大形状SVG + 小形状SVG + 固定3个小形状
+        // 4����״���ã�����״SVG + С��״SVG + �̶�3��С��״
         const shapes = [
             { 
                 name: 'Circle',
                 bigSvg: '<circle cx="70" cy="70" r="55" stroke="#1a1a1a" stroke-width="5" fill="none"/>',
-                smallSvg: '<circle cx="30" cy="30" r="25" fill="#c0c0c0" stroke="#999" stroke-width="1.5"/>',
+                smallSvg: '<circle cx="30" cy="30" r="25" fill="none" stroke="#999" stroke-width="2" stroke-dasharray="5,3"/>',
                 smallCount: 3,
                 smallViewBox: '0 0 60 60'
             },
             { 
                 name: 'Square',
                 bigSvg: '<rect x="15" y="15" width="110" height="110" stroke="#1a1a1a" stroke-width="5" fill="none"/>',
-                smallSvg: '<rect x="5" y="5" width="50" height="50" fill="#c0c0c0" stroke="#999" stroke-width="1.5"/>',
+                smallSvg: '<rect x="5" y="5" width="50" height="50" fill="none" stroke="#999" stroke-width="2" stroke-dasharray="5,3"/>',
                 smallCount: 3,
                 smallViewBox: '0 0 60 60'
             },
             { 
                 name: 'Triangle',
                 bigSvg: '<polygon points="70,15 125,125 15,125" stroke="#1a1a1a" stroke-width="5" fill="none"/>',
-                smallSvg: '<polygon points="30,5 55,50 5,50" fill="#c0c0c0" stroke="#999" stroke-width="1.5"/>',
+                smallSvg: '<polygon points="30,5 55,50 5,50" fill="none" stroke="#999" stroke-width="2" stroke-dasharray="5,3"/>',
                 smallCount: 3,
                 smallViewBox: '0 0 60 55'
             },
             { 
                 name: 'Star',
                 bigSvg: '<polygon points="70,5 82,45 125,45 90,70 102,115 70,90 38,115 50,70 15,45 58,45" stroke="#1a1a1a" stroke-width="5" fill="none"/>',
-                smallSvg: '<polygon points="30,2 36,20 55,20 40,32 46,52 30,40 14,52 20,32 5,20 24,20" fill="#c0c0c0" stroke="#999" stroke-width="1.5"/>',
+                smallSvg: '<polygon points="30,2 36,20 55,20 40,32 46,52 30,40 14,52 20,32 5,20 24,20" fill="none" stroke="#999" stroke-width="2" stroke-dasharray="5,3"/>',
                 smallCount: 3,
                 smallViewBox: '0 0 60 55'
             }
@@ -8629,35 +8638,35 @@ export class ImageGenerator {
             gap: 20px;
             flex: 1;
             padding: 10px 20px;
+            align-content: center;
         }
         .shape-cell {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            padding: 20px 16px 16px;
-            background: linear-gradient(145deg, #ffffff 0%, #f8f9fa 100%);
-            border: 2px solid ${themeColors.light};
-            border-radius: 20px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.8);
-            transition: transform 0.2s;
+            padding: 28px 20px 20px;
+            background: ${themeColors.light};
+            border: 3px solid ${themeColors.secondary};
+            border-radius: 24px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06);
         }
         .big-shape {
-            width: 140px;
-            height: 140px;
+            width: 180px;
+            height: 180px;
             filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));
         }
         .small-shapes {
             display: flex;
-            gap: 12px;
-            margin-top: 14px;
-            padding: 10px 16px;
-            background: rgba(${themeColors.primary === '#4CAF50' ? '76,175,80' : themeColors.primary === '#2196F3' ? '33,150,243' : themeColors.primary === '#9C27B0' ? '156,39,176' : themeColors.primary === '#FF9800' ? '255,152,0' : '100,100,100'}, 0.08);
-            border-radius: 12px;
+            gap: 16px;
+            margin-top: 18px;
+            padding: 12px 20px;
+            background: ${themeColors.light};
+            border-radius: 14px;
         }
         .small-shape {
-            width: 52px;
-            height: 52px;
+            width: 60px;
+            height: 60px;
             opacity: 1;
             filter: drop-shadow(0 1px 2px rgba(0,0,0,0.15));
         }
@@ -8711,13 +8720,7 @@ export class ImageGenerator {
             <div class="shape-grid">
                 ${shapesHtml}
             </div>
-            <div class="draw-area">
-                <div class="draw-area-title">Draw your favorite shape!</div>
-                <div class="draw-box"></div>
-            </div>
         </div>
-        ${colorAssets[2] ? `<img class="corner-icon corner-bl" src="http://localhost:3000${colorAssets[2]}" />` : ''}
-        ${colorAssets[3] ? `<img class="corner-icon corner-br" src="http://localhost:3000${colorAssets[3]}" />` : ''}
         ${stickerHtml}
     </div>
 </body>
@@ -8726,7 +8729,7 @@ export class ImageGenerator {
         const filename = `shape-tracing-${Date.now()}.png`;
         const filepath = path.join(OUTPUT_DIR, filename);
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -8735,7 +8738,7 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成涂色页面
+     * ����Ϳɫҳ��
      */
     async generateColoringPage(data: any): Promise<string> {
         await this.initialize();
@@ -8748,7 +8751,7 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 随机获取主题线稿图片（从 line/main 文件夹）
+        // �����ȡ�����߸�ͼƬ����?line/main �ļ��У�
         const mainAssets = getThemeMainLineAssets(themeKey, 1);
         const lineArtPath = mainAssets[0] || '';
 
@@ -8801,7 +8804,7 @@ export class ImageGenerator {
         const filename = `coloring-page-${Date.now()}.png`;
         const filepath = path.join(OUTPUT_DIR, filename);
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -8810,7 +8813,7 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成创意画页�?
+     * ���ɴ��⻭ҳ??
      */
     async generateCreativePrompt(data: any): Promise<string> {
         await this.initialize();
@@ -8823,8 +8826,9 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 获取 Creative Prompt 图片
-        const promptImage = getCreativePromptImage(themeKey, promptType);
+        // ��ȡ Creative Prompt ͼƬ��ȥ����ɫ����
+        const originalImage = getCreativePromptImage(themeKey, promptType);
+        const promptImage = await removeWhiteBackground(originalImage);
 
         const titles: Record<string, string> = {
             'blank_sign': 'Creative Drawing',
@@ -8870,7 +8874,7 @@ export class ImageGenerator {
                 ${iconPosition === 'right' ? titleIconHtml : ''}
             </div>
             <div class="drawing-container">
-                ${promptImage ? `<img class="prompt-image" src="http://localhost:3000${promptImage}" alt="Creative Prompt" />` : ''}
+                ${promptImage ? `<img class="prompt-image" src="${promptImage.startsWith('data:') ? promptImage : 'http://localhost:3000' + promptImage}" alt="Creative Prompt" />` : ''}
             </div>
         </div>
         ${stickerHtml}
@@ -8881,7 +8885,7 @@ export class ImageGenerator {
         const filename = `creative-prompt-${Date.now()}.png`;
         const filepath = path.join(OUTPUT_DIR, filename);
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -8890,8 +8894,8 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成图片减法页面
-     * 2x2 网格，每个格子显示物体，部分被划掉（X标记），下方是减法算式
+     * ����ͼƬ����ҳ��
+     * 2x2 ����ÿ��������ʾ���壬���ֱ�������X��ǣ����·��Ǽ������?
      */
     async generatePictureSubtraction(data: any): Promise<string> {
         await this.initialize();
@@ -8904,28 +8908,28 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 获取主题彩色素材
+        // ��ȡ�����ɫ�ز�?
         const colorAssets = getThemeColorAssets(themeKey, 6);
 
-        // 生成6道减法题
+        // ����6��������
         const problems = Array.from({ length: 6 }, (_, idx) => {
             const total = Math.floor(Math.random() * 5) + 4; // 4-8
-            const subtract = Math.floor(Math.random() * (total - 1)) + 1; // 1 到 total-1
+            const subtract = Math.floor(Math.random() * (total - 1)) + 1; // 1 �� total-1
             const result = total - subtract;
             const imageUrl = colorAssets[idx % colorAssets.length] || colorAssets[0];
             
             return { total, subtract, result, imageUrl };
         });
 
-        // 生成每个问题的HTML
+        // ����ÿ�������HTML
         const problemsHtml = problems.map((p, idx) => {
-            // 生成物体图标（前subtract个被划掉）
+            // ��������ͼ�꣨ǰsubtract����������
             const objectsHtml = Array.from({ length: p.total }, (_, i) => {
                 const isCrossed = i < p.subtract;
                 return `
                     <div class="object-item ${isCrossed ? 'crossed' : ''}">
                         <img src="http://localhost:3000${p.imageUrl}" alt="object" />
-                        ${isCrossed ? '<div class="cross-mark">✕</div>' : ''}
+                        ${isCrossed ? '<div class="cross-mark">?</div>' : ''}
                     </div>
                 `;
             }).join('');
@@ -8935,7 +8939,7 @@ export class ImageGenerator {
                     <div class="objects-grid">${objectsHtml}</div>
                     <div class="equation">
                         <span class="num">${p.total}</span>
-                        <span class="op">−</span>
+                        <span class="op">?</span>
                         <span class="num">${p.subtract}</span>
                         <span class="op">=</span>
                         <span class="answer-box"></span>
@@ -9058,7 +9062,7 @@ export class ImageGenerator {
         const filename = `picture-subtraction-${Date.now()}.png`;
         const filepath = path.join(OUTPUT_DIR, filename);
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'networkidle0' });
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
@@ -9067,8 +9071,8 @@ export class ImageGenerator {
     }
 
     /**
-     * 生成数字序列页面
-     * 多行数字序列，用椭圆/药丸形状连接，部分数字为空需要填写
+     * ������������ҳ��
+     * �����������У�����Բ/ҩ����״���ӣ���������Ϊ����Ҫ��д
      */
     async generateNumberSequencing(data: any): Promise<string> {
         await this.initialize();
@@ -9081,7 +9085,7 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // 生成6行数字序列
+        // ����6����������
         const sequences: { numbers: (number | null)[]; start: number }[] = [];
         const usedStarts = new Set<number>();
         
@@ -9092,7 +9096,7 @@ export class ImageGenerator {
             } while (usedStarts.has(start));
             usedStarts.add(start);
             
-            // 每行5个数字，随机1-2个空白
+            // ÿ��5�����֣����?-2���հ�
             const numbers: (number | null)[] = [];
             const blankCount = Math.random() > 0.5 ? 2 : 1;
             const blankPositions = new Set<number>();
@@ -9107,7 +9111,7 @@ export class ImageGenerator {
             sequences.push({ numbers, start });
         }
 
-        // 生成序列HTML
+        // ��������HTML
         const sequencesHtml = sequences.map((seq, rowIdx) => {
             const pillsHtml = seq.numbers.map((num, idx) => {
                 const isBlank = num === null;
@@ -9209,7 +9213,7 @@ export class ImageGenerator {
         const filename = `number-sequencing-${Date.now()}.png`;
         const filepath = path.join(OUTPUT_DIR, filename);
         const page = await this.browser.newPage();
-        await page.setViewport({ width: 794, height: 1123, deviceScaleFactor: 1.25 });
+        await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'networkidle0' });
         await page.evaluateHandle('document.fonts.ready');
         await page.screenshot({ path: filepath, fullPage: true });
