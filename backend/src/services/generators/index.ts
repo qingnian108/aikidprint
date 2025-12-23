@@ -270,36 +270,41 @@ async function generateBeginningSounds(config: any) {
     };
 }
 
-// CVC Words 生成器 - 简单的 CVC 单词练习（随机混合词族）
+// CVC Words 生成器 - 每组固定 6 个单词
 async function generateCVCWords(config: any) {
     const { theme = 'dinosaur' } = config;
     
-    const wordFamilies: Record<string, string[]> = {
-        'at': ['cat', 'bat', 'hat', 'mat', 'rat', 'sat'],
-        'an': ['can', 'man', 'fan', 'pan', 'ran', 'van'],
-        'ap': ['cap', 'map', 'tap', 'nap', 'gap', 'lap'],
-        'ig': ['big', 'pig', 'dig', 'fig', 'wig', 'jig'],
-        'op': ['hop', 'top', 'mop', 'pop', 'cop', 'bop'],
-        'ug': ['bug', 'mug', 'rug', 'hug', 'jug', 'tug']
-    };
+    // 按发音规律分组，每组 6 个单词
+    const wordGroups: { name: string; words: string[] }[] = [
+        { name: 'Short A', words: ['cat', 'bat', 'hat', 'bag', 'fan', 'pan'] },
+        { name: 'Short A & E', words: ['map', 'bed', 'hen', 'pen', 'ten', 'jet'] },
+        { name: 'Short I', words: ['pig', 'dig', 'wig', 'bin', 'fin', 'lip'] },
+        { name: 'Short O', words: ['dog', 'log', 'fox', 'box', 'top', 'mop'] },
+        { name: 'Short U', words: ['bug', 'mug', 'cup', 'bun', 'sun', 'run'] },
+        { name: 'Mixed CVC', words: ['net', 'nut', 'hot', 'zip', 'web', 'hen'] }
+    ];
     
-    // 随机选择一个词族
-    const allFamilies = ['at', 'an', 'ap', 'ig', 'op', 'ug'];
-    const wordFamily = allFamilies[Math.floor(Math.random() * allFamilies.length)];
+    // 随机选择一组
+    const selectedGroup = wordGroups[Math.floor(Math.random() * wordGroups.length)];
     
-    const words = wordFamilies[wordFamily] || wordFamilies['at'];
-    // 随机选择 6 个单词
-    const shuffled = [...words].sort(() => Math.random() - 0.5);
-    const selectedWords = shuffled.slice(0, 6);
+    // 打乱单词顺序
+    const shuffledWords = [...selectedGroup.words].sort(() => Math.random() - 0.5);
+    
+    // 为每个单词添加图片路径
+    const wordsWithImages = shuffledWords.map(word => ({
+        word,
+        image: `/uploads/bigpng/${word}.png`
+    }));
     
     return {
-        title: `CVC Words: -${wordFamily}`,
+        title: `CVC Words: ${selectedGroup.name}`,
         type: 'cvc-words',
         content: {
-            wordFamily,
-            words: selectedWords,
+            groupName: selectedGroup.name,
+            words: shuffledWords,
+            wordsWithImages,
             theme,
-            instructions: `Read and trace the -${wordFamily} words.`
+            instructions: `Read and write the CVC words.`
         }
     };
 }

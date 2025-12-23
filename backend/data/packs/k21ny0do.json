@@ -1,0 +1,18 @@
+{
+  "packId": "k21ny0do",
+  "childName": "kiki",
+  "age": "5-6",
+  "theme": "space",
+  "weekNumber": 51,
+  "pages": [
+    {
+      "order": 1,
+      "type": "cover",
+      "title": "Cover Page",
+      "imageUrl": "/uploads/Cover/space/space_cover_07.png"
+    }
+  ],
+  "createdAt": "2025-12-18T13:13:08.767Z",
+  "createdBy": "7o7zbjOrfOVLyWK5rGILVtJfA093",
+  "source": "manual"
+}

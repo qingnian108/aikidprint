@@ -5,12 +5,12 @@ import { getAssetUrl } from '../../config/api';
 
 // 主题配置
 export const THEMES = [
-  { id: 'dinosaur', name: 'Dinosaurs', image: getAssetUrl('/uploads/assets/A_main_assets/dinosaur/color/main/dinosaur_000_color.png'), color: '#a1e44d' },
-  { id: 'space', name: 'Space', image: getAssetUrl('/uploads/assets/A_main_assets/space/color/main/space_000_color.png'), color: '#7bd3ea' },
-  { id: 'vehicles', name: 'Cars', image: getAssetUrl('/uploads/assets/A_main_assets/vehicles/color/main/vehicles_000_color.png'), color: '#ff9f1c' },
-  { id: 'unicorn', name: 'Unicorn', image: getAssetUrl('/uploads/assets/A_main_assets/unicorn/color/main/unicorn_000_color.png'), color: '#ff99c8' },
-  { id: 'ocean', name: 'Ocean', image: getAssetUrl('/uploads/assets/A_main_assets/ocean/color/main/ocean_000_color.png'), color: '#7bd3ea' },
-  { id: 'safari', name: 'Safari', image: getAssetUrl('/uploads/assets/A_main_assets/safari/color/main/safari_000_color.png'), color: '#ffd60a' }
+  { id: 'dinosaur', name: 'Dinosaurs', image: getAssetUrl('/uploads/assets/B_character_ip/dinosaur/icon/dinosaur_icon.png'), color: '#a1e44d' },
+  { id: 'space', name: 'Space', image: getAssetUrl('/uploads/assets/B_character_ip/space/icon/space_astronaut_icon.png'), color: '#7bd3ea' },
+  { id: 'vehicles', name: 'Cars', image: getAssetUrl('/uploads/assets/B_character_ip/vehicles/icon/vehicles_car_icon.png'), color: '#ff9f1c' },
+  { id: 'unicorn', name: 'Unicorn', image: getAssetUrl('/uploads/assets/B_character_ip/unicorn/icon/unicorn_icon.png'), color: '#ff99c8' },
+  { id: 'ocean', name: 'Ocean', image: getAssetUrl('/uploads/assets/B_character_ip/ocean/icon/ocean_whale_icon.png'), color: '#7bd3ea' },
+  { id: 'safari', name: 'Safari', image: getAssetUrl('/uploads/assets/B_character_ip/safari/icon/safari_lion_icon.png'), color: '#ffd60a' }
 ];
 
 export interface ThemeSelectorProps {

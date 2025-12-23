@@ -117,7 +117,32 @@ export interface WeeklyPackConfig {
 }
 
 /**
+ * 从数组中随机选择 n 个元素
+ */
+function pickRandom<T>(arr: T[], n: number): T[] {
+  const shuffled = [...arr].sort(() => Math.random() - 0.5);
+  return shuffled.slice(0, n);
+}
+
+/**
+ * 获取随机字母组
+ */
+function getRandomLetterSet(): string {
+  const sets = ['A-E', 'F-J', 'K-O', 'P-T', 'U-Z'];
+  return sets[Math.floor(Math.random() * sets.length)];
+}
+
+/**
+ * 获取随机字母组（大小写匹配用）
+ */
+function getRandomUpperLowerSet(): string {
+  const sets = ['A-F', 'G-L', 'M-R', 'S-V', 'W-Z'];
+  return sets[Math.floor(Math.random() * sets.length)];
+}
+
+/**
  * 生成每周作业包配置
+ * 根据年龄智能选择页面，有难度的按难度，没难度的随机
  */
 export async function generateWeeklyPackConfig(
   childName: string,
@@ -132,279 +157,224 @@ export async function generateWeeklyPackConfig(
   const pages: WeeklyPackPage[] = [];
   let order = 1;
   
-  // 1. 封面页（使用封面图片）
+  // ========== 封面 ==========
   pages.push({
     order: order++,
     type: 'cover',
     category: 'cover',
     title: 'Cover Page',
-    config: {
-      theme,
-      childName,
-      weekNumber,
-      coverImage
-    }
+    config: { theme, childName, weekNumber, coverImage }
   });
   
-  // 2. Write My Name - 个性化开场
+  // ========== Literacy 读写 (5-6页) ==========
+  
+  // 1. Write My Name - 必选
   pages.push({
     order: order++,
     type: 'write-my-name',
     category: 'literacy',
     title: 'Write My Name',
-    config: {
-      theme,
-      name: childName
-    }
+    config: { theme, name: childName }
   });
   
-  // 3. 大写字母描红
-  if (ageConfig.includeUppercase) {
-    pages.push({
-      order: order++,
-      type: 'uppercase-tracing',
-      category: 'literacy',
-      title: `Uppercase ${weeklyLetter} Tracing`,
-      config: {
-        letter: weeklyLetter,
-        theme
-      }
-    });
-  }
+  // 2. 大写字母描红 - 必选
+  pages.push({
+    order: order++,
+    type: 'uppercase-tracing',
+    category: 'literacy',
+    title: `Uppercase ${weeklyLetter} Tracing`,
+    config: { letter: weeklyLetter, theme }
+  });
   
-  // 4. 小写字母描红（3岁以上）
+  // 3. 小写字母描红 - 3岁以上
   if (ageConfig.includeLowercase) {
     pages.push({
       order: order++,
       type: 'lowercase-tracing',
       category: 'literacy',
       title: `Lowercase ${weeklyLetter.toLowerCase()} Tracing`,
-      config: {
-        letter: weeklyLetter.toLowerCase(),
-        theme
-      }
+      config: { letter: weeklyLetter.toLowerCase(), theme }
     });
   }
   
-  // 5. 字母识别
+  // 4. 字母识别 - 有难度
   pages.push({
     order: order++,
     type: 'letter-recognition',
     category: 'literacy',
     title: `Find Letter ${weeklyLetter}`,
-    config: {
-      letter: weeklyLetter,
-      theme,
-      difficulty: ageConfig.difficulty
-    }
+    config: { letter: weeklyLetter, theme, difficulty: ageConfig.difficulty }
   });
   
-  // 6. 数字描红
+  // 5. 从剩余 Literacy 中随机选 1-2 个
+  const optionalLiteracy = [
+    { type: 'alphabet-sequencing', title: 'Alphabet Sequencing', hasDifficulty: true },
+    { type: 'beginning-sounds', title: 'Beginning Sounds', hasDifficulty: false, letterSet: true },
+    { type: 'cvc-words', title: 'CVC Words', hasDifficulty: false },
+    { type: 'match-upper-lower', title: 'Match Uppercase & Lowercase', hasDifficulty: false, upperLowerSet: true }
+  ];
+  
+  const selectedLiteracy = pickRandom(optionalLiteracy, age === '2-3' ? 1 : 2);
+  for (const item of selectedLiteracy) {
+    const config: Record<string, any> = { theme };
+    if (item.hasDifficulty) config.difficulty = ageConfig.difficulty;
+    if (item.letterSet) config.letterSet = getRandomLetterSet();
+    if (item.upperLowerSet) config.letterSet = getRandomUpperLowerSet();
+    
+    pages.push({
+      order: order++,
+      type: item.type,
+      category: 'literacy',
+      title: item.title,
+      config
+    });
+  }
+  
+  // ========== Math 数学 (5-6页) ==========
+  
+  // 1. 数字描红 - 必选
   pages.push({
     order: order++,
     type: 'number-tracing',
     category: 'math',
     title: 'Number Tracing',
-    config: {
-      range: ageConfig.numberRange,
-      theme
-    }
+    config: { range: ageConfig.numberRange, theme }
   });
   
-  // 7. 数数练习
+  // 2. 数数练习 - 有难度
   pages.push({
     order: order++,
     type: 'counting-objects',
     category: 'math',
     title: 'Count and Write',
-    config: {
-      theme,
-      difficulty: ageConfig.difficulty
-    }
+    config: { theme, difficulty: ageConfig.difficulty }
   });
   
-  // 8. 迷宫
+  // 3. 从剩余 Math 中随机选 3-4 个
+  const optionalMath = [
+    { type: 'number-path', title: 'Number Path', hasDifficulty: false },
+    { type: 'which-is-more', title: 'Which is More?', hasDifficulty: true },
+    { type: 'ten-frame', title: 'Ten Frame Counting', hasDifficulty: false },
+    { type: 'count-shapes', title: 'Count the Shapes', hasDifficulty: false },
+    { type: 'number-sequencing', title: 'Number Sequencing', hasDifficulty: false }
+  ];
+  
+  // 高年龄段增加加减法
+  const advancedMath = [
+    { type: 'picture-addition', title: 'Picture Addition', hasDifficulty: false, minAge: '3-4' },
+    { type: 'picture-subtraction', title: 'Picture Subtraction', hasDifficulty: false, minAge: '4-5' },
+    { type: 'number-bonds', title: 'Number Bonds', hasDifficulty: false, minAge: '4-5' }
+  ];
+  
+  const availableMath = [...optionalMath];
+  for (const item of advancedMath) {
+    if (age === '4-5' || age === '5-6' || (item.minAge === '3-4' && age !== '2-3')) {
+      availableMath.push(item);
+    }
+  }
+  
+  const selectedMath = pickRandom(availableMath, age === '2-3' ? 3 : 4);
+  for (const item of selectedMath) {
+    const config: Record<string, any> = { theme };
+    if (item.hasDifficulty) config.difficulty = ageConfig.difficulty;
+    
+    pages.push({
+      order: order++,
+      type: item.type,
+      category: 'math',
+      title: item.title,
+      config
+    });
+  }
+  
+  // ========== Logic 逻辑 (4-5页) ==========
+  
+  // 1. 迷宫 - 有难度，必选
   pages.push({
     order: order++,
     type: 'maze',
     category: 'logic',
     title: 'Maze',
-    config: {
-      theme,
-      difficulty: ageConfig.difficulty
-    }
+    config: { theme, difficulty: ageConfig.difficulty }
   });
   
-  // 9. 影子匹配
-  pages.push({
-    order: order++,
-    type: 'shadow-matching',
-    category: 'logic',
-    title: 'Shadow Matching',
-    config: {
-      theme,
-      difficulty: ageConfig.difficulty
-    }
-  });
+  // 2. 从剩余 Logic 中随机选 3-4 个
+  const optionalLogic = [
+    { type: 'shadow-matching', title: 'Shadow Matching', hasDifficulty: false },
+    { type: 'sorting', title: 'Sorting', hasDifficulty: false },
+    { type: 'pattern-compare', title: 'Pattern Compare', hasDifficulty: false },
+    { type: 'pattern-sequencing', title: 'Pattern Sequencing', hasDifficulty: false },
+    { type: 'odd-one-out', title: 'Odd One Out', hasDifficulty: false },
+    { type: 'matching-halves', title: 'Matching Halves', hasDifficulty: false }
+  ];
   
-  // 10. 分类练习
-  pages.push({
-    order: order++,
-    type: 'sorting',
-    category: 'logic',
-    title: 'Sorting',
-    config: {
-      theme
-    }
-  });
+  const selectedLogic = pickRandom(optionalLogic, age === '2-3' ? 3 : 4);
+  for (const item of selectedLogic) {
+    const config: Record<string, any> = { theme };
+    if (item.hasDifficulty) config.difficulty = ageConfig.difficulty;
+    
+    pages.push({
+      order: order++,
+      type: item.type,
+      category: 'logic',
+      title: item.title,
+      config
+    });
+  }
   
-  // 11. 图案排序
-  pages.push({
-    order: order++,
-    type: 'pattern-sequencing',
-    category: 'logic',
-    title: 'Pattern Sequencing',
-    config: {
-      theme,
-      difficulty: ageConfig.difficulty
-    }
-  });
+  // ========== Creativity 创意 (4-5页) ==========
   
-  // 12. 连线数字 (Dot-to-Dot)
-  pages.push({
-    order: order++,
-    type: 'number-path',
-    category: 'math',
-    title: 'Connect the Dots',
-    config: {
-      theme,
-      difficulty: ageConfig.difficulty,
-      maxNumber: ageConfig.dotsCount
-    }
-  });
-  
-  // 13. 线条描红
+  // 1. 线条描红 - 必选
   pages.push({
     order: order++,
     type: 'trace-lines',
     category: 'creativity',
     title: 'Trace Lines',
-    config: {
-      theme,
-      difficulty: ageConfig.difficulty
-    }
+    config: { theme }
   });
   
-  // 14. 形状描红
-  pages.push({
-    order: order++,
-    type: 'shape-tracing',
-    category: 'creativity',
-    title: 'Shape Tracing',
-    config: {
-      theme,
-      difficulty: ageConfig.difficulty
-    }
-  });
-  
-  // 15. 涂色页
+  // 2. 涂色页 - 必选
   pages.push({
     order: order++,
     type: 'coloring-page',
     category: 'creativity',
     title: 'Coloring Page',
-    config: {
-      theme
-    }
+    config: { theme }
   });
   
-  // 16. 创意绘画
-  pages.push({
-    order: order++,
-    type: 'creative-prompt',
-    category: 'creativity',
-    title: 'Creative Drawing',
-    config: {
-      theme,
-      promptType: 'blank_sign'
-    }
-  });
+  // 3. 从剩余 Creativity 中随机选 2-3 个
+  const optionalCreativity = [
+    { type: 'shape-tracing', title: 'Shape Tracing', hasDifficulty: false },
+    { type: 'creative-prompt', title: 'Creative Drawing', hasDifficulty: false, promptType: true },
+    { type: 'trace-and-draw', title: 'Trace and Draw', hasDifficulty: false },
+    { type: 'shape-path', title: 'Shape Path', hasDifficulty: false }
+  ];
   
-  // 17. 图片加法 (3岁以上)
-  if (age !== '2-3') {
-    pages.push({
-      order: order++,
-      type: 'picture-addition',
-      category: 'math',
-      title: 'Picture Addition',
-      config: {
-        theme,
-        difficulty: ageConfig.difficulty
-      }
-    });
+  // 高年龄段增加逻辑创意
+  const advancedCreativity = [
+    { type: 'logic-grid', title: 'Logic Grid', hasDifficulty: false, minAge: '4-5' },
+    { type: 'shape-synthesis', title: 'Shape Synthesis', hasDifficulty: false, minAge: '3-4' }
+  ];
+  
+  const availableCreativity = [...optionalCreativity];
+  for (const item of advancedCreativity) {
+    if (age === '4-5' || age === '5-6' || (item.minAge === '3-4' && age !== '2-3')) {
+      availableCreativity.push(item);
+    }
   }
   
-  // 18. 十框计数
-  pages.push({
-    order: order++,
-    type: 'ten-frame',
-    category: 'math',
-    title: 'Ten Frame Counting',
-    config: {
-      theme,
-      difficulty: ageConfig.difficulty
-    }
-  });
-  
-  // 19. 逻辑网格 (4岁以上)
-  if (age === '4-5' || age === '5-6') {
+  const selectedCreativity = pickRandom(availableCreativity, age === '2-3' ? 2 : 3);
+  for (const item of selectedCreativity) {
+    const config: Record<string, any> = { theme };
+    if (item.hasDifficulty) config.difficulty = ageConfig.difficulty;
+    if (item.promptType) config.promptType = Math.random() > 0.5 ? 'blank_sign' : 'halfbody';
+    
     pages.push({
       order: order++,
-      type: 'logic-grid',
-      category: 'logic',
-      title: 'Logic Grid',
-      config: {
-        theme,
-        difficulty: ageConfig.difficulty
-      }
-    });
-  }
-  
-  // 20. 找不同
-  pages.push({
-    order: order++,
-    type: 'odd-one-out',
-    category: 'logic',
-    title: 'Odd One Out',
-    config: {
-      theme,
-      difficulty: ageConfig.difficulty
-    }
-  });
-  
-  // 21. 匹配两半
-  pages.push({
-    order: order++,
-    type: 'matching-halves',
-    category: 'logic',
-    title: 'Matching Halves',
-    config: {
-      theme,
-      difficulty: ageConfig.difficulty
-    }
-  });
-  
-  // 22. 数字凑数 (4岁以上)
-  if (age === '4-5' || age === '5-6') {
-    pages.push({
-      order: order++,
-      type: 'number-bonds',
-      category: 'math',
-      title: 'Number Bonds',
-      config: {
-        theme,
-        difficulty: ageConfig.difficulty
-      }
+      type: item.type,
+      category: 'creativity',
+      title: item.title,
+      config
     });
   }
   

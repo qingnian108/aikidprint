@@ -1,0 +1,18 @@
+{
+  "packId": "qti2a7lt",
+  "childName": "ss",
+  "age": "2-3",
+  "theme": "dinosaur",
+  "weekNumber": 51,
+  "pages": [
+    {
+      "order": 1,
+      "type": "cover",
+      "title": "Cover Page",
+      "imageUrl": "/uploads/Cover/dinosaur/dinosaur_cover_09.png"
+    }
+  ],
+  "createdAt": "2025-12-18T13:15:59.282Z",
+  "createdBy": "7o7zbjOrfOVLyWK5rGILVtJfA093",
+  "source": "manual"
+}

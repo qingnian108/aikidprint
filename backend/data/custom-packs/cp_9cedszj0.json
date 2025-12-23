@@ -1,0 +1,126 @@
+{
+  "id": "cp_9cedszj0",
+  "theme": "safari",
+  "selections": {
+    "coloring-page": 3,
+    "trace-lines": 2,
+    "shape-tracing": 2,
+    "creative-prompt": 1,
+    "trace-and-draw": 1,
+    "shape-synthesis": 1,
+    "maze": 2,
+    "pattern-sequencing": 1,
+    "matching-halves": 1,
+    "uppercase-tracing": 1,
+    "write-my-name": 1,
+    "number-tracing": 1,
+    "counting-objects": 1
+  },
+  "pages": [
+    {
+      "order": 1,
+      "type": "coloring-page",
+      "title": "Coloring Page #1",
+      "imageUrl": "/generated/worksheets/coloring-page-1766064450051.png"
+    },
+    {
+      "order": 2,
+      "type": "coloring-page",
+      "title": "Coloring Page #2",
+      "imageUrl": "/generated/worksheets/coloring-page-1766064450395.png"
+    },
+    {
+      "order": 3,
+      "type": "coloring-page",
+      "title": "Coloring Page #3",
+      "imageUrl": "/generated/worksheets/coloring-page-1766064450618.png"
+    },
+    {
+      "order": 4,
+      "type": "trace-lines",
+      "title": "Trace Lines #1",
+      "imageUrl": "/generated/worksheets/trace-lines-1766064450919.png"
+    },
+    {
+      "order": 5,
+      "type": "trace-lines",
+      "title": "Trace Lines #2",
+      "imageUrl": "/generated/worksheets/trace-lines-1766064451286.png"
+    },
+    {
+      "order": 6,
+      "type": "shape-tracing",
+      "title": "Shape Tracing #1",
+      "imageUrl": "/generated/worksheets/shape-tracing-1766064451591.png"
+    },
+    {
+      "order": 7,
+      "type": "shape-tracing",
+      "title": "Shape Tracing #2",
+      "imageUrl": "/generated/worksheets/shape-tracing-1766064451955.png"
+    },
+    {
+      "order": 8,
+      "type": "creative-prompt",
+      "title": "Creative Prompt",
+      "imageUrl": "/generated/worksheets/creative-prompt-1766064452243.png"
+    },
+    {
+      "order": 9,
+      "type": "trace-and-draw",
+      "title": "Trace and Draw",
+      "imageUrl": "/generated/worksheets/trace-and-draw-1766064452628.png"
+    },
+    {
+      "order": 10,
+      "type": "maze",
+      "title": "Maze #1",
+      "imageUrl": "/generated/worksheets/maze-1766064454053.png"
+    },
+    {
+      "order": 11,
+      "type": "maze",
+      "title": "Maze #2",
+      "imageUrl": "/generated/worksheets/maze-1766064454481.png"
+    },
+    {
+      "order": 12,
+      "type": "pattern-sequencing",
+      "title": "Pattern Sequencing",
+      "imageUrl": "/generated/worksheets/pattern-sequencing-1766064454719.png"
+    },
+    {
+      "order": 13,
+      "type": "matching-halves",
+      "title": "Matching Halves",
+      "imageUrl": "/generated/worksheets/matching-halves-1766064455023.png"
+    },
+    {
+      "order": 14,
+      "type": "uppercase-tracing",
+      "title": "Uppercase Letter Tracing",
+      "imageUrl": "/generated/worksheets/uppercase-G-1766064455282.png"
+    },
+    {
+      "order": 15,
+      "type": "write-my-name",
+      "title": "Write My Name",
+      "imageUrl": "/generated/worksheets/write-my-name-1766064455881.png"
+    },
+    {
+      "order": 16,
+      "type": "number-tracing",
+      "title": "Number Tracing",
+      "imageUrl": "/generated/worksheets/number-tracing-0-4-1766064456316.png"
+    },
+    {
+      "order": 17,
+      "type": "counting-objects",
+      "title": "Counting Objects",
+      "imageUrl": "/generated/worksheets/count-write-safari-1766064456552.png"
+    }
+  ],
+  "createdAt": "2025-12-18T13:27:36.839Z",
+  "userId": "7o7zbjOrfOVLyWK5rGILVtJfA093",
+  "totalPages": 17
+}

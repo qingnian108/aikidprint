@@ -1,0 +1,144 @@
+{
+  "packId": "t9xhlmn4",
+  "childName": "kiki",
+  "age": "3-4",
+  "theme": "vehicles",
+  "weekNumber": 51,
+  "pages": [
+    {
+      "order": 1,
+      "type": "cover",
+      "title": "Cover Page",
+      "imageUrl": "/uploads/Cover/vehicles/vehicles_cover_02.png"
+    },
+    {
+      "order": 2,
+      "type": "write-my-name",
+      "title": "Write My Name",
+      "imageUrl": "/generated/worksheets/write-my-name-1766063854966.png"
+    },
+    {
+      "order": 3,
+      "type": "uppercase-tracing",
+      "title": "Uppercase A Tracing",
+      "imageUrl": "/generated/worksheets/uppercase-A-1766063855385.png"
+    },
+    {
+      "order": 4,
+      "type": "lowercase-tracing",
+      "title": "Lowercase a Tracing",
+      "imageUrl": "/generated/worksheets/lowercase-a-1766063855671.png"
+    },
+    {
+      "order": 5,
+      "type": "letter-recognition",
+      "title": "Find Letter A",
+      "imageUrl": "/generated/worksheets/letter-recognition-A-1766063856020.png"
+    },
+    {
+      "order": 6,
+      "type": "match-upper-lower",
+      "title": "Match Uppercase & Lowercase",
+      "imageUrl": "/generated/worksheets/match-upper-lower-1766063856274.png"
+    },
+    {
+      "order": 7,
+      "type": "cvc-words",
+      "title": "CVC Words",
+      "imageUrl": "/generated/worksheets/cvc-words-1766063857204.png"
+    },
+    {
+      "order": 8,
+      "type": "number-tracing",
+      "title": "Number Tracing",
+      "imageUrl": "/generated/worksheets/number-tracing-0-4-1766063858454.png"
+    },
+    {
+      "order": 9,
+      "type": "counting-objects",
+      "title": "Count and Write",
+      "imageUrl": "/generated/worksheets/count-write-vehicles-1766063858703.png"
+    },
+    {
+      "order": 10,
+      "type": "number-path",
+      "title": "Number Path",
+      "imageUrl": "/generated/worksheets/connect-dots-vehicles-1766063901618.png"
+    },
+    {
+      "order": 11,
+      "type": "which-is-more",
+      "title": "Which is More?",
+      "imageUrl": "/generated/worksheets/which-is-more-1766063901907.png"
+    },
+    {
+      "order": 12,
+      "type": "ten-frame",
+      "title": "Ten Frame Counting",
+      "imageUrl": "/generated/worksheets/ten-frame-1766063903124.png"
+    },
+    {
+      "order": 13,
+      "type": "count-shapes",
+      "title": "Count the Shapes",
+      "imageUrl": "/generated/worksheets/count-shapes-1766063904443.png"
+    },
+    {
+      "order": 14,
+      "type": "maze",
+      "title": "Maze",
+      "imageUrl": "/generated/worksheets/maze-1766063905709.png"
+    },
+    {
+      "order": 15,
+      "type": "shadow-matching",
+      "title": "Shadow Matching",
+      "imageUrl": "/generated/worksheets/shadow-matching-vehicles-1766063905943.png"
+    },
+    {
+      "order": 16,
+      "type": "pattern-sequencing",
+      "title": "Pattern Sequencing",
+      "imageUrl": "/generated/worksheets/pattern-sequencing-1766063906541.png"
+    },
+    {
+      "order": 17,
+      "type": "matching-halves",
+      "title": "Matching Halves",
+      "imageUrl": "/generated/worksheets/matching-halves-1766063906882.png"
+    },
+    {
+      "order": 18,
+      "type": "pattern-compare",
+      "title": "Pattern Compare",
+      "imageUrl": "/generated/worksheets/pattern-compare-1766063932341.png"
+    },
+    {
+      "order": 19,
+      "type": "trace-lines",
+      "title": "Trace Lines",
+      "imageUrl": "/generated/worksheets/trace-lines-1766063932787.png"
+    },
+    {
+      "order": 20,
+      "type": "coloring-page",
+      "title": "Coloring Page",
+      "imageUrl": "/generated/worksheets/coloring-page-1766063933067.png"
+    },
+    {
+      "order": 22,
+      "type": "shape-path",
+      "title": "Shape Path",
+      "imageUrl": "/generated/worksheets/shape-path-1766063933373.png"
+    },
+    {
+      "order": 23,
+      "type": "trace-and-draw",
+      "title": "Trace and Draw",
+      "imageUrl": "/generated/worksheets/trace-and-draw-1766063934698.png"
+    }
+  ],
+  "createdAt": "2025-12-18T13:18:56.019Z",
+  "createdBy": "7o7zbjOrfOVLyWK5rGILVtJfA093",
+  "source": "manual"
+}

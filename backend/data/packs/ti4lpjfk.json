@@ -1,0 +1,144 @@
+{
+  "packId": "ti4lpjfk",
+  "childName": "kiki",
+  "age": "4-5",
+  "theme": "ocean",
+  "weekNumber": 51,
+  "pages": [
+    {
+      "order": 1,
+      "type": "cover",
+      "title": "Cover Page",
+      "imageUrl": "/uploads/Cover/ocean/ocean_cover_03.png"
+    },
+    {
+      "order": 2,
+      "type": "write-my-name",
+      "title": "Write My Name",
+      "imageUrl": "/generated/worksheets/write-my-name-1766062494520.png"
+    },
+    {
+      "order": 3,
+      "type": "uppercase-tracing",
+      "title": "Uppercase L Tracing",
+      "imageUrl": "/generated/worksheets/uppercase-L-1766062495085.png"
+    },
+    {
+      "order": 4,
+      "type": "lowercase-tracing",
+      "title": "Lowercase l Tracing",
+      "imageUrl": "/generated/worksheets/lowercase-l-1766062495455.png"
+    },
+    {
+      "order": 5,
+      "type": "letter-recognition",
+      "title": "Find Letter L",
+      "imageUrl": "/generated/worksheets/letter-recognition-L-1766062495712.png"
+    },
+    {
+      "order": 6,
+      "type": "match-upper-lower",
+      "title": "Match Uppercase & Lowercase",
+      "imageUrl": "/generated/worksheets/match-upper-lower-1766062496055.png"
+    },
+    {
+      "order": 7,
+      "type": "cvc-words",
+      "title": "CVC Words",
+      "imageUrl": "/generated/worksheets/cvc-words-1766062496964.png"
+    },
+    {
+      "order": 8,
+      "type": "number-tracing",
+      "title": "Number Tracing",
+      "imageUrl": "/generated/worksheets/number-tracing-0-4-1766062498189.png"
+    },
+    {
+      "order": 9,
+      "type": "counting-objects",
+      "title": "Count and Write",
+      "imageUrl": "/generated/worksheets/count-write-ocean-1766062498468.png"
+    },
+    {
+      "order": 10,
+      "type": "ten-frame",
+      "title": "Ten Frame Counting",
+      "imageUrl": "/generated/worksheets/ten-frame-1766062498785.png"
+    },
+    {
+      "order": 11,
+      "type": "picture-addition",
+      "title": "Picture Addition",
+      "imageUrl": "/generated/worksheets/picture-addition-1766062500051.png"
+    },
+    {
+      "order": 12,
+      "type": "number-path",
+      "title": "Number Path",
+      "imageUrl": "/generated/worksheets/connect-dots-ocean-1766062524369.png"
+    },
+    {
+      "order": 13,
+      "type": "which-is-more",
+      "title": "Which is More?",
+      "imageUrl": "/generated/worksheets/which-is-more-1766062524721.png"
+    },
+    {
+      "order": 14,
+      "type": "maze",
+      "title": "Maze",
+      "imageUrl": "/generated/worksheets/maze-1766062526045.png"
+    },
+    {
+      "order": 15,
+      "type": "matching-halves",
+      "title": "Matching Halves",
+      "imageUrl": "/generated/worksheets/matching-halves-1766062526350.png"
+    },
+    {
+      "order": 16,
+      "type": "pattern-sequencing",
+      "title": "Pattern Sequencing",
+      "imageUrl": "/generated/worksheets/pattern-sequencing-1766062526691.png"
+    },
+    {
+      "order": 17,
+      "type": "odd-one-out",
+      "title": "Odd One Out",
+      "imageUrl": "/generated/worksheets/odd-one-out-1766062526991.png"
+    },
+    {
+      "order": 18,
+      "type": "sorting",
+      "title": "Sorting",
+      "imageUrl": "/generated/worksheets/sorting-1766062527316.png"
+    },
+    {
+      "order": 19,
+      "type": "trace-lines",
+      "title": "Trace Lines",
+      "imageUrl": "/generated/worksheets/trace-lines-1766062527588.png"
+    },
+    {
+      "order": 20,
+      "type": "coloring-page",
+      "title": "Coloring Page",
+      "imageUrl": "/generated/worksheets/coloring-page-1766062527942.png"
+    },
+    {
+      "order": 21,
+      "type": "shape-tracing",
+      "title": "Shape Tracing",
+      "imageUrl": "/generated/worksheets/shape-tracing-1766062528193.png"
+    },
+    {
+      "order": 22,
+      "type": "shape-path",
+      "title": "Shape Path",
+      "imageUrl": "/generated/worksheets/shape-path-1766062528524.png"
+    }
+  ],
+  "createdAt": "2025-12-18T12:55:29.875Z",
+  "createdBy": "7o7zbjOrfOVLyWK5rGILVtJfA093",
+  "source": "manual"
+}

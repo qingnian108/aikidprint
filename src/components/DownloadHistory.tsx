@@ -28,13 +28,13 @@ interface WeeklyPack {
 
 // Theme image URLs
 const THEME_IMAGES: Record<string, string> = {
-  dinosaur: getAssetUrl('/uploads/assets/A_main_assets/dinosaur/color/main/dinosaur_000_color.png'),
-  space: getAssetUrl('/uploads/assets/A_main_assets/space/color/main/space_000_color.png'),
-  ocean: getAssetUrl('/uploads/assets/A_main_assets/ocean/color/main/ocean_000_color.png'),
-  safari: getAssetUrl('/uploads/assets/A_main_assets/safari/color/main/safari_000_color.png'),
-  unicorn: getAssetUrl('/uploads/assets/A_main_assets/unicorn/color/main/unicorn_000_color.png'),
-  vehicles: getAssetUrl('/uploads/assets/A_main_assets/vehicles/color/main/vehicles_000_color.png'),
-  cars: getAssetUrl('/uploads/assets/A_main_assets/vehicles/color/main/vehicles_000_color.png'),
+  dinosaur: getAssetUrl('/uploads/assets/B_character_ip/dinosaur/icon/dinosaur_icon.png'),
+  space: getAssetUrl('/uploads/assets/B_character_ip/space/icon/space_astronaut_icon.png'),
+  ocean: getAssetUrl('/uploads/assets/B_character_ip/ocean/icon/ocean_whale_icon.png'),
+  safari: getAssetUrl('/uploads/assets/B_character_ip/safari/icon/safari_lion_icon.png'),
+  unicorn: getAssetUrl('/uploads/assets/B_character_ip/unicorn/icon/unicorn_icon.png'),
+  vehicles: getAssetUrl('/uploads/assets/B_character_ip/vehicles/icon/vehicles_car_icon.png'),
+  cars: getAssetUrl('/uploads/assets/B_character_ip/vehicles/icon/vehicles_car_icon.png'),
   default: ''
 };
 

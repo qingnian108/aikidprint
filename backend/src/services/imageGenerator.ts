@@ -15,13 +15,62 @@ if (!fs.existsSync(OUTPUT_DIR)) {
 
 export class ImageGenerator {
     private browser: any = null;
+    private pageCount: number = 0;
+    private readonly MAX_PAGES_BEFORE_RESTART = 15; // 每生成15页重启浏览器
 
     async initialize() {
+        // 检查浏览器是否还活着
+        let needRestart = false;
+        
         if (!this.browser) {
+            needRestart = true;
+        } else {
+            try {
+                // 尝试获取浏览器版本来检测连接
+                await this.browser.version();
+            } catch {
+                console.log('[ImageGenerator] Browser connection lost, restarting...');
+                needRestart = true;
+            }
+        }
+        
+        // 每生成一定数量页面后重启浏览器，防止内存泄漏
+        if (this.pageCount >= this.MAX_PAGES_BEFORE_RESTART) {
+            console.log(`[ImageGenerator] Restarting browser after ${this.pageCount} pages`);
+            needRestart = true;
+        }
+        
+        if (needRestart) {
+            await this.closeBrowser();
             this.browser = await puppeteer.launch({
                 headless: true,
-                args: ['--no-sandbox', '--disable-setuid-sandbox']
+                args: [
+                    '--no-sandbox',
+                    '--disable-setuid-sandbox',
+                    '--disable-dev-shm-usage',
+                    '--disable-gpu',
+                    '--no-first-run',
+                    '--no-zygote'
+                ]
             });
+            this.pageCount = 0;
+        }
+        
+        this.pageCount++;
+    }
+
+    /**
+     * 安全关闭浏览器
+     */
+    async closeBrowser() {
+        if (this.browser) {
+            try {
+                await this.browser.close();
+            } catch (e) {
+                // 忽略关闭错误
+            }
+            this.browser = null;
+            this.pageCount = 0;
         }
     }
 
@@ -1195,11 +1244,11 @@ export class ImageGenerator {
         .line {
             width: 100%;
             height: 0;
-            border-bottom: 2px solid #333;
+            border-bottom: 2px solid ${themeColors.primary};
         }
         .mid-line {
             border-bottom-style: dashed;
-            border-color: #999;
+            border-color: ${themeColors.secondary};
         }
         .cells {
             position: relative;
@@ -1220,13 +1269,13 @@ export class ImageGenerator {
         .cell.letter {
             font-size: 85px;
             font-weight: 900;
-            color: #000;
+            color: ${themeColors.accent};
             font-family: 'Arial Black', 'Quicksand', sans-serif;
         }
         .cell.blank-box .box-inner {
             width: 80px;
             height: 80px;
-            border: 3px solid #000;
+            border: 3px solid ${themeColors.primary};
             border-radius: 10px;
             background: transparent;
         }
@@ -1488,45 +1537,41 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
-        // ��Ƭ������ɫ
+        // 卡片背景颜色
         const cardBgColors = [
-            '#DBEAFE', // ǳ��
-            '#FCE7F3', // ǳ��
-            '#CFFAFE', // ǳ��
-            '#D1FAE5', // ǳ��
-            '#E9D5FF', // ǳ��
-            '#FEF3C7', // ǳ��
+            '#DBEAFE', // 浅蓝
+            '#FCE7F3', // 浅粉
+            '#CFFAFE', // 浅青
+            '#D1FAE5', // 浅绿
+            '#E9D5FF', // 浅紫
+            '#FEF3C7', // 浅黄
         ];
         
-        // ���õ� CVC ���ʺͶ�Ӧ��ͼƬ�ļ���������ĸ��д��
+        // 所有可用的 CVC 单词（bigpng 文件夹中有图片的）
         const availableCvcWords = [
-            { word: 'cat', image: 'Cat' },
-            { word: 'dog', image: 'Dog' },
-            { word: 'hat', image: 'Hat' },
-            { word: 'pig', image: 'Pig' },
-            { word: 'sun', image: 'Sun' },
-            { word: 'van', image: 'Van' },
-            { word: 'net', image: 'Net' },
-            { word: 'jam', image: 'Jam' },
-            { word: 'egg', image: 'Egg' },
-            { word: 'ant', image: 'Ant' },
-            { word: 'bee', image: 'Bee' },
-            { word: 'car', image: 'Car' },
+            'bag', 'bat', 'bed', 'bin', 'box', 'bug', 'bun',
+            'cat', 'cup', 'dig', 'dog', 'fan', 'fin', 'fox',
+            'hat', 'hen', 'hot', 'jet', 'lip', 'log', 'map',
+            'mop', 'mug', 'net', 'nut', 'pan', 'pen', 'pig',
+            'run', 'sun', 'ten', 'top', 'web', 'wig', 'zip'
         ];
         
-        // ��ȡ���ʶ�Ӧ��ͼƬ
+        // 获取单词对应的图片路径（小写文件名）
         const getWordImage = (word: string) => {
-            const found = availableCvcWords.find(w => w.word === word.toLowerCase());
-            if (found) {
-                return `/uploads/bigpng/${found.image}.png`;
-            }
-            // Ĭ�ϳ�������ĸ��д
-            return `/uploads/bigpng/${word.charAt(0).toUpperCase() + word.slice(1)}.png`;
+            return `/uploads/bigpng/${word.toLowerCase()}.png`;
         };
         
-        // ���ѡ��?������
-        const shuffled = [...availableCvcWords].sort(() => Math.random() - 0.5);
-        const displayWords = shuffled.slice(0, 6).map(w => w.word);
+        // 如果传入了 wordsWithImages，使用它；否则随机选择
+        const wordsWithImages = content.wordsWithImages || [];
+        let displayWords: string[];
+        
+        if (wordsWithImages.length > 0) {
+            displayWords = wordsWithImages.map((w: any) => w.word);
+        } else {
+            // 随机选择 6 个单词
+            const shuffled = [...availableCvcWords].sort(() => Math.random() - 0.5);
+            displayWords = shuffled.slice(0, 6);
+        }
         
         const cardsHtml = displayWords.map((word: string, idx: number) => {
             const bgColor = cardBgColors[idx % cardBgColors.length];
@@ -2825,7 +2870,7 @@ export class ImageGenerator {
                 : difficulty === 'medium'
                     ? 60
                     : 70; // default/easy
-        const rewardStars = Array.from({ length: 5 }).map(() => '<span class="reward-star">�?/span>').join('');
+        const rewardStars = Array.from({ length: 5 }).map(() => '<span class="reward-star">⭐</span>').join('');
         const pointingMap: Record<string, string> = {
             dinosaur: '/uploads/assets/B_character_ip/dinosaur/poses/color/dinosaur_pointing_pose.png',
             vehicles: '/uploads/assets/B_character_ip/vehicles/poses/color/vehicles_car_pointing_pose.png',
@@ -3990,7 +4035,7 @@ export class ImageGenerator {
         .rows {
             display: flex;
             flex-direction: column;
-            justify-content: flex-start;
+            justify-content: center;
             width: 100%;
             flex: 1;
             padding: 16px 0 8px;
@@ -7666,37 +7711,38 @@ export class ImageGenerator {
         }
         .matching-container {
             display: flex;
-            justify-content: space-between;
+            justify-content: center;
             align-items: center;
             width: 100%;
-            padding: 0 40px;
+            padding: 0;
+            gap: 80px;
         }
         .column {
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 20px;
             flex-shrink: 0;
         }
         .half-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            padding: 8px;
+            gap: 6px;
+            padding: 6px;
             background: ${themeColors.light};
-            border-radius: 14px;
-            height: 115px;
-            width: 200px;
+            border-radius: 12px;
+            height: 105px;
+            width: 180px;
         }
         .half-number, .half-letter {
-            width: 36px;
-            height: 36px;
+            width: 32px;
+            height: 32px;
             background: ${themeColors.primary};
             color: white;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             flex-shrink: 0;
         }
@@ -7708,22 +7754,22 @@ export class ImageGenerator {
             justify-content: center;
             overflow: hidden;
             background: transparent;
-            border-radius: 12px;
+            border-radius: 10px;
             border: 3px solid ${themeColors.secondary};
         }
-        /* ��벿��ͼƬ��ֻ��ʾͼƬ���һ�룬�����ڷ����� */
+        /* 左半部分图片，只显示图片左边一半 */
         .left-half-img {
-            height: 95px;
-            max-height: 95px;
+            height: 85px;
+            max-height: 85px;
             width: auto;
             max-width: 200%;
             object-fit: contain;
             clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
         }
-        /* �Ұ벿��ͼƬ��ֻ��ʾͼƬ�ұ�һ�룬�����ڷ����� */
+        /* 右半部分图片，只显示图片右边一半 */
         .right-half-img {
-            height: 95px;
-            max-height: 95px;
+            height: 85px;
+            max-height: 85px;
             width: auto;
             max-width: 200%;
             object-fit: contain;

@@ -422,9 +422,9 @@ export async function processDotToDotFromTheme(
         console.log(`[DotToDot] Using Gemini API generated sketch: ${imagePath}`);
     }
     
-    // 2. 如果 API 失败，从 sketches/{theme}/ 目录选取
+    // 2. 如果 API 失败，从 generated/sketches/{theme}/ 目录选取
     if (!imagePath) {
-        console.log(`[DotToDot] API failed, trying sketches/${theme} directory...`);
+        console.log(`[DotToDot] API failed, trying generated/sketches/${theme} directory...`);
         imagePath = getRandomSketchImage(theme);
         if (imagePath) {
             characterName = path.basename(imagePath, path.extname(imagePath));
@@ -432,9 +432,29 @@ export async function processDotToDotFromTheme(
         }
     }
     
-    // 只使用 sketches 目录和 Gemini API，不再使用其他来源
+    // 3. 如果还是没有，使用主题线稿 (A_main_assets/{theme}/line/)
     if (!imagePath) {
-        throw new Error(`Cannot find image for theme: ${theme}. Please ensure sketches directory has images or Gemini API is configured.`);
+        console.log(`[DotToDot] No sketches, trying line art...`);
+        const lineArtResult = getRandomLineArt(theme);
+        if (lineArtResult) {
+            imagePath = lineArtResult.imagePath;
+            characterName = lineArtResult.characterName;
+            console.log(`[DotToDot] Using line art: ${imagePath}`);
+        }
+    }
+    
+    // 4. 最后备用：使用主题彩色图片
+    if (!imagePath) {
+        console.log(`[DotToDot] No line art, trying color assets...`);
+        imagePath = getRandomThemeImage(theme);
+        if (imagePath) {
+            characterName = path.basename(imagePath, path.extname(imagePath)).replace(/_/g, ' ');
+            console.log(`[DotToDot] Using color image: ${imagePath}`);
+        }
+    }
+    
+    if (!imagePath) {
+        throw new Error(`Cannot find image for theme: ${theme}. Please ensure assets are available.`);
     }
     
     console.log(`[DotToDot] Final image: ${imagePath}`);

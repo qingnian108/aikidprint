@@ -1,0 +1,30 @@
+{
+  "id": "cp_6to8zrgn",
+  "theme": "unicorn",
+  "selections": {
+    "uppercase-tracing": 2,
+    "maze": 1
+  },
+  "pages": [
+    {
+      "order": 1,
+      "type": "uppercase-tracing",
+      "title": "Uppercase Letter Tracing #1",
+      "imageUrl": "/generated/worksheets/uppercase-P-1766400530644.png"
+    },
+    {
+      "order": 2,
+      "type": "uppercase-tracing",
+      "title": "Uppercase Letter Tracing #2",
+      "imageUrl": "/generated/worksheets/uppercase-L-1766400530972.png"
+    },
+    {
+      "order": 3,
+      "type": "maze",
+      "title": "Maze",
+      "imageUrl": "/generated/worksheets/maze-1766400531228.png"
+    }
+  ],
+  "createdAt": "2025-12-22T10:48:51.490Z",
+  "totalPages": 3
+}
