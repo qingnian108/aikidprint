@@ -44,4 +44,4 @@ temp/
 
 # Generated files
 backend/public/generated/
-public/previews/
+# public/previews/ - needed for deployment
