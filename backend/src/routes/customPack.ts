@@ -53,53 +53,6 @@ interface CustomPackData {
   totalPages: number;
 }
 
-// 页面类型到生成器的映射
-const pageTypeGenerators: Record<string, {
-  generator: Map<string, (config: any) => Promise<any>>;
-  imageMethod: string;
-}> = {
-  // Literacy
-  'uppercase-tracing': { generator: literacyGenerators, imageMethod: 'generateUppercaseTracing' },
-  'lowercase-tracing': { generator: literacyGenerators, imageMethod: 'generateLowercaseTracing' },
-  'letter-recognition': { generator: literacyGenerators, imageMethod: 'generateLetterRecognitionPage' },
-  'write-my-name': { generator: literacyGenerators, imageMethod: 'generateWriteMyName' },
-  'alphabet-sequencing': { generator: literacyGenerators, imageMethod: 'generateAlphabetSequencing' },
-  'beginning-sounds': { generator: literacyGenerators, imageMethod: 'generateBeginningSounds' },
-  'cvc-words': { generator: literacyGenerators, imageMethod: 'generateCVCWordsPage' },
-  'match-upper-lower': { generator: literacyGenerators, imageMethod: 'generateMatchUpperLower' },
-  
-  // Math
-  'number-tracing': { generator: mathGenerators, imageMethod: 'generateNumberTracingPage' },
-  'counting-objects': { generator: mathGenerators, imageMethod: 'generateCountAndWrite' },
-  'number-path': { generator: mathGenerators, imageMethod: 'generateConnectDots' },
-  'which-is-more': { generator: mathGenerators, imageMethod: 'generateWhichIsMore' },
-  'number-bonds': { generator: mathGenerators, imageMethod: 'generateNumberBonds' },
-  'ten-frame': { generator: mathGenerators, imageMethod: 'generateTenFrame' },
-  'picture-addition': { generator: mathGenerators, imageMethod: 'generatePictureAddition' },
-  'count-shapes': { generator: mathGenerators, imageMethod: 'generateCountShapes' },
-  'picture-subtraction': { generator: mathGenerators, imageMethod: 'generatePictureSubtraction' },
-  'number-sequencing': { generator: mathGenerators, imageMethod: 'generateNumberSequencing' },
-  
-  // Logic
-  'maze': { generator: logicGenerators, imageMethod: 'generateMazePage' },
-  'shadow-matching': { generator: logicGenerators, imageMethod: 'generateShadowMatching' },
-  'sorting': { generator: logicGenerators, imageMethod: 'generateSortingPage' },
-  'pattern-compare': { generator: logicGenerators, imageMethod: 'generatePatternComparePage' },
-  'pattern-sequencing': { generator: logicGenerators, imageMethod: 'generatePatternSequencing' },
-  'odd-one-out': { generator: logicGenerators, imageMethod: 'generateOddOneOut' },
-  'matching-halves': { generator: logicGenerators, imageMethod: 'generateMatchingHalves' },
-  'logic-grid': { generator: logicGenerators, imageMethod: 'generateLogicGrid' },
-  'shape-synthesis': { generator: logicGenerators, imageMethod: 'generateShapeSynthesis' },
-  
-  // Creativity
-  'trace-lines': { generator: fineMotorGenerators, imageMethod: 'generateTraceLines' },
-  'shape-tracing': { generator: fineMotorGenerators, imageMethod: 'generateShapeTracing' },
-  'coloring-page': { generator: creativityGenerators, imageMethod: 'generateColoringPage' },
-  'creative-prompt': { generator: creativityGenerators, imageMethod: 'generateCreativePrompt' },
-  'trace-and-draw': { generator: creativityGenerators, imageMethod: 'generateTraceAndDraw' },
-  'shape-path': { generator: creativityGenerators, imageMethod: 'generateShapePath' }
-};
-
 // 页面类型标题映射
 const pageTypeTitles: Record<string, string> = {
   'uppercase-tracing': 'Uppercase Letter Tracing',

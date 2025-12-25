@@ -9,8 +9,9 @@ const __dirname = path.dirname(__filename);
 
 const DEFAULT_MAX_NUMBER = Math.max(10, Math.min(60, Number(process.env.DOTS_POINT_COUNT) || 20));
 
-// Generator function type
-type GeneratorFn = (config: any) => Promise<any>;
+// Generator function type - allows both sync and async functions
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type GeneratorFn = (config: any) => any;
 
 // ==================== MAPS ====================
 export const literacyGenerators = new Map<string, GeneratorFn>([
