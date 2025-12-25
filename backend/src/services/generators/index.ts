@@ -9,8 +9,11 @@ const __dirname = path.dirname(__filename);
 
 const DEFAULT_MAX_NUMBER = Math.max(10, Math.min(60, Number(process.env.DOTS_POINT_COUNT) || 20));
 
+// Generator function type
+type GeneratorFn = (config: any) => Promise<any>;
+
 // ==================== MAPS ====================
-export const literacyGenerators = new Map<string, Function>([
+export const literacyGenerators = new Map<string, GeneratorFn>([
     ['uppercase-tracing', generateUppercaseTracing],
     ['lowercase-tracing', generateLowercaseTracing],
     ['letter-recognition', generateLetterRecognition],
@@ -346,7 +349,7 @@ async function generateMatchUpperLower(config: any) {
     };
 }
 
-export const mathGenerators = new Map<string, Function>([
+export const mathGenerators = new Map<string, GeneratorFn>([
     ['number-tracing', generateNumberTracing],
     ['counting-objects', generateCountAndWrite],
     ['number-path', generateConnectDots],
@@ -1042,7 +1045,7 @@ async function generateShapePath(config: any) {
     };
 }
 
-export const logicGenerators = new Map<string, Function>([
+export const logicGenerators = new Map<string, GeneratorFn>([
     ['maze', generateMaze],
     ['shadow-matching', generateShadowMatching],
     ['sorting', generateSortingData],
@@ -1104,7 +1107,7 @@ async function generateCreativePrompt(config: any) {
 }
 
 // 合并 Fine Motor 和 Creativity 到一个分类
-export const creativityGenerators = new Map<string, Function>([
+export const creativityGenerators = new Map<string, GeneratorFn>([
     ['trace-lines', generateTraceLines],
     ['shape-tracing', generateShapeTracing],
     ['coloring-page', generateColoringPage],
