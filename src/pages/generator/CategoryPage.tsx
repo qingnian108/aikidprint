@@ -2,6 +2,7 @@ import React from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getCategory } from '../../constants/pageTypes';
 import { ArrowLeft, ArrowRight, Star } from 'lucide-react';
+import { getPreviewImageUrl } from '../../config/api';
 
 const CategoryPage: React.FC = () => {
     const { categoryId } = useParams<{ categoryId: string }>();
@@ -69,7 +70,7 @@ const CategoryPage: React.FC = () => {
                                     {/* Image Container (Paper Look) */}
                                     <div className="relative w-full h-full shadow-sm group-hover:shadow-xl group-hover:scale-105 transition-all duration-500 rounded-xl overflow-hidden bg-white border-2 border-gray-200 transform rotate-1 group-hover:rotate-0">
                                         <img
-                                            src={pageType.previewImage}
+                                            src={getPreviewImageUrl(pageType.previewImage)}
                                             alt={pageType.title}
                                             className="w-full h-full object-contain bg-white"
                                         />

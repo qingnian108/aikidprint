@@ -6,6 +6,7 @@ import { ArrowLeft, Sparkles, Download, RefreshCw, Printer } from 'lucide-react'
 import ErrorModal from '../../components/ErrorModal';
 import { useAuth } from '../../contexts/AuthContext';
 import { recordDownload, getPrintSettings, getDefaultPrintSettings } from '../../services/firestoreService';
+import { getPreviewImageUrl } from '../../config/api';
 
 const GeneratorDetail: React.FC = () => {
     const { categoryId, typeId } = useParams<{ categoryId: string; typeId: string }>();
@@ -482,7 +483,7 @@ const GeneratorDetail: React.FC = () => {
                                     </div>
                                 ) : (
                                     <img
-                                        src={pageType.previewImage}
+                                        src={getPreviewImageUrl(pageType.previewImage)}
                                         alt="Worksheet Preview"
                                         className="max-w-full max-h-full object-contain shadow-sm"
                                     />

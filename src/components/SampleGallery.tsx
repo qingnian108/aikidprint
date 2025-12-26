@@ -2,6 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { FileText, Palette, Hash, Star, Shapes, Award } from 'lucide-react';
+import { API_BASE_URL } from '../config/api';
 
 const SampleGallery: React.FC = () => {
   const navigate = useNavigate();
@@ -108,7 +109,7 @@ const SampleGallery: React.FC = () => {
                 {/* Paper container with shadow */}
                 <div className="relative bg-white rounded-lg shadow-[4px_4px_12px_rgba(0,0,0,0.15)] border border-gray-200 overflow-hidden group-hover:shadow-[6px_6px_16px_rgba(0,0,0,0.2)] transition-shadow duration-300">
                   <img 
-                    src={sample.previewImage}
+                    src={`${API_BASE_URL}${sample.previewImage}`}
                     alt={sample.title}
                     className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500"
                     style={{ maxHeight: '340px' }}
