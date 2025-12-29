@@ -1,6 +1,7 @@
 [build]
 builder = "nixpacks"
 buildCommand = "cd backend && npm ci && npm run build"
+nixPkgs = ["glib", "nss", "nspr", "at-spi2-atk", "cups", "libdrm", "gtk3", "pango", "cairo", "alsa-lib", "libxcomposite", "libxdamage", "libxfixes", "libxrandr", "mesa", "expat", "libxkbcommon", "xorg.libX11", "xorg.libXext", "xorg.libxcb", "dbus"]
 
 [deploy]
 startCommand = "cd backend && node dist/index.js"
