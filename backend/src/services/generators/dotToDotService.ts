@@ -341,7 +341,7 @@ export async function processDotToDot(
 
     return new Promise((resolve, reject) => {
         const scriptPath = path.join(__dirname, '../../../../scripts/dot_to_dot.py');
-        const pythonPath = process.env.PYTHON_PATH || 'E:\\python\\python.exe';
+        const pythonPath = process.env.PYTHON_PATH || (process.platform === 'win32' ? 'python' : 'python3');
 
         console.log(`[DotToDot] Processing (in-memory)...`);
         console.log(`[DotToDot] Input: ${actualInputPath}`);
