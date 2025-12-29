@@ -23,8 +23,11 @@ app.use(cors({
   origin: (origin, callback) => {
     // Allow requests with no origin (mobile apps, curl, etc.)
     if (!origin) return callback(null, true);
-    // Allow all vercel preview URLs
-    if (origin.includes('vercel.app') || corsOrigins.includes(origin)) {
+    // Allow all vercel preview URLs and aikidprint domains
+    if (origin.includes('vercel.app') || 
+        origin.includes('aikidprint.com') || 
+        origin.includes('railway.app') ||
+        corsOrigins.includes(origin)) {
       return callback(null, true);
     }
     callback(new Error('Not allowed by CORS'));
