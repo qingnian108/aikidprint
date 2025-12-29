@@ -75,7 +75,7 @@ app.use((err: Error, req: express.Request, res: express.Response, next: express.
 // Initialize cron jobs
 cronService.initializeWeeklyDelivery();
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
+app.listen(Number(PORT), '0.0.0.0', () => {
+  console.log(`🚀 Server running on http://0.0.0.0:${PORT}`);
   console.log(`📅 Weekly delivery cron job initialized`);
 });
