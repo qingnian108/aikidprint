@@ -721,7 +721,7 @@ function generateMazeImage(difficulty: string = 'medium'): string | null {
     const level = allowed.includes(difficulty) ? difficulty : 'medium';
     
     const scriptPath = path.resolve(__dirname, '../../../../scripts/maze_generator.py');
-    const pythonPath = process.env.PYTHON_PATH || 'E:\\python\\python.exe';
+    const pythonPath = process.env.PYTHON_PATH || (process.platform === 'win32' ? 'python' : 'python3');
     
     console.log(`[Maze] Generating ${level} maze (in-memory)...`);
 
