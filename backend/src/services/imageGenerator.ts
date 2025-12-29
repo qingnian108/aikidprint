@@ -365,8 +365,8 @@ export class ImageGenerator {
         // �����Ѷȵ���ͼ��λ�ã��Թ���С��ͬ����ڳ���λ��Ҳ��ͬ��?
         const cornerPositions: Record<string, { left: { top: string; left: string }; right: { bottom: string; right: string } }> = {
             easy: {
-                left: { top: '310px', left: '80px' },
-                right: { bottom: '235px', right: '80px' }
+                left: { top: '295px', left: '80px' },
+                right: { bottom: '220px', right: '80px' }
             },
             medium: {
                 left: { top: '285px', left: '60px' },
