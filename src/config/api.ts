@@ -19,10 +19,11 @@ export const getAssetUrl = (path: string): string => {
   return `${API_BASE_URL}${cleanPath}`;
 };
 
-// Helper function to get preview image URL
+// Helper function to get preview image URL (从前端 public 文件夹加载)
 export const getPreviewImageUrl = (previewPath: string): string => {
   if (previewPath.startsWith('http')) {
     return previewPath;
   }
-  return `${API_BASE_URL}${previewPath}`;
+  // 预览图片在前端 public/previews 文件夹，直接返回路径
+  return previewPath;
 };
