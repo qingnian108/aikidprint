@@ -335,7 +335,8 @@ const generatePackPDF = async (
   const pagesHtml = pages.map((p, index) => {
     let imageUrl = p.imageUrl;
     if (!imageUrl.startsWith('http')) {
-      imageUrl = `http://localhost:3000${imageUrl}`;
+      const baseUrl = process.env.API_BASE_URL || 'http://localhost:3000';
+      imageUrl = `${baseUrl}${imageUrl}`;
     }
     
     return `

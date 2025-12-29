@@ -744,7 +744,8 @@ router.post('/download-pdf', async (req, res) => {
       // 处理图片 URL
       let imageUrl = p.imageUrl;
       if (!imageUrl.startsWith('http')) {
-        imageUrl = `http://localhost:3000${imageUrl}`;
+        const baseUrl = process.env.API_BASE_URL || 'http://localhost:3000';
+        imageUrl = `${baseUrl}${imageUrl}`;
       }
       
       return `

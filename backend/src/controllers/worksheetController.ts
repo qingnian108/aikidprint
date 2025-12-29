@@ -68,17 +68,20 @@ export const generateWorksheetImage = async (req: Request, res: Response) => {
         const imageUrls: string[] = [];
         const imagePaths: string[] = [];
 
+        // 使用环境变量或请求头获取基础 URL
+        const baseUrl = process.env.API_BASE_URL || `${req.protocol}://${req.get('host')}`;
+
         if (shouldAggregate && isBatch) {
             const imageUrl = await imageGenerator.generateWorksheet(result.type, result);
             const imagePath = path.join(__dirname, '../../public', imageUrl);
-            imageUrls.push(`http://localhost:3000${imageUrl}`);
+            imageUrls.push(`${baseUrl}${imageUrl}`);
             imagePaths.push(imagePath);
         } else {
             const concurrency = Math.min(6, contentArray.length);
             const generateOne = async (contentItem: any) => {
                 const imageUrl = await imageGenerator.generateWorksheet(result.type, contentItem);
                 const imagePath = path.join(__dirname, '../../public', imageUrl);
-                return { imageUrl: `http://localhost:3000${imageUrl}`, imagePath };
+                return { imageUrl: `${baseUrl}${imageUrl}`, imagePath };
             };
 
             let index = 0;
