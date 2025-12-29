@@ -1241,7 +1241,8 @@
   },
   "uploads-letter-P-default": {
     "usedImages": [
-      "/uploads/bigpng/pan.png"
+      "/uploads/bigpng/pan.png",
+      "/uploads/bigpng/pen.png"
     ],
     "allImages": [
       "/uploads/bigpng/pan.png",
@@ -2453,6 +2454,18 @@
       "/uploads/bigpng/Quail.png",
       "/uploads/bigpng/Queen.png",
       "/uploads/bigpng/Quilt.png"
+    ]
+  },
+  "uploads-letter-I-default": {
+    "usedImages": [
+      "/uploads/bigpng/Igloo.png",
+      "/uploads/bigpng/Ice Cream.png",
+      "/uploads/bigpng/Insect.png"
+    ],
+    "allImages": [
+      "/uploads/bigpng/Ice Cream.png",
+      "/uploads/bigpng/Igloo.png",
+      "/uploads/bigpng/Insect.png"
     ]
   }
 }
