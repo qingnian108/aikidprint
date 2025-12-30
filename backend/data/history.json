@@ -5,6 +5,141 @@
     "categoryName": "Letters & Literacy",
     "pageTypeId": "alphabet-sequencing",
     "pageTypeName": "Alphabet Sequencing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/alphabet-sequencing-1767071102203.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\alphabet-sequencing-1767071102203.png",
+    "config": {
+      "difficulty": "easy",
+      "theme": "dinosaur"
+    },
+    "id": "1767071102322-5b4agiqoj",
+    "createdAt": "2025-12-30T05:05:02.322Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "alphabet-sequencing",
+    "pageTypeName": "Alphabet Sequencing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/alphabet-sequencing-1767071101038.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\alphabet-sequencing-1767071101038.png",
+    "config": {
+      "difficulty": "easy",
+      "theme": "dinosaur"
+    },
+    "id": "1767071101234-5i0f83d1b",
+    "createdAt": "2025-12-30T05:05:01.234Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "alphabet-sequencing",
+    "pageTypeName": "Alphabet Sequencing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/alphabet-sequencing-1767071091793.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\alphabet-sequencing-1767071091793.png",
+    "config": {
+      "difficulty": "easy",
+      "theme": "dinosaur"
+    },
+    "id": "1767071091937-zed4j3k93",
+    "createdAt": "2025-12-30T05:04:51.937Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "alphabet-sequencing",
+    "pageTypeName": "Alphabet Sequencing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/alphabet-sequencing-1767071086206.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\alphabet-sequencing-1767071086206.png",
+    "config": {
+      "difficulty": "easy",
+      "theme": "dinosaur"
+    },
+    "id": "1767071086372-9xr53zr2h",
+    "createdAt": "2025-12-30T05:04:46.372Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "alphabet-sequencing",
+    "pageTypeName": "Alphabet Sequencing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/alphabet-sequencing-1767071085631.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\alphabet-sequencing-1767071085631.png",
+    "config": {
+      "difficulty": "easy",
+      "theme": "dinosaur"
+    },
+    "id": "1767071085753-lpnj485ar",
+    "createdAt": "2025-12-30T05:04:45.753Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "alphabet-sequencing",
+    "pageTypeName": "Alphabet Sequencing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/alphabet-sequencing-1767071085108.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\alphabet-sequencing-1767071085108.png",
+    "config": {
+      "difficulty": "easy",
+      "theme": "dinosaur"
+    },
+    "id": "1767071085238-nzdyi6z6o",
+    "createdAt": "2025-12-30T05:04:45.238Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "alphabet-sequencing",
+    "pageTypeName": "Alphabet Sequencing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/alphabet-sequencing-1767071083492.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\alphabet-sequencing-1767071083492.png",
+    "config": {
+      "difficulty": "easy",
+      "theme": "dinosaur"
+    },
+    "id": "1767071083640-0y2xalhtu",
+    "createdAt": "2025-12-30T05:04:43.640Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "alphabet-sequencing",
+    "pageTypeName": "Alphabet Sequencing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/alphabet-sequencing-1767071082804.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\alphabet-sequencing-1767071082804.png",
+    "config": {
+      "difficulty": "easy",
+      "theme": "dinosaur"
+    },
+    "id": "1767071082919-r4tasjqn3",
+    "createdAt": "2025-12-30T05:04:42.919Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "alphabet-sequencing",
+    "pageTypeName": "Alphabet Sequencing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/alphabet-sequencing-1767071081689.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\alphabet-sequencing-1767071081689.png",
+    "config": {
+      "difficulty": "easy",
+      "theme": "dinosaur"
+    },
+    "id": "1767071081889-61vx7at2s",
+    "createdAt": "2025-12-30T05:04:41.889Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "alphabet-sequencing",
+    "pageTypeName": "Alphabet Sequencing",
     "imageUrl": "http://localhost:3000/generated/worksheets/alphabet-sequencing-1767070773863.png",
     "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\alphabet-sequencing-1767070773863.png",
     "config": {
@@ -163,141 +298,5 @@
     },
     "id": "1767014554940-v261imiiw",
     "createdAt": "2025-12-29T13:22:34.940Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "logic",
-    "categoryName": "logic",
-    "pageTypeId": "maze",
-    "pageTypeName": "Maze",
-    "imageUrl": "http://localhost:3000/generated/worksheets/maze-1767014551670.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\maze-1767014551670.png",
-    "config": {
-      "theme": "unicorn",
-      "difficulty": "easy"
-    },
-    "id": "1767014551927-edz74qatp",
-    "createdAt": "2025-12-29T13:22:31.927Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "logic",
-    "categoryName": "logic",
-    "pageTypeId": "maze",
-    "pageTypeName": "Maze",
-    "imageUrl": "http://localhost:3000/generated/worksheets/maze-1767014546520.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\maze-1767014546520.png",
-    "config": {
-      "theme": "dinosaur",
-      "difficulty": "easy"
-    },
-    "id": "1767014546851-1ziowsutb",
-    "createdAt": "2025-12-29T13:22:26.851Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "logic",
-    "categoryName": "logic",
-    "pageTypeId": "maze",
-    "pageTypeName": "Maze",
-    "imageUrl": "http://localhost:3000/generated/worksheets/maze-1767014485559.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\maze-1767014485559.png",
-    "config": {
-      "theme": "dinosaur",
-      "difficulty": "easy"
-    },
-    "id": "1767014485777-zihw1ktm5",
-    "createdAt": "2025-12-29T13:21:25.777Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "logic",
-    "categoryName": "logic",
-    "pageTypeId": "maze",
-    "pageTypeName": "Maze",
-    "imageUrl": "http://localhost:3000/generated/worksheets/maze-1767014483547.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\maze-1767014483547.png",
-    "config": {
-      "theme": "dinosaur",
-      "difficulty": "hard"
-    },
-    "id": "1767014483904-87f79lg8e",
-    "createdAt": "2025-12-29T13:21:23.904Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "logic",
-    "categoryName": "logic",
-    "pageTypeId": "maze",
-    "pageTypeName": "Maze",
-    "imageUrl": "http://localhost:3000/generated/worksheets/maze-1767014481375.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\maze-1767014481375.png",
-    "config": {
-      "theme": "dinosaur",
-      "difficulty": "medium"
-    },
-    "id": "1767014481610-tfalefkp2",
-    "createdAt": "2025-12-29T13:21:21.610Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "logic",
-    "categoryName": "logic",
-    "pageTypeId": "maze",
-    "pageTypeName": "Maze",
-    "imageUrl": "http://localhost:3000/generated/worksheets/maze-1767014480066.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\maze-1767014480066.png",
-    "config": {
-      "theme": "dinosaur",
-      "difficulty": "medium"
-    },
-    "id": "1767014480296-ue4h4vp0d",
-    "createdAt": "2025-12-29T13:21:20.296Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "logic",
-    "categoryName": "logic",
-    "pageTypeId": "maze",
-    "pageTypeName": "Maze",
-    "imageUrl": "http://localhost:3000/generated/worksheets/maze-1767014477110.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\maze-1767014477110.png",
-    "config": {
-      "theme": "dinosaur",
-      "difficulty": "medium"
-    },
-    "id": "1767014477412-3cttcy34b",
-    "createdAt": "2025-12-29T13:21:17.412Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "literacy",
-    "categoryName": "Letters & Literacy",
-    "pageTypeId": "letter-recognition",
-    "pageTypeName": "Find the Letter A",
-    "imageUrl": "http://localhost:3000/generated/worksheets/letter-recognition-A-1766984077685.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\letter-recognition-A-1766984077685.png",
-    "config": {
-      "letter": "A",
-      "difficulty": "easy",
-      "theme": "dinosaur"
-    },
-    "id": "1766984078062-itkb20dco",
-    "createdAt": "2025-12-29T04:54:38.062Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "logic",
-    "categoryName": "logic",
-    "pageTypeId": "maze",
-    "pageTypeName": "Maze",
-    "imageUrl": "http://localhost:3000/generated/worksheets/maze-1766977368840.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\maze-1766977368840.png",
-    "config": {
-      "theme": "dinosaur",
-      "difficulty": "hard"
-    },
-    "id": "1766977369209-13r8fvvpd",
-    "createdAt": "2025-12-29T03:02:49.209Z"
   }
 ]

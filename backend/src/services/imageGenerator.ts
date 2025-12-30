@@ -592,7 +592,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -739,7 +739,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -1153,7 +1153,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -1333,7 +1333,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'domcontentloaded' });
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         
@@ -1528,7 +1528,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'domcontentloaded' });
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         
@@ -1739,7 +1739,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'domcontentloaded' });
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         
@@ -1925,7 +1925,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'domcontentloaded' });
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         
@@ -2154,7 +2154,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'domcontentloaded' });
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         
@@ -2336,7 +2336,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'domcontentloaded' });
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -2491,7 +2491,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'domcontentloaded' });
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         return `/generated/worksheets/${filename}`;
@@ -2653,7 +2653,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'domcontentloaded' });
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         return `/generated/worksheets/${filename}`;
@@ -2854,7 +2854,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'domcontentloaded' });
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         return `/generated/worksheets/${filename}`;
@@ -3153,7 +3153,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -3548,7 +3548,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -3782,7 +3782,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         return `/generated/worksheets/${filename}`;
@@ -4166,7 +4166,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -4349,7 +4349,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -4554,7 +4554,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -4837,7 +4837,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -5077,7 +5077,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -5278,7 +5278,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -5556,7 +5556,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -5820,7 +5820,7 @@ export class ImageGenerator {
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
 
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
 
         await page.screenshot({
             path: filepath,
@@ -6021,7 +6021,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -6393,7 +6393,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -6561,7 +6561,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -6811,7 +6811,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
 
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
@@ -7043,7 +7043,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -7358,7 +7358,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -7511,7 +7511,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -7656,7 +7656,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -7823,7 +7823,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -7968,7 +7968,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
@@ -8249,7 +8249,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'domcontentloaded' });
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         
@@ -8419,7 +8419,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'domcontentloaded' });
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         return `/generated/worksheets/${filename}`;
@@ -8614,7 +8614,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         return `/generated/worksheets/${filename}`;
@@ -8791,7 +8791,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         return `/generated/worksheets/${filename}`;
@@ -8866,7 +8866,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         return `/generated/worksheets/${filename}`;
@@ -8947,7 +8947,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html);
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         return `/generated/worksheets/${filename}`;
@@ -9124,7 +9124,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'domcontentloaded' });
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         return `/generated/worksheets/${filename}`;
@@ -9275,7 +9275,7 @@ export class ImageGenerator {
         const page = await this.browser.newPage();
         await page.setViewport({ width: 816, height: 1056, deviceScaleFactor: 1.25 });
         await page.setContent(html, { waitUntil: 'domcontentloaded' });
-        await page.evaluateHandle('document.fonts.ready');
+        await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
         return `/generated/worksheets/${filename}`;
