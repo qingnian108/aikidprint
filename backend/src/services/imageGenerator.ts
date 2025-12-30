@@ -7,58 +7,37 @@ import { getLetterImage, getRandomAnimalImages, getRandomDecorImages, getThemeBo
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 获取基础 URL，用于字体和资源加载
+// 获取基础 URL，用于资源加载（图片等）
 const getBaseUrl = () => process.env.API_BASE_URL || 'http://localhost:3000';
 
-// 字体文件目录
-const FONTS_DIR = path.join(__dirname, '../../public/fonts/Quicksand');
+// Puppeteer 内部使用的本地 URL（用于字体加载，避免 HTTPS 证书问题）
+const getLocalUrl = () => 'http://127.0.0.1:3000';
 
-// 缓存 base64 编码的字�?
-let fontCache: { [key: string]: string } = {};
-
-// 将字体文件转换为 base64
-const getFontBase64 = (filename: string): string => {
-    if (fontCache[filename]) {
-        return fontCache[filename];
-    }
-    const fontPath = path.join(FONTS_DIR, filename);
-    if (fs.existsSync(fontPath)) {
-        const fontData = fs.readFileSync(fontPath);
-        fontCache[filename] = fontData.toString('base64');
-        return fontCache[filename];
-    }
-    return '';
-};
-
-// 获取字体样式 CSS（使�?base64 内嵌字体�?
+// 获取字体样式 CSS（使用本地 URL）
 const getFontStyles = () => {
-    const regular = getFontBase64('quicksand-v37-latin-regular.woff2');
-    const medium = getFontBase64('quicksand-v37-latin-500.woff2');
-    const semibold = getFontBase64('quicksand-v37-latin-600.woff2');
-    const bold = getFontBase64('quicksand-v37-latin-700.woff2');
-    
+    const localUrl = getLocalUrl();
     return `
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${regular}') format('woff2');
+            src: url('${localUrl}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${medium}') format('woff2');
+            src: url('${localUrl}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${semibold}') format('woff2');
+            src: url('${localUrl}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${bold}') format('woff2');
+            src: url('${localUrl}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -422,25 +401,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -664,25 +643,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -802,25 +781,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -2975,25 +2954,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -3213,25 +3192,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -3961,25 +3940,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -4217,25 +4196,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -4405,25 +4384,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -4641,25 +4620,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -4919,25 +4898,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -5190,25 +5169,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -5388,25 +5367,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -5608,25 +5587,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -5930,25 +5909,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -6182,25 +6161,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -6627,25 +6606,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -6926,25 +6905,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -7177,25 +7156,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-regular.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-500.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-600.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('data:font/woff2;base64,${getFontBase64('quicksand-v37-latin-700.woff2')}') format('woff2');
+            src: url('http://127.0.0.1:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
