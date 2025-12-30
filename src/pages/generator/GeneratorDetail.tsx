@@ -64,10 +64,6 @@ const GeneratorDetail: React.FC = () => {
                 setGeneratedImages(images);
                 setImagesLoaded(new Array(images.length).fill(false));
                 
-                // 延迟显示图片，等待加载完成或最少4秒
-                const minLoadTime = 4000;
-                const startTime = Date.now();
-                
                 // 预加载所有图片
                 const preloadImages = images.map((src: string, idx: number) => {
                     return new Promise<void>((resolve) => {
@@ -87,12 +83,6 @@ const GeneratorDetail: React.FC = () => {
                 
                 // 等待所有图片加载完成
                 await Promise.all(preloadImages);
-                
-                // 确保至少等待4秒
-                const elapsed = Date.now() - startTime;
-                if (elapsed < minLoadTime) {
-                    await new Promise(resolve => setTimeout(resolve, minLoadTime - elapsed));
-                }
                 
                 // 显示图片（淡入效果）
                 setShowImages(true);
