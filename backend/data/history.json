@@ -1,6 +1,21 @@
 [
   {
     "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "alphabet-sequencing",
+    "pageTypeName": "Alphabet Sequencing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/alphabet-sequencing-1767066455556.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\alphabet-sequencing-1767066455556.png",
+    "config": {
+      "difficulty": "easy",
+      "theme": "dinosaur"
+    },
+    "id": "1767066456533-hqsw9771u",
+    "createdAt": "2025-12-30T03:47:36.533Z"
+  },
+  {
+    "userId": "guest",
     "categoryId": "logic",
     "categoryName": "logic",
     "pageTypeId": "maze",
@@ -280,19 +295,5 @@
     },
     "id": "1766976734443-dwublvzma",
     "createdAt": "2025-12-29T02:52:14.443Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "logic",
-    "categoryName": "logic",
-    "pageTypeId": "pattern-compare",
-    "pageTypeName": "Pattern Compare",
-    "imageUrl": "http://localhost:3000/generated/worksheets/pattern-compare-1766976540812.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\pattern-compare-1766976540812.png",
-    "config": {
-      "theme": "ocean"
-    },
-    "id": "1766976541195-fz599bq10",
-    "createdAt": "2025-12-29T02:49:01.195Z"
   }
 ]

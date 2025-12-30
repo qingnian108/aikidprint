@@ -7,6 +7,40 @@ import { getLetterImage, getRandomAnimalImages, getRandomDecorImages, getThemeBo
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// 获取基础 URL，用于字体和资源加载
+const getBaseUrl = () => process.env.API_BASE_URL || 'http://localhost:3000';
+
+// 获取字体样式 CSS
+const getFontStyles = () => {
+    const baseUrl = getBaseUrl();
+    return `
+        @font-face {
+            font-family: 'Quicksand';
+            src: url('${baseUrl}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            font-weight: 400;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Quicksand';
+            src: url('${baseUrl}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            font-weight: 500;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Quicksand';
+            src: url('${baseUrl}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            font-weight: 600;
+            font-style: normal;
+        }
+        @font-face {
+            font-family: 'Quicksand';
+            src: url('${baseUrl}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            font-weight: 700;
+            font-style: normal;
+        }
+    `;
+};
+
 const OUTPUT_DIR = path.join(__dirname, '../../public/generated/worksheets');
 
 if (!fs.existsSync(OUTPUT_DIR)) {
@@ -16,7 +50,7 @@ if (!fs.existsSync(OUTPUT_DIR)) {
 export class ImageGenerator {
     private browser: any = null;
     private pageCount: number = 0;
-    private readonly MAX_PAGES_BEFORE_RESTART = 15; // 每生�?5页重启浏览器
+    private readonly MAX_PAGES_BEFORE_RESTART = 15; // 每生�?5页重启浏览器
 
     async initialize() {
         // 检查浏览器是否还活着
@@ -26,7 +60,7 @@ export class ImageGenerator {
             needRestart = true;
         } else {
             try {
-                // 尝试获取浏览器版本来检测连�?
+                // 尝试获取浏览器版本来检测连�?
                 await this.browser.version();
             } catch {
                 console.log('[ImageGenerator] Browser connection lost, restarting...');
@@ -60,7 +94,7 @@ export class ImageGenerator {
     }
 
     /**
-     * 安全关闭浏览�?
+     * 安全关闭浏览�?
      */
     async closeBrowser() {
         if (this.browser) {
@@ -216,12 +250,12 @@ export class ImageGenerator {
     }
 
     /**
-     * ���ɴ�ͼ��ı���?HTML
-     * ͼ����������ڱ��������Ҳ�?
+     * ���ɴ�ͼ��ı���?HTML
+     * ͼ����������ڱ��������Ҳ�?
      */
     private getTitleHtml(title: string, titleIcon: string): string {
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const iconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const iconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         
         return `
             <div class="title-row">
@@ -233,10 +267,10 @@ export class ImageGenerator {
     }
 
     /**
-     * ���ɱ���ͼ HTML �� CSS�������ֽ��?
+     * ���ɱ���ͼ HTML �� CSS�������ֽ��?
      */
     private getBackgroundHtml(themeKey: string): { html: string; css: string } {
-        const html = ''; // ����Ҫ�����?HTML��ʹ�� CSS αԪ��
+        const html = ''; // ����Ҫ�����?HTML��ʹ�� CSS αԪ��
         const css = this.getBackgroundCss(themeKey);
         return { html, css };
     }
@@ -257,7 +291,7 @@ export class ImageGenerator {
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('http://localhost:3000${backgroundImage}');
+            background-image: url('\${getBaseUrl()}${backgroundImage}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -288,7 +322,7 @@ export class ImageGenerator {
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('http://localhost:3000${backgroundImage}');
+            background-image: url('\${getBaseUrl()}${backgroundImage}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -303,8 +337,8 @@ export class ImageGenerator {
     }
 
     /**
-     * �����ܼ���ֽ HTML - �ѷ��������ر���ͼ��ʹ�� getBackgroundHtml ���?
-     * @deprecated ʹ�� getBackgroundHtml ���?
+     * �����ܼ���ֽ HTML - �ѷ��������ر���ͼ��ʹ�� getBackgroundHtml ���?
+     * @deprecated ʹ�� getBackgroundHtml ���?
      */
     private getDenseStickersHtml(themeKey: string): { html: string; css: string } {
         return this.getBackgroundHtml(themeKey);
@@ -318,7 +352,7 @@ export class ImageGenerator {
         const mazeUrl = content.mazeImageUrl || mazeImageUrl || '';
         const level = String(content.difficulty || difficulty || 'medium');
 
-        // ��ȡ����ͼ�������ֽ��?
+        // ��ȡ����ͼ�������ֽ��?
         const { html: backgroundHtml, css: backgroundCss } = this.getBackgroundHtml(themeKey);
 
         // �����ȡ����ͼ���������ɫ
@@ -327,9 +361,9 @@ export class ImageGenerator {
         
         // �������ͼ��λ�ã������??
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
 
-        // �Թ����?����ͼ�꣨��������ѡ��??
+        // �Թ����?����ͼ�꣨��������ѡ��??
         const mazeIconsMap: Record<string, { start: string; end: string }> = {
             dinosaur: {
                 start: '/uploads/assets/A_main_assets/dinosaur/color/dinosaur_000_color.png',
@@ -360,10 +394,10 @@ export class ImageGenerator {
         const cornerLeft = mazeIcons.start;
         const cornerRight = mazeIcons.end;
 
-        // ĳЩ��������Ͻ�ͼ����Ҫ��ת���Գƣ���ĳЩ����??
+        // ĳЩ��������Ͻ�ͼ����Ҫ��ת���Գƣ���ĳЩ����??
         const flipLeftIcon = themeKey !== 'space'; // ̫�����ⲻ��??
 
-        // �����Ѷȵ���ͼ��λ�ã��Թ���С��ͬ����ڳ���λ��Ҳ��ͬ��?
+        // �����Ѷȵ���ͼ��λ�ã��Թ���С��ͬ����ڳ���λ��Ҳ��ͬ��?
         const cornerPositions: Record<string, { left: { top: string; left: string }; right: { bottom: string; right: string } }> = {
             easy: {
                 left: { top: '285px', left: '80px' },
@@ -388,25 +422,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -560,11 +594,11 @@ export class ImageGenerator {
                 <div class="main">Maze</div>
                 ${iconPosition === 'right' ? titleIconHtml : ''}
             </div>
-            ${cornerLeft ? `<img class="corner-img corner-left" src="http://localhost:3000${cornerLeft}" />` : ''}
-            ${cornerRight ? `<img class="corner-img corner-right" src="http://localhost:3000${cornerRight}" />` : ''}
+            ${cornerLeft ? `<img class="corner-img corner-left" src="${getBaseUrl()}${cornerLeft}" />` : ''}
+            ${cornerRight ? `<img class="corner-img corner-right" src="${getBaseUrl()}${cornerRight}" />` : ''}
             <div class="maze-wrapper">
                 <div class="maze-box">
-                    ${mazeUrl ? `<img src="${mazeUrl.startsWith('data:') ? mazeUrl : 'http://localhost:3000' + mazeUrl}" alt="maze">` : '<div style="color:#94a3b8;font-size:16px;">Maze will appear here</div>'}
+                    ${mazeUrl ? `<img src="${mazeUrl.startsWith('data:') ? mazeUrl : getBaseUrl() + mazeUrl}" alt="maze">` : '<div style="color:#94a3b8;font-size:16px;">Maze will appear here</div>'}
                 </div>
             </div>
         </div>
@@ -606,7 +640,7 @@ export class ImageGenerator {
                         return `<div class="cell missing"></div>`;
                     }
                     return isImageFile(cell)
-                        ? `<div class="cell"><img src="http://localhost:3000${cell}" /></div>`
+                        ? `<div class="cell"><img src="${getBaseUrl()}${cell}" /></div>`
                         : `<div class="cell"><span class="emoji">${cell}</span></div>`;
                 }).join('');
                 return `<div class="row">${cells}</div>`;
@@ -630,25 +664,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -744,7 +778,7 @@ export class ImageGenerator {
         
         // �������ͼ��λ�ã�����ң�
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
 
         const { image: mainImage, word } = getLetterImage(upperLetter);
         const characterImage = getThemeCharacter(themeKey);
@@ -752,10 +786,10 @@ export class ImageGenerator {
         // ��ȡ���ⱳ��ͼ��30% ���ȣ�
         const backgroundImage = getThemeBackground(themeKey);
         const backgroundHtml = backgroundImage 
-            ? `<div class="theme-background" style="background-image: url('http://localhost:3000${backgroundImage}');"></div>` 
+            ? `<div class="theme-background" style="background-image: url('\${getBaseUrl()}${backgroundImage}');"></div>` 
             : '';
 
-        // ʹ�� uploads/letters/uppercase �е����?PNG
+        // ʹ�� uploads/letters/uppercase �е����?PNG
         const tracingRel = `/uploads/letters/uppercase/${upperLetter}_uppercase_tracing.png`;
         const tracingFull = path.join(__dirname, '../../public', tracingRel);
         const tracingImage = fs.existsSync(tracingFull) ? tracingRel : '';
@@ -768,25 +802,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -1087,18 +1121,18 @@ export class ImageGenerator {
             <div class="main-row">
                 <div class="tracing-card">
                     ${tracingImage
-                        ? `<img src="http://localhost:3000${tracingImage}" alt="Tracing ${upperLetter}">`
+                        ? `<img src="${getBaseUrl()}${tracingImage}" alt="Tracing ${upperLetter}">`
                         : `<div class="fallback-letter">${upperLetter}</div>`}
                     <div class="character-in-letter">
                         ${isImageFile(characterImage)
-                            ? `<img src="http://localhost:3000${characterImage}" alt="${themeKey} character">`
+                            ? `<img src="${getBaseUrl()}${characterImage}" alt="${themeKey} character">`
                             : characterImage}
                     </div>
                 </div>
                 <div class="word-card">
                     <div class="word-image">
                         ${isImageFile(mainImage)
-                            ? `<img src="http://localhost:3000${mainImage}" alt="${word}">`
+                            ? `<img src="${getBaseUrl()}${mainImage}" alt="${word}">`
                             : mainImage}
                     </div>
                     <div class="word-label">${word}</div>
@@ -1149,7 +1183,7 @@ export class ImageGenerator {
 
     /**
      * ���� Alphabet Sequencing ҳ��
-     * ��дȱʧ����ĸ�����ĸ����?
+     * ��дȱʧ����ĸ�����ĸ����?
      */
     async generateAlphabetSequencing(data: any): Promise<string> {
         await this.initialize();
@@ -1160,7 +1194,7 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
         // ������ HTML
@@ -1329,7 +1363,7 @@ export class ImageGenerator {
 
     /**
      * ���� Beginning Sounds ҳ��
-     * ƥ��ͼƬ������ĸ - �����ĸ��Ƭ���Ҳ�ͼƬ��Ƭ���м�����?
+     * ƥ��ͼƬ������ĸ - �����ĸ��Ƭ���Ҳ�ͼƬ��Ƭ���м�����?
      */
     async generateBeginningSounds(data: any): Promise<string> {
         await this.initialize();
@@ -1340,7 +1374,7 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
         // �̶�5����ĸ�Ĳ��ֲ���
@@ -1381,10 +1415,10 @@ export class ImageGenerator {
             </div>
         `).join('');
         
-        // �����Ҳ�ͼƬ��Ƭ HTML��ʹ�ô��Һ��˳��?
+        // �����Ҳ�ͼƬ��Ƭ HTML��ʹ�ô��Һ��˳��?
         const rightCardsHtml = shuffledItems.map((item: any, index: number) => `
             <div class="card image-card" style="background: ${cardColors[(index + 3) % cardColors.length]}; width: ${cardSize}px; height: ${cardSize}px;">
-                <img class="card-image" src="http://localhost:3000${item.image}" alt="${item.word}" style="width: ${imageSize}px; height: ${imageSize}px;" />
+                <img class="card-image" src="${getBaseUrl()}${item.image}" alt="${item.word}" style="width: ${imageSize}px; height: ${imageSize}px;" />
             </div>
         `).join('');
         
@@ -1535,7 +1569,7 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
         // 卡片背景颜色
@@ -1548,7 +1582,7 @@ export class ImageGenerator {
             '#FEF3C7', // 浅黄
         ];
         
-        // 所有可用的 CVC 单词（bigpng 文件夹中有图片的�?
+        // 所有可用的 CVC 单词（bigpng 文件夹中有图片的�?
         const availableCvcWords = [
             'bag', 'bat', 'bed', 'bin', 'box', 'bug', 'bun',
             'cat', 'cup', 'dig', 'dog', 'fan', 'fin', 'fox',
@@ -1562,14 +1596,14 @@ export class ImageGenerator {
             return `/uploads/bigpng/${word.toLowerCase()}.png`;
         };
         
-        // 如果传入�?wordsWithImages，使用它；否则随机选择
+        // 如果传入�?wordsWithImages，使用它；否则随机选择
         const wordsWithImages = content.wordsWithImages || [];
         let displayWords: string[];
         
         if (wordsWithImages.length > 0) {
             displayWords = wordsWithImages.map((w: any) => w.word);
         } else {
-            // 随机选择 6 个单�?
+            // 随机选择 6 个单�?
             const shuffled = [...availableCvcWords].sort(() => Math.random() - 0.5);
             displayWords = shuffled.slice(0, 6);
         }
@@ -1586,7 +1620,7 @@ export class ImageGenerator {
             return `
                 <div class="word-card">
                     <div class="image-area" style="background: ${bgColor};">
-                        <img class="word-image" src="http://localhost:3000${getWordImage(word)}" alt="${word}" />
+                        <img class="word-image" src="${getBaseUrl()}${getWordImage(word)}" alt="${word}" />
                     </div>
                     <div class="letters-area">
                         ${letterBoxes}
@@ -1735,7 +1769,7 @@ export class ImageGenerator {
 
     /**
      * ���� Match Uppercase & Lowercase ҳ��
-     * ��Сд��ĸ���?- ��ߴ�д˳���ұ�Сд����?
+     * ��Сд��ĸ���?- ��ߴ�д˳���ұ�Сд����?
      */
     async generateMatchUpperLower(data: any): Promise<string> {
         await this.initialize();
@@ -1746,7 +1780,7 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
         // Ĭ����ĸ��
@@ -1921,7 +1955,7 @@ export class ImageGenerator {
 
     /**
      * ���� Which is More? ҳ��
-     * �Ƚ������������� - 3�У�ÿ����������ͼƬ��ÿ����ڷ�����?
+     * �Ƚ������������� - 3�У�ÿ����������ͼƬ��ÿ����ڷ�����?
      */
     async generateWhichIsMore(data: any): Promise<string> {
         await this.initialize();
@@ -1932,7 +1966,7 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
         // �����Ѷ�����������Χ
@@ -1961,7 +1995,7 @@ export class ImageGenerator {
             ];
         }
         
-        // ���ѡ��?����ͬ��ͼƬ����3��
+        // ���ѡ��?����ͬ��ͼƬ����3��
         const shuffled = [...themeImages].sort(() => Math.random() - 0.5);
         const selectedImages = shuffled.slice(0, 3);
         while (selectedImages.length < 3) {
@@ -1989,12 +2023,12 @@ export class ImageGenerator {
             // ������������ÿ����ʾ����ͼƬ
             const itemsPerRow = row.leftCount <= 5 ? row.leftCount : 5;
             const leftImages = Array(row.leftCount).fill(0).map(() => 
-                `<img class="item-img" src="http://localhost:3000${row.image}" />`
+                `<img class="item-img" src="${getBaseUrl()}${row.image}" />`
             ).join('');
             
             const rightItemsPerRow = row.rightCount <= 5 ? row.rightCount : 5;
             const rightImages = Array(row.rightCount).fill(0).map(() => 
-                `<img class="item-img" src="http://localhost:3000${row.image}" />`
+                `<img class="item-img" src="${getBaseUrl()}${row.image}" />`
             ).join('');
             
             return `
@@ -2160,7 +2194,7 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
         const baseBonds =
@@ -2342,7 +2376,7 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
         // ����6��ʮ������?
@@ -2352,7 +2386,7 @@ export class ImageGenerator {
             problems.push(count);
         }
         
-        // ����ʮ���?HTML - 5��2�У�ÿ�������б߿�
+        // ����ʮ���?HTML - 5��2�У�ÿ�������б߿�
         const generateTenFrameHtml = (count: number) => {
             let cells = '';
             for (let i = 0; i < 10; i++) {
@@ -2496,7 +2530,7 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
         // �������ļ��л�ȡͼƬ
@@ -2509,7 +2543,7 @@ export class ImageGenerator {
             themeImages = ['/uploads/assets/A_main_assets/dinosaur/color/dinosaur_000_color.png'];
         }
         
-        // ����6���ӷ��⣬ÿ�����?��
+        // ����6���ӷ��⣬ÿ�����?��
         const problems = [];
         for (let i = 0; i < 6; i++) {
             const a = Math.floor(Math.random() * 3) + 1; // 1-3
@@ -2520,7 +2554,7 @@ export class ImageGenerator {
         
         // ���ɾ��е�ͼƬ�飨ʹ��flexbox���У�
         const generateCenteredImages = (count: number, imageSrc: string) => {
-            const images = Array(count).fill(0).map(() => `<img class="add-img" src="http://localhost:3000${imageSrc}" />`).join('');
+            const images = Array(count).fill(0).map(() => `<img class="add-img" src="${getBaseUrl()}${imageSrc}" />`).join('');
             return images;
         };
         
@@ -2658,7 +2692,7 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
         
         // ��״����
@@ -2670,7 +2704,7 @@ export class ImageGenerator {
             { name: 'heart', svg: '<path d="M20 35 C5 25 2 15 8 8 C14 2 20 8 20 12 C20 8 26 2 32 8 C38 15 35 25 20 35Z" fill="COLOR" stroke="#333" stroke-width="2"/>', color: '#F472B6' },
         ];
         
-        // Ϊÿ����״�����������?(5-9)
+        // Ϊÿ����״�����������?(5-9)
         const shapeCounts: { shape: typeof shapes[0], count: number }[] = shapes.map(s => ({
             shape: s,
             count: Math.floor(Math.random() * 5) + 5
@@ -2683,7 +2717,7 @@ export class ImageGenerator {
         const boxWidth = 600;
         const boxHeight = 410;
         
-        // �����λ���Ƿ���������״�ص�?
+        // �����λ���Ƿ���������״�ص�?
         const isOverlapping = (newX: number, newY: number) => {
             for (const existing of allShapes) {
                 const dx = newX - existing.x;
@@ -2871,7 +2905,7 @@ export class ImageGenerator {
                 : difficulty === 'medium'
                     ? 60
                     : 70; // default/easy
-        const rewardStars = Array.from({ length: 5 }).map(() => '<span class="reward-star">�?/span>').join('');
+        const rewardStars = Array.from({ length: 5 }).map(() => '<span class="reward-star">�?/span>').join('');
         const pointingMap: Record<string, string> = {
             dinosaur: '/uploads/assets/B_character_ip/dinosaur/poses/color/dinosaur_pointing_pose.png',
             vehicles: '/uploads/assets/B_character_ip/vehicles/poses/color/vehicles_car_pointing_pose.png',
@@ -2895,12 +2929,12 @@ export class ImageGenerator {
         // ʹ�ñ���ͼ������?
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // ���ɻ����ĸ����?
+        // ���ɻ����ĸ����?
         let gridCells: string[] = [];
         if (Array.isArray(cells) && cells.length > 0) {
             gridCells = cells.slice(0, gridSize * gridSize);
         } else {
-            // �Զ����ɻ����ĸ����?
+            // �Զ����ɻ����ĸ����?
             const totalCells = gridSize * gridSize;
             // �����ѶȾ���Ŀ����ĸ������
             const targetCount = difficulty === 'hard' ? Math.floor(totalCells * 0.25) 
@@ -2941,25 +2975,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -3076,8 +3110,8 @@ export class ImageGenerator {
             font-size: ${fontSize}px;     /* �Ѷȶ�̬�ֺţ�easy 70 / medium 60 / hard 50 */
             font-weight: 900;
             letter-spacing: 0.3px;
-            color: ${themeColors.primary};              /* ����ɫ���?*/
-            -webkit-text-stroke: 0;      /* ȡ�����?*/
+            color: ${themeColors.primary};              /* ����ɫ���?*/
+            -webkit-text-stroke: 0;      /* ȡ�����?*/
             line-height: 1;
         }
         .reward-row {
@@ -3115,7 +3149,7 @@ export class ImageGenerator {
 
         <div class="safe-area">
             <div class="lr-title">
-                <img src="http://localhost:3000${magnifierIcon}" alt="helper icon" />
+                <img src="${getBaseUrl()}${magnifierIcon}" alt="helper icon" />
                 <span>Find all the letter ${upperLetter}</span>
             </div>
             <div class="lr-panel">
@@ -3124,7 +3158,7 @@ export class ImageGenerator {
                 </div>
             </div>
             <div class="reward-row">
-                <img class="reward-dino" src="http://localhost:3000${rewardDino}" alt="theme helper" />
+                <img class="reward-dino" src="${getBaseUrl()}${rewardDino}" alt="theme helper" />
                 <div class="reward-stars">${rewardStars}</div>
             </div>
         </div>
@@ -3159,7 +3193,7 @@ export class ImageGenerator {
         
         // �������ͼ��λ�ã������??
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
 
         const { image: mainImage, word } = getLetterImage(lookupLetter);
         const characterImage = getThemeCharacter(themeKey);
@@ -3179,25 +3213,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -3482,18 +3516,18 @@ export class ImageGenerator {
             <div class="main-row">
                 <div class="tracing-card">
                     ${tracingImage
-                        ? `<img src="http://localhost:3000${tracingImage}" alt="Tracing ${lowerLetter}">`
+                        ? `<img src="${getBaseUrl()}${tracingImage}" alt="Tracing ${lowerLetter}">`
                         : `<div class="fallback-letter">${lowerLetter}</div>`}
                     <div class="character-in-letter">
                         ${isImageFile(characterImage)
-                            ? `<img src="http://localhost:3000${characterImage}" alt="${themeKey} character">`
+                            ? `<img src="${getBaseUrl()}${characterImage}" alt="${themeKey} character">`
                             : characterImage}
         </div>
                 </div>
                 <div class="word-card">
                     <div class="word-image">
                 ${isImageFile(mainImage)
-                ? `<img src="http://localhost:3000${mainImage}" alt="${word}">`
+                ? `<img src="${getBaseUrl()}${mainImage}" alt="${word}">`
                 : mainImage}
             </div>
             <div class="word-label">${word}</div>
@@ -3563,15 +3597,15 @@ export class ImageGenerator {
         // ���ɴ���ĸͼƬHTML���� uploads/letters/uppercase ȡͼƬ��
         const bigLettersHtml = displayName.split('').map(letter => {
             const letterImagePath = `/uploads/letters/uppercase/${letter}_uppercase_tracing.png`;
-            return `<img class="big-letter-img" src="http://localhost:3000${letterImagePath}" alt="${letter}" />`;
+            return `<img class="big-letter-img" src="${getBaseUrl()}${letterImagePath}" alt="${letter}" />`;
         }).join('');
 
-        // ��ȡ�����ɫͼ������?A_main_assets/{theme}/color/main/ ���ȡһ�ţ�?
+        // ��ȡ�����ɫͼ������?A_main_assets/{theme}/color/main/ ���ȡһ�ţ�?
         const colorAssets = getThemeMainColorAssets(themeKey, 1);
         const characterImage = colorAssets[0] || '';
 
         // �������ֳ��Ⱦ���ÿ����ʾ1����??����??
-        // ������ֳ���?����ĸ��ÿ��ֻ��??����??
+        // ������ֳ���?����ĸ��ÿ��ֻ��??����??
         const namesPerLine = nameLength > 5 ? 1 : 2;
         const tracingClass = namesPerLine === 1 ? 'tracing-text single' : 'tracing-text';
         const tracingContent = namesPerLine === 1 
@@ -3583,7 +3617,7 @@ export class ImageGenerator {
         // letter-spacing = (���ÿ��� - ��ĸ??* ��ĸ����) / (��ĸ??- 1)
         const getLetterSpacing = (len: number, perLine: number): number => {
             if (len <= 1) return 0;
-            const availableWidth = perLine === 1 ? 600 : 280; // ��������ʱ���ø����??
+            const availableWidth = perLine === 1 ? 600 : 280; // ��������ʱ���ø����??
             const charWidth = 55; // ÿ����ĸ??5px
             const totalCharWidth = len * charWidth;
             const spacing = Math.floor((availableWidth - totalCharWidth) / (len - 1));
@@ -3625,7 +3659,7 @@ export class ImageGenerator {
             object-fit: contain;
             flex-shrink: 1;
         }
-        /* �м��ɫͼƬ����?- ���� */
+        /* �м��ɫͼƬ����?- ���� */
         .character-section {
             flex: 1;
             display: flex;
@@ -3640,7 +3674,7 @@ export class ImageGenerator {
             height: auto;
             object-fit: contain;
         }
-        /* ��ϰ���� - �ο���д��ĸ�����??*/
+        /* ��ϰ���� - �ο���д��ĸ�����??*/
         .practice {
             margin-top: 10px;
             margin-left: -18px;
@@ -3731,7 +3765,7 @@ export class ImageGenerator {
                 </div>
                 <!-- �м��ɫͼ�?-->
                 <div class="character-section">
-                    ${characterImage ? `<img class="character-image" src="http://localhost:3000${characterImage}" alt="character" />` : ''}
+                    ${characterImage ? `<img class="character-image" src="${getBaseUrl()}${characterImage}" alt="character" />` : ''}
                 </div>
                 <!-- ��ϰ�� - �ο���д��ĸ������?-->
                 <div class="practice">
@@ -3805,7 +3839,7 @@ export class ImageGenerator {
                 const numberImgPath = `/uploads/A_basic_assets/numbers/number_${n}_tracing.png`;
                 const numberImgAbs = path.join(__dirname, '../../public', numberImgPath.replace(/^\//, ''));
                 const leftNumber = fs.existsSync(numberImgAbs)
-                    ? `<img class="left-num-img" src="http://localhost:3000${numberImgPath}" alt="${n}">`
+                    ? `<img class="left-num-img" src="${getBaseUrl()}${numberImgPath}" alt="${n}">`
                     : `<div class="left-num-text">${n}</div>`;
 
                 const iconPool = themeColorPool.length > 0 ? themeColorPool : [defaultIcon];
@@ -3865,7 +3899,7 @@ export class ImageGenerator {
                         if (layout) {
                             icons = `<div class="icon-group" style="position: relative; display: block; width:100%; height:100%;">
                                 ${ layout.map(pos =>
-                                    `<img class="icon-img" src="http://localhost:3000${iconSrc}" style="position:absolute; width:${iconSize}px; height:${iconSize}px; top:${pos.top}%; left:${pos.left}%; transform: translate(-50%,-50%);" />`
+                                    `<img class="icon-img" src="${getBaseUrl()}${iconSrc}" style="position:absolute; width:${iconSize}px; height:${iconSize}px; top:${pos.top}%; left:${pos.left}%; transform: translate(-50%,-50%);" />`
                                   ).join('') }
                             </div>`;
                         } else {
@@ -3873,7 +3907,7 @@ export class ImageGenerator {
                             const gridStyle = `grid-template-columns: repeat(${cols}, 1fr);`;
                             icons = `<div class="icon-group" style="${gridStyle}">
                                 ${Array.from({ length: countForIcons }).map(() =>
-                                    `<img class="icon-img" src="http://localhost:3000${iconSrc}" style="width:${iconSize}px;height:${iconSize}px;" />`
+                                    `<img class="icon-img" src="${getBaseUrl()}${iconSrc}" style="width:${iconSize}px;height:${iconSize}px;" />`
                                 ).join('')}
                             </div>`;
                         }
@@ -3906,7 +3940,7 @@ export class ImageGenerator {
                 <div class="divider"></div>
                 <div class="safe-area">
                     <div class="nt-title">
-                        <img src="http://localhost:3000${titleIcon}" alt="theme icon" />
+                        <img src="${getBaseUrl()}${titleIcon}" alt="theme icon" />
                         <span>${titleText}</span>
                     </div>
                     <div class="rows">${rowsHtml}</div>
@@ -3927,25 +3961,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -4170,7 +4204,7 @@ export class ImageGenerator {
         
         // �������ͼ��λ�ã������??
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
 
         // ʹ�ñ���ͼ������?
         const stickerHtml = this.getStickersHtml(themeKey);
@@ -4183,25 +4217,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -4322,7 +4356,7 @@ export class ImageGenerator {
                 ${iconPosition === 'right' ? titleIconHtml : ''}
                 ${subtitle ? `<div class="sub">${subtitle}</div>` : ''}
             </div>
-            <!-- ���հ�ȫ������������߼�����?-->
+            <!-- ���հ�ȫ������������߼�����?-->
         </div>
         ${stickerHtml}
     </div>
@@ -4353,14 +4387,14 @@ export class ImageGenerator {
         
         // �������ͼ��λ�ã������??
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
 
         // ��ֽ
         const stickerHtml = this.getStickersHtml(themeKey);
 
         // ͼƬ��������
         const imageHtml = patternImageUrl 
-            ? `<img class="pattern-image" src="http://localhost:3000${patternImageUrl}" />`
+            ? `<img class="pattern-image" src="${getBaseUrl()}${patternImageUrl}" />`
             : `<div class="placeholder">�Ҳ�ͬͼƬ������...</div>`;
 
         const html = `
@@ -4371,25 +4405,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -4558,15 +4592,15 @@ export class ImageGenerator {
         
         // �������ͼ��λ�ã������??
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
 
         // ��ȡ�������ƣ�����ĸ��д??
         const themeName = themeKey.charAt(0).toUpperCase() + themeKey.slice(1);
 
-        // ��ȡ8�������ɫ�زģ�??color/main ���ļ���??
+        // ��ȡ8�������ɫ�زģ�??color/main ���ļ���??
         const themeAssets = getThemeMainColorAssets(themeKey, 8);
         
-        // �������??�Ŵ�ͼ��4��С??
+        // �������??�Ŵ�ͼ��4��С??
         const shuffledAssets = [...themeAssets].sort(() => Math.random() - 0.5);
         const bigItems = shuffledAssets.slice(0, 4);
         const smallItems = shuffledAssets.slice(4, 8);
@@ -4587,7 +4621,7 @@ export class ImageGenerator {
         const makeItemHtml = (item: { src: string; size: string }) => {
             const size = item.size === 'big' ? '120px' : '50px';
             return `<div class="item-cell">
-                <img src="http://localhost:3000${item.src}" style="width: ${size}; height: ${size}; object-fit: contain;" />
+                <img src="${getBaseUrl()}${item.src}" style="width: ${size}; height: ${size}; object-fit: contain;" />
             </div>`;
         };
         
@@ -4607,25 +4641,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -4841,12 +4875,12 @@ export class ImageGenerator {
         
         // �������ͼ��λ�ã������??
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
 
         // ʹ�ñ���ͼ������?
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // ѡȡ�����ɫ�ز�?
+        // ѡȡ�����ɫ�ز�?
         const colorPool = getThemeColorAssets(themeKey, 40);
         const shuffled = [...colorPool];
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -4868,10 +4902,10 @@ export class ImageGenerator {
             return `
                 <div class="match-row">
                     <div class="cell color">
-                        ${src ? `<img src="http://localhost:3000${src}" />` : ''}
+                        ${src ? `<img src="${getBaseUrl()}${src}" />` : ''}
                     </div>
                     <div class="cell shadow">
-                        ${shadow ? `<img src="http://localhost:3000${shadow}" class="shadow-img" />` : ''}
+                        ${shadow ? `<img src="${getBaseUrl()}${shadow}" class="shadow-img" />` : ''}
                     </div>
                 </div>
             `;
@@ -4885,25 +4919,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -5105,7 +5139,7 @@ export class ImageGenerator {
                         <div class="cluster">
                             ${Array.from({ length: count }).map(() => `
                                 <span class="icon">${isImageFile(image)
-                                    ? `<img src="http://localhost:3000${image}" />`
+                                    ? `<img src="${getBaseUrl()}${image}" />`
                                     : image}</span>
                             `).join('')}
                         </div>
@@ -5125,7 +5159,7 @@ export class ImageGenerator {
                 const renderSized = (scale: number) => `
                     <div class="size-box">
                         ${isImageFile(image)
-                            ? `<img src="http://localhost:3000${image}" style="width:${160 * scale}px;height:${140 * scale}px;" />`
+                            ? `<img src="${getBaseUrl()}${image}" style="width:${160 * scale}px;height:${140 * scale}px;" />`
                             : `<span class="emoji" style="font-size:${110 * scale}px;">${image}</span>`}
                     </div>
                 `;
@@ -5156,25 +5190,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -5285,7 +5319,7 @@ export class ImageGenerator {
         
         // �������ͼ��λ�ã������??
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
 
         const makeDots = (count: number) => {
             const dotsArr = [];
@@ -5305,7 +5339,7 @@ export class ImageGenerator {
         // ʹ��ͨ�÷���������ֽ
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // ��ȡ��Ե�ͼƬ�ͽ�ɫ����?
+        // ��ȡ��Ե�ͼƬ�ͽ�ɫ����?
         let dotsImageUrl = data.dotsImageUrl || '';
         const characterName = data.characterName || '';
 
@@ -5316,7 +5350,7 @@ export class ImageGenerator {
 
         const pagesHtml = pagesContent.map((dotsArr: any[], pageIdx: number) => {
             // ����е�Ե�ͼƬ����ʾ�� canvas �У�֧�� data URL ����ͨ·����
-            const imgSrc = dotsImageUrl.startsWith('data:') ? dotsImageUrl : `http://localhost:3000${dotsImageUrl}`;
+            const imgSrc = dotsImageUrl.startsWith('data:') ? dotsImageUrl : `${getBaseUrl()}${dotsImageUrl}`;
             const canvasContent = dotsImageUrl 
                 ? `<img src="${imgSrc}" style="width: 100%; height: 100%; object-fit: contain;" />`
                 : '<div style="display: flex; align-items: center; justify-content: center; height: 100%; color: #999; font-size: 18px;">Connect the dots</div>';
@@ -5354,25 +5388,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -5574,25 +5608,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -5767,7 +5801,7 @@ export class ImageGenerator {
         <div class="image-container">
             <div class="main-image">
                 ${isImageFile(mainImage)
-                ? `<img src="http://localhost:3000${mainImage}" alt="${word}">`
+                ? `<img src="${getBaseUrl()}${mainImage}" alt="${word}">`
                 : mainImage}
             </div>
             <div class="word-label">${word}</div>
@@ -5872,7 +5906,7 @@ export class ImageGenerator {
                                 <div class="card">
                                     <div class="image-wrapper">
                                         ${isImageFile(item.image)
-                                            ? `<img src="http://localhost:3000${item.image}" alt="${item.imgWord}">`
+                                            ? `<img src="${getBaseUrl()}${item.image}" alt="${item.imgWord}">`
                                             : `<span class="emoji">${item.image}</span>`}
                                     </div>
                                     <div class="divider"></div>
@@ -5896,25 +5930,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -6037,7 +6071,7 @@ export class ImageGenerator {
         
         // �������ͼ��λ�ã�����ң�
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" alt="theme icon">` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" alt="theme icon">` : '';
 
         // ʹ�ñ���ͼ������?
         const stickerHtml = this.getStickersHtml(themeKey);
@@ -6064,7 +6098,7 @@ export class ImageGenerator {
             const titleText = 'Counting Objects';
             const titleIcon = titleIconMap[themeKey] || titleIconMap['dinosaur'];
             const rowsHtml = items.map((item: any, idx: number) => {
-                // �Ҳ� 3 �����֣������Ѷȷ�Χ�������������?
+                // �Ҳ� 3 �����֣������Ѷȷ�Χ�������������?
                 const optionsSet = new Set<number>();
                 while (optionsSet.size < 3) {
                     optionsSet.add(Math.floor(Math.random() * (range.max - range.min + 1)) + range.min);
@@ -6090,12 +6124,12 @@ export class ImageGenerator {
                 const iconElements = Array.from({ length: count }, () => {
                     const iconSrc = randomIcon();
                     const iconTag = iconSrc
-                        ? `<img src="http://localhost:3000${iconSrc}" alt="icon" style="width:${size}px;height:${size}px;">`
+                        ? `<img src="${getBaseUrl()}${iconSrc}" alt="icon" style="width:${size}px;height:${size}px;">`
                         : `<span class="emoji" style="font-size:${size}px;">??</span>`;
                     return `<span class="icon" style="width:${size}px;height:${size}px;">${iconTag}</span>`;
                 });
                 
-                // �����Ҫ���ţ��ֳ���������?
+                // �����Ҫ���ţ��ֳ���������?
                 let iconsHtml: string;
                 if (needTwoRows) {
                     const halfCount = Math.ceil(count / 2);
@@ -6148,25 +6182,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -6274,7 +6308,7 @@ export class ImageGenerator {
             align-items: center;
             gap: 8px;
             padding: 10px 4px 10px 12px; /* �Ҳ����� 4px��������ȫ�� */
-            border: none; /* ȥ�����??*/
+            border: none; /* ȥ�����??*/
             border-bottom: 1.5px solid #0f172a; /* �����ָ�??*/
             border-radius: 0;
             background: transparent;
@@ -6593,25 +6627,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -6782,7 +6816,7 @@ export class ImageGenerator {
             ${animalStickers.map(sticker => `
                 <div class="sticker-item">
                     ${isImageFile(sticker)
-                        ? `<img class="sticker-img" src="http://localhost:3000${sticker}" alt="animal sticker">`
+                        ? `<img class="sticker-img" src="${getBaseUrl()}${sticker}" alt="animal sticker">`
                         : `<span class="sticker-emoji">${sticker}</span>`}
                 </div>
             `).join('')}
@@ -6880,7 +6914,7 @@ export class ImageGenerator {
             const width = cellPct * spanCols;
             const height = cellPct * spanRows;
             return isImageFile(mainImage)
-                ? `<img src="http://localhost:3000${mainImage}" class="main-image" style="top:${top}%;left:${left}%;width:${width}%;height:${height}%;">`
+                ? `<img src="${getBaseUrl()}${mainImage}" class="main-image" style="top:${top}%;left:${left}%;width:${width}%;height:${height}%;">`
                 : `<span class="main-emoji" style="top:${top}%;left:${left}%;width:${width}%;height:${height}%;font-size:${letterSize * 6}px;">${mainImage}</span>`;
         })() : '';
 
@@ -6892,25 +6926,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -7057,9 +7091,9 @@ export class ImageGenerator {
             throw new Error(`���� ${themeKey} ���زĲ��㣬��Ҫ��??��`);
         }
 
-        // �������ͼ��λ��?
+        // �������ͼ��λ��?
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
 
         // ʹ�ñ���ͼ������?
         const stickerHtml = this.getStickersHtml(themeKey);
@@ -7121,7 +7155,7 @@ export class ImageGenerator {
         // ����??HTML - 6��ͼ??+ 1���հ׿����ʺ�??
         const rowsHtml = rows.map((row, idx) => {
             const imagesHtml = row.images.map(img => 
-                `<img class="seq-item" src="http://localhost:3000${img}" />`
+                `<img class="seq-item" src="${getBaseUrl()}${img}" />`
             ).join('');
 
             return `
@@ -7143,25 +7177,25 @@ export class ImageGenerator {
     <style>
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-regular.woff2') format('woff2');
             font-weight: 400;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-500.woff2') format('woff2');
             font-weight: 500;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-600.woff2') format('woff2');
             font-weight: 600;
             font-style: normal;
         }
         @font-face {
             font-family: 'Quicksand';
-            src: url('http://localhost:3000/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
+            src: url('\${getBaseUrl()}/fonts/Quicksand/quicksand-v37-latin-700.woff2') format('woff2');
             font-weight: 700;
             font-style: normal;
         }
@@ -7366,7 +7400,7 @@ export class ImageGenerator {
         const stickerHtml = this.getStickersHtml(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         
         // ��״����ɫ
         const shapes = ['circle', 'square', 'triangle'];
@@ -7406,7 +7440,7 @@ export class ImageGenerator {
             }
         };
         
-        // �������� HTML - ʹ�ø���ĳߴ�?
+        // �������� HTML - ʹ�ø���ĳߴ�?
         const gridHtml = grid.map((row, rowIdx) => {
             const cellsHtml = row.map((cell, colIdx) => {
                 if (rowIdx === missingRow && colIdx === missingCol) {
@@ -7519,7 +7553,7 @@ export class ImageGenerator {
         const stickerHtml = this.getStickersHtml(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         
         // ��ȡ�����ز�
         const colorAssets = getThemeColorAssets(themeKey, 30);
@@ -7550,7 +7584,7 @@ export class ImageGenerator {
         // ������ HTML
         const rowsHtml = rows.map((row, idx) => {
             const itemsHtml = row.items.map(item => 
-                `<div class="item-cell"><img src="http://localhost:3000${item}" /></div>`
+                `<div class="item-cell"><img src="${getBaseUrl()}${item}" /></div>`
             ).join('');
             
             return `
@@ -7664,33 +7698,33 @@ export class ImageGenerator {
         const stickerHtml = this.getStickersHtml(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         
         // ��ȡ�����ز�
         const colorAssets = getThemeColorAssets(themeKey, 10);
         const shuffled = [...colorAssets].sort(() => Math.random() - 0.5);
         const selected = shuffled.slice(0, 5);
         
-        // ���̶�˳���Ҳ����?
+        // ���̶�˳���Ҳ����?
         const leftItems = selected.map((item, idx) => ({ item, id: idx }));
         const rightItems = [...leftItems].sort(() => Math.random() - 0.5);
         
-        // �������?HTML����ʾͼƬ����벿�֣��������ұ߿����м�?
+        // �������?HTML����ʾͼƬ����벿�֣��������ұ߿����м�?
         const leftHtml = leftItems.map((item, idx) => `
             <div class="half-item left-item">
                 <div class="half-image">
-                    <img class="left-half-img" src="http://localhost:3000${item.item}" />
+                    <img class="left-half-img" src="${getBaseUrl()}${item.item}" />
                 </div>
                 <div class="half-number">${idx + 1}</div>
             </div>
         `).join('');
         
-        // �����Ҳ� HTML����ʾͼƬ���Ұ벿�֣���ĸ����߿����м�?
+        // �����Ҳ� HTML����ʾͼƬ���Ұ벿�֣���ĸ����߿����м�?
         const rightHtml = rightItems.map((item, idx) => `
             <div class="half-item right-item">
                 <div class="half-letter">${String.fromCharCode(65 + idx)}</div>
                 <div class="half-image">
-                    <img class="right-half-img" src="http://localhost:3000${item.item}" />
+                    <img class="right-half-img" src="${getBaseUrl()}${item.item}" />
                 </div>
             </div>
         `).join('');
@@ -7758,7 +7792,7 @@ export class ImageGenerator {
             border-radius: 10px;
             border: 3px solid ${themeColors.secondary};
         }
-        /* 左半部分图片，只显示图片左边一�?*/
+        /* 左半部分图片，只显示图片左边一�?*/
         .left-half-img {
             height: 85px;
             max-height: 85px;
@@ -7767,7 +7801,7 @@ export class ImageGenerator {
             object-fit: contain;
             clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
         }
-        /* 右半部分图片，只显示图片右边一�?*/
+        /* 右半部分图片，只显示图片右边一�?*/
         .right-half-img {
             height: 85px;
             max-height: 85px;
@@ -7831,7 +7865,7 @@ export class ImageGenerator {
         const stickerHtml = this.getStickersHtml(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         
         // ���õĻ�����״������ɫ
         const availableShapes = [
@@ -7964,7 +7998,7 @@ export class ImageGenerator {
 
     /**
      * ���� Shape Path ҳ��
-     * ��״·����ϰ - ������״������ߵ��յ�?
+     * ��״·����ϰ - ������״������ߵ��յ�?
      */
     async generateShapePath(data: any): Promise<string> {
         await this.initialize();
@@ -7976,18 +8010,18 @@ export class ImageGenerator {
         const stickerHtml = this.getStickersHtml(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         
         // ��״����
         const shapes = ['circle', 'square', 'triangle'];
         
-        // ���� 5x5 ������5��5�У���ȷ��������״���ָ������?
-        // �ܹ� 25 �����ӣ�ÿ����״���� 8 ����ʣ�� 1 �����?
+        // ���� 5x5 ������5��5�У���ȷ��������״���ָ������?
+        // �ܹ� 25 �����ӣ�ÿ����״���� 8 ����ʣ�� 1 �����?
         const shapePool: string[] = [];
         for (let i = 0; i < 8; i++) {
             shapePool.push('circle', 'square', 'triangle');
         }
-        shapePool.push(shapes[Math.floor(Math.random() * shapes.length)]); // ��25�����?
+        shapePool.push(shapes[Math.floor(Math.random() * shapes.length)]); // ��25�����?
         // ϴ��
         for (let i = shapePool.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -8027,7 +8061,7 @@ export class ImageGenerator {
             if (currentRow >= 4 && currentCol === 4) break;
         }
         
-        // ������������Ƿ����ڣ���·����������?
+        // ������������Ƿ����ڣ���·����������?
         const getPathIndex = (row: number, col: number) => {
             return pathCoords.findIndex(p => p.row === row && p.col === col);
         };
@@ -8090,7 +8124,7 @@ export class ImageGenerator {
                 const current = pathCoords[i];
                 const next = pathCoords[i + 1];
                 
-                // ���������յ�λ�ã����������������?
+                // ���������յ�λ�ã����������������?
                 const x1 = current.col * cellSize + cellSize / 2;
                 const y1 = current.row * cellSize + cellSize / 2;
                 const x2 = next.col * cellSize + cellSize / 2;
@@ -8244,7 +8278,7 @@ export class ImageGenerator {
     }
 
     /**
-     * Trace and Draw - �Ϸ������״���·����ɻ�?
+     * Trace and Draw - �Ϸ������״���·����ɻ�?
      */
     async generateTraceAndDraw(data: any): Promise<string> {
         await this.initialize();
@@ -8254,7 +8288,7 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
         // ������?- ���Ӻ������ο�ͼƬ��
@@ -8495,9 +8529,9 @@ export class ImageGenerator {
     }
 
     /**
-     * �����������ҳ��?
+     * �����������ҳ��?
      * ÿ�У���������??+ �м����� + �Ҳ�����ͼ��
-     * 4??��������ֱ�ߡ������ߡ�����ߡ���??
+     * 4??��������ֱ�ߡ������ߡ�����ߡ���??
      */
     async generateTraceLines(data: any): Promise<string> {
         await this.initialize();
@@ -8507,10 +8541,10 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // ��ȡ�����ɫ�ز�??����4����??+ 4���Ҳࣩ
+        // ��ȡ�����ɫ�ز�??����4����??+ 4���Ҳࣩ
         const colorAssets = getThemeColorAssets(themeKey, 8);
         const shuffledAssets = [...colorAssets].sort(() => Math.random() - 0.5);
 
@@ -8518,7 +8552,7 @@ export class ImageGenerator {
         const lineTypes = [
             { path: 'M 0 40 L 300 40', name: 'straight' },  // ֱ��
             { path: 'M 0 40 Q 75 0 150 40 Q 225 80 300 40', name: 'wavy' },  // ����??
-            { path: 'M 0 70 L 50 10 L 100 70 L 150 10 L 200 70 L 250 10 L 300 70', name: 'zigzag' },  // ���??
+            { path: 'M 0 70 L 50 10 L 100 70 L 150 10 L 200 70 L 250 10 L 300 70', name: 'zigzag' },  // ���??
             { path: 'M 0 70 Q 100 70 150 30 Q 200 0 300 10', name: 'curved' }  // ����
         ];
 
@@ -8529,12 +8563,12 @@ export class ImageGenerator {
             
             return `
                 <div class="trace-row">
-                    <img class="trace-icon left" src="http://localhost:3000${leftImg}" />
+                    <img class="trace-icon left" src="${getBaseUrl()}${leftImg}" />
                     <svg class="trace-line" viewBox="0 0 300 80" preserveAspectRatio="xMidYMid meet">
                         <path d="${line.path}" stroke="#1a1a1a" stroke-width="16" fill="none" stroke-linecap="round"/>
                         <path d="${line.path}" stroke="#ffffff" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="0 16"/>
                     </svg>
-                    <img class="trace-icon right" src="http://localhost:3000${rightImg}" />
+                    <img class="trace-icon right" src="${getBaseUrl()}${rightImg}" />
                 </div>
             `;
         }).join('');
@@ -8608,7 +8642,7 @@ export class ImageGenerator {
     }
 
     /**
-     * ������״���ҳ��?
+     * ������״���ҳ��?
      * 2x2����Բ�Ρ������Ρ������Ρ���??
      * ÿ�����򣺴���״ + �·�С��״���軭
      * �ײ������ɻ滭��??
@@ -8621,7 +8655,7 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
         // ��ȡ4������װ��ͼ�����Ľ�??
@@ -8795,10 +8829,10 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // �����ȡ�����߸�ͼƬ����?line/main �ļ��У�
+        // �����ȡ�����߸�ͼƬ����?line/main �ļ��У�
         const mainAssets = getThemeMainLineAssets(themeKey, 1);
         const lineArtPath = mainAssets[0] || '';
 
@@ -8840,7 +8874,7 @@ export class ImageGenerator {
                 ${iconPosition === 'right' ? titleIconHtml : ''}
             </div>
             <div class="coloring-container">
-                <img class="coloring-image" src="http://localhost:3000${lineArtPath}" alt="Coloring" />
+                <img class="coloring-image" src="${getBaseUrl()}${lineArtPath}" alt="Coloring" />
             </div>
         </div>
         ${stickerHtml}
@@ -8870,7 +8904,7 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
         // ��ȡ Creative Prompt ͼƬ��ȥ����ɫ����
@@ -8921,7 +8955,7 @@ export class ImageGenerator {
                 ${iconPosition === 'right' ? titleIconHtml : ''}
             </div>
             <div class="drawing-container">
-                ${promptImage ? `<img class="prompt-image" src="${promptImage.startsWith('data:') ? promptImage : 'http://localhost:3000' + promptImage}" alt="Creative Prompt" />` : ''}
+                ${promptImage ? `<img class="prompt-image" src="${promptImage.startsWith('data:') ? promptImage : getBaseUrl() + promptImage}" alt="Creative Prompt" />` : ''}
             </div>
         </div>
         ${stickerHtml}
@@ -8952,10 +8986,10 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // ��ȡ�����ɫ�ز�?
+        // ��ȡ�����ɫ�ز�?
         const colorAssets = getThemeColorAssets(themeKey, 6);
 
         // ����6��������
@@ -8975,7 +9009,7 @@ export class ImageGenerator {
                 const isCrossed = i < p.subtract;
                 return `
                     <div class="object-item ${isCrossed ? 'crossed' : ''}">
-                        <img src="http://localhost:3000${p.imageUrl}" alt="object" />
+                        <img src="${getBaseUrl()}${p.imageUrl}" alt="object" />
                         ${isCrossed ? '<div class="cross-mark">?</div>' : ''}
                     </div>
                 `;
@@ -9129,7 +9163,7 @@ export class ImageGenerator {
         const themeColors = getThemeColor(themeKey);
         const titleIcon = getRandomTitleIcon(themeKey);
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
-        const titleIconHtml = titleIcon ? `<img class="title-icon" src="http://localhost:3000${titleIcon}" />` : '';
+        const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
         // ����6����������
@@ -9143,7 +9177,7 @@ export class ImageGenerator {
             } while (usedStarts.has(start));
             usedStarts.add(start);
             
-            // ÿ��5�����֣����?-2���հ�
+            // ÿ��5�����֣����?-2���հ�
             const numbers: (number | null)[] = [];
             const blankCount = Math.random() > 0.5 ? 2 : 1;
             const blankPositions = new Set<number>();
