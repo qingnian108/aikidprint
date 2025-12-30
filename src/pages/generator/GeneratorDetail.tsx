@@ -20,6 +20,8 @@ const GeneratorDetail: React.FC = () => {
     const [isGenerating, setIsGenerating] = useState(false);
     const [generatedImages, setGeneratedImages] = useState<string[]>([]);
     const [errorModal, setErrorModal] = useState<{ open: boolean; message: string }>({ open: false, message: '' });
+    const [imagesLoaded, setImagesLoaded] = useState<boolean[]>([]);
+    const [showImages, setShowImages] = useState(false);
 
     // Initialize default values
     useEffect(() => {
@@ -42,6 +44,8 @@ const GeneratorDetail: React.FC = () => {
 
     const handleGenerate = async () => {
         setIsGenerating(true);
+        setShowImages(false);
+        setImagesLoaded([]);
         try {
             const result = await generateWorksheet({
                 category: categoryId!,
@@ -58,6 +62,40 @@ const GeneratorDetail: React.FC = () => {
                 const images = result.imageUrls || (result.imageUrl ? [result.imageUrl] : []);
                 console.log('Setting images:', images);
                 setGeneratedImages(images);
+                setImagesLoaded(new Array(images.length).fill(false));
+                
+                // 延迟显示图片，等待加载完成或最少4秒
+                const minLoadTime = 4000;
+                const startTime = Date.now();
+                
+                // 预加载所有图片
+                const preloadImages = images.map((src: string, idx: number) => {
+                    return new Promise<void>((resolve) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            setImagesLoaded(prev => {
+                                const newState = [...prev];
+                                newState[idx] = true;
+                                return newState;
+                            });
+                            resolve();
+                        };
+                        img.onerror = () => resolve();
+                        img.src = src;
+                    });
+                });
+                
+                // 等待所有图片加载完成
+                await Promise.all(preloadImages);
+                
+                // 确保至少等待4秒
+                const elapsed = Date.now() - startTime;
+                if (elapsed < minLoadTime) {
+                    await new Promise(resolve => setTimeout(resolve, minLoadTime - elapsed));
+                }
+                
+                // 显示图片（淡入效果）
+                setShowImages(true);
             } else {
                 setErrorModal({
                     open: true,
@@ -472,7 +510,10 @@ const GeneratorDetail: React.FC = () => {
                                 ) : generatedImages.length > 0 ? (
                                     <div className="w-full space-y-4">
                                         {generatedImages.map((img, idx) => (
-                                            <div key={idx} className="border-2 border-black rounded-lg overflow-hidden bg-white">
+                                            <div 
+                                                key={idx} 
+                                                className={`border-2 border-black rounded-lg overflow-hidden bg-white transition-opacity duration-700 ease-in-out ${showImages ? 'opacity-100' : 'opacity-0'}`}
+                                            >
                                                 <img
                                                     src={img}
                                                     alt={`Worksheet ${idx + 1}`}
