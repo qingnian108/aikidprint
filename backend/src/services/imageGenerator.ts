@@ -262,6 +262,7 @@ export class ImageGenerator {
         const backgroundImage = getThemeBackground(themeKey);
         if (!backgroundImage) return '';
         
+        const baseUrl = getBaseUrl();
         return `<style>
         .page::before {
             content: '';
@@ -270,7 +271,7 @@ export class ImageGenerator {
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('\${getBaseUrl()}${backgroundImage}');
+            background-image: url('${baseUrl}${backgroundImage}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -293,6 +294,7 @@ export class ImageGenerator {
         const backgroundImage = getThemeBackground(themeKey);
         if (!backgroundImage) return '';
         
+        const baseUrl = getBaseUrl();
         return `
         .page::before {
             content: '';
@@ -301,7 +303,7 @@ export class ImageGenerator {
             left: 0;
             width: 100%;
             height: 100%;
-            background-image: url('\${getBaseUrl()}${backgroundImage}');
+            background-image: url('${baseUrl}${backgroundImage}');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
@@ -764,8 +766,9 @@ export class ImageGenerator {
         
         // ��ȡ���ⱳ��ͼ��30% ���ȣ�
         const backgroundImage = getThemeBackground(themeKey);
+        const baseUrl = getBaseUrl();
         const backgroundHtml = backgroundImage 
-            ? `<div class="theme-background" style="background-image: url('\${getBaseUrl()}${backgroundImage}');"></div>` 
+            ? `<div class="theme-background" style="background-image: url('${baseUrl}${backgroundImage}');"></div>` 
             : '';
 
         // ʹ�� uploads/letters/uppercase �е����?PNG

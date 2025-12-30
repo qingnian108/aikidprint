@@ -5,6 +5,38 @@
     "categoryName": "Letters & Literacy",
     "pageTypeId": "letter-recognition",
     "pageTypeName": "Find the Letter A",
+    "imageUrl": "http://localhost:3000/generated/worksheets/letter-recognition-A-1767076333191.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\letter-recognition-A-1767076333191.png",
+    "config": {
+      "letter": "A",
+      "difficulty": "easy",
+      "theme": "dinosaur"
+    },
+    "id": "1767076334078-iwso19mxl",
+    "createdAt": "2025-12-30T06:32:14.078Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "letter-recognition",
+    "pageTypeName": "Find the Letter A",
+    "imageUrl": "http://localhost:3000/generated/worksheets/letter-recognition-A-1767076192409.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\letter-recognition-A-1767076192409.png",
+    "config": {
+      "letter": "A",
+      "difficulty": "easy",
+      "theme": "dinosaur"
+    },
+    "id": "1767076193102-727o1tbyo",
+    "createdAt": "2025-12-30T06:29:53.102Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "letter-recognition",
+    "pageTypeName": "Find the Letter A",
     "imageUrl": "http://localhost:3000/generated/worksheets/letter-recognition-A-1767075405761.png",
     "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\letter-recognition-A-1767075405761.png",
     "config": {
@@ -269,35 +301,5 @@
     },
     "id": "1767014652240-vf43gn8fz",
     "createdAt": "2025-12-29T13:24:12.240Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "logic",
-    "categoryName": "logic",
-    "pageTypeId": "maze",
-    "pageTypeName": "Maze",
-    "imageUrl": "http://localhost:3000/generated/worksheets/maze-1767014616811.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\maze-1767014616811.png",
-    "config": {
-      "theme": "unicorn",
-      "difficulty": "hard"
-    },
-    "id": "1767014617103-chcj5ws8t",
-    "createdAt": "2025-12-29T13:23:37.103Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "logic",
-    "categoryName": "logic",
-    "pageTypeId": "maze",
-    "pageTypeName": "Maze",
-    "imageUrl": "http://localhost:3000/generated/worksheets/maze-1767014613646.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\maze-1767014613646.png",
-    "config": {
-      "theme": "unicorn",
-      "difficulty": "medium"
-    },
-    "id": "1767014614058-8dmo7iwof",
-    "createdAt": "2025-12-29T13:23:34.058Z"
   }
 ]
