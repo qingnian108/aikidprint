@@ -5,6 +5,36 @@
     "categoryName": "Letters & Literacy",
     "pageTypeId": "alphabet-sequencing",
     "pageTypeName": "Alphabet Sequencing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/alphabet-sequencing-1767070773863.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\alphabet-sequencing-1767070773863.png",
+    "config": {
+      "difficulty": "easy",
+      "theme": "dinosaur"
+    },
+    "id": "1767070775998-ponwehdi3",
+    "createdAt": "2025-12-30T04:59:35.998Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "alphabet-sequencing",
+    "pageTypeName": "Alphabet Sequencing",
+    "imageUrl": "http://localhost:3000/generated/worksheets/alphabet-sequencing-1767070769401.png",
+    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\alphabet-sequencing-1767070769401.png",
+    "config": {
+      "difficulty": "easy",
+      "theme": "dinosaur"
+    },
+    "id": "1767070770921-9iizm08gz",
+    "createdAt": "2025-12-30T04:59:30.921Z"
+  },
+  {
+    "userId": "guest",
+    "categoryId": "literacy",
+    "categoryName": "Letters & Literacy",
+    "pageTypeId": "alphabet-sequencing",
+    "pageTypeName": "Alphabet Sequencing",
     "imageUrl": "http://localhost:3000/generated/worksheets/alphabet-sequencing-1767068154772.png",
     "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\alphabet-sequencing-1767068154772.png",
     "config": {
@@ -269,33 +299,5 @@
     },
     "id": "1766977369209-13r8fvvpd",
     "createdAt": "2025-12-29T03:02:49.209Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "logic",
-    "categoryName": "logic",
-    "pageTypeId": "pattern-compare",
-    "pageTypeName": "Pattern Compare",
-    "imageUrl": "http://localhost:3000/generated/worksheets/pattern-compare-1766977355296.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\pattern-compare-1766977355296.png",
-    "config": {
-      "theme": "dinosaur"
-    },
-    "id": "1766977355764-h4ge2omwg",
-    "createdAt": "2025-12-29T03:02:35.765Z"
-  },
-  {
-    "userId": "guest",
-    "categoryId": "creativity",
-    "categoryName": "creativity",
-    "pageTypeId": "coloring-page",
-    "pageTypeName": "Coloring Page",
-    "imageUrl": "http://localhost:3000/generated/worksheets/coloring-page-1766976756852.png",
-    "imagePath": "E:\\codex\\ai-kid-print\\backend\\public\\generated\\worksheets\\coloring-page-1766976756852.png",
-    "config": {
-      "theme": "dinosaur"
-    },
-    "id": "1766976757189-at32fnxi2",
-    "createdAt": "2025-12-29T02:52:37.189Z"
   }
 ]
