@@ -10,10 +10,10 @@ const __dirname = path.dirname(__filename);
 // 获取基础 URL，用于资源加载（图片等）
 const getBaseUrl = () => process.env.API_BASE_URL || 'http://localhost:3000';
 
-// Puppeteer 内部使用的本�?URL（用于字体加载，避免 HTTPS 证书问题�?
+// Puppeteer 内部使用的本�?URL（用于字体加载，避免 HTTPS 证书问题�?
 const getLocalUrl = () => 'http://127.0.0.1:3000';
 
-// 获取字体样式 CSS（使用本�?URL�?
+// 获取字体样式 CSS（使用本�?URL�?
 const getFontStyles = () => {
     const localUrl = getLocalUrl();
     return `
@@ -53,7 +53,7 @@ if (!fs.existsSync(OUTPUT_DIR)) {
 export class ImageGenerator {
     private browser: any = null;
     private pageCount: number = 0;
-    private readonly MAX_PAGES_BEFORE_RESTART = 15; // 每生�?5页重启浏览器
+    private readonly MAX_PAGES_BEFORE_RESTART = 15; // 每生�?5页重启浏览器
 
     async initialize() {
         // 检查浏览器是否还活着
@@ -63,7 +63,7 @@ export class ImageGenerator {
             needRestart = true;
         } else {
             try {
-                // 尝试获取浏览器版本来检测连�?
+                // 尝试获取浏览器版本来检测连�?
                 await this.browser.version();
             } catch {
                 console.log('[ImageGenerator] Browser connection lost, restarting...');
@@ -97,7 +97,7 @@ export class ImageGenerator {
     }
 
     /**
-     * 安全关闭浏览�?
+     * 安全关闭浏览�?
      */
     async closeBrowser() {
         if (this.browser) {
@@ -229,8 +229,8 @@ export class ImageGenerator {
     }
 
     /**
-     * ���ɴ�ͼ��ı���?HTML
-     * ͼ����������ڱ��������Ҳ�?
+     * ���ɴ�ͼ��ı���?HTML
+     * ͼ����������ڱ��������Ҳ�?
      */
     private getTitleHtml(title: string, titleIcon: string): string {
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
@@ -246,10 +246,10 @@ export class ImageGenerator {
     }
 
     /**
-     * ���ɱ���ͼ HTML �� CSS�������ֽ��?
+     * ���ɱ���ͼ HTML �� CSS�������ֽ��?
      */
     private getBackgroundHtml(themeKey: string): { html: string; css: string } {
-        const html = ''; // ����Ҫ�����?HTML��ʹ�� CSS αԪ��
+        const html = ''; // ����Ҫ�����?HTML��ʹ�� CSS αԪ��
         const css = this.getBackgroundCss(themeKey);
         return { html, css };
     }
@@ -316,8 +316,8 @@ export class ImageGenerator {
     }
 
     /**
-     * �����ܼ���ֽ HTML - �ѷ��������ر���ͼ��ʹ�� getBackgroundHtml ���?
-     * @deprecated ʹ�� getBackgroundHtml ���?
+     * �����ܼ���ֽ HTML - �ѷ��������ر���ͼ��ʹ�� getBackgroundHtml ���?
+     * @deprecated ʹ�� getBackgroundHtml ���?
      */
     private getDenseStickersHtml(themeKey: string): { html: string; css: string } {
         return this.getBackgroundHtml(themeKey);
@@ -331,7 +331,7 @@ export class ImageGenerator {
         const mazeUrl = content.mazeImageUrl || mazeImageUrl || '';
         const level = String(content.difficulty || difficulty || 'medium');
 
-        // ��ȡ����ͼ�������ֽ��?
+        // ��ȡ����ͼ�������ֽ��?
         const { html: backgroundHtml, css: backgroundCss } = this.getBackgroundHtml(themeKey);
 
         // �����ȡ����ͼ���������ɫ
@@ -342,7 +342,7 @@ export class ImageGenerator {
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
 
-        // �Թ����?����ͼ�꣨��������ѡ��??
+        // �Թ����?����ͼ�꣨��������ѡ��??
         const mazeIconsMap: Record<string, { start: string; end: string }> = {
             dinosaur: {
                 start: '/uploads/assets/A_main_assets/dinosaur/color/dinosaur_000_color.png',
@@ -373,10 +373,10 @@ export class ImageGenerator {
         const cornerLeft = mazeIcons.start;
         const cornerRight = mazeIcons.end;
 
-        // ĳЩ��������Ͻ�ͼ����Ҫ��ת���Գƣ���ĳЩ����??
+        // ĳЩ��������Ͻ�ͼ����Ҫ��ת���Գƣ���ĳЩ����??
         const flipLeftIcon = themeKey !== 'space'; // ̫�����ⲻ��??
 
-        // �����Ѷȵ���ͼ��λ�ã��Թ���С��ͬ����ڳ���λ��Ҳ��ͬ��?
+        // �����Ѷȵ���ͼ��λ�ã��Թ���С��ͬ����ڳ���λ��Ҳ��ͬ��?
         const cornerPositions: Record<string, { left: { top: string; left: string }; right: { bottom: string; right: string } }> = {
             easy: {
                 left: { top: '285px', left: '80px' },
@@ -768,7 +768,7 @@ export class ImageGenerator {
             ? `<div class="theme-background" style="background-image: url('\${getBaseUrl()}${backgroundImage}');"></div>` 
             : '';
 
-        // ʹ�� uploads/letters/uppercase �е����?PNG
+        // ʹ�� uploads/letters/uppercase �е����?PNG
         const tracingRel = `/uploads/letters/uppercase/${upperLetter}_uppercase_tracing.png`;
         const tracingFull = path.join(__dirname, '../../public', tracingRel);
         const tracingImage = fs.existsSync(tracingFull) ? tracingRel : '';
@@ -1162,7 +1162,7 @@ export class ImageGenerator {
 
     /**
      * ���� Alphabet Sequencing ҳ��
-     * ��дȱʧ����ĸ�����ĸ����?
+     * ��дȱʧ����ĸ�����ĸ����?
      */
     async generateAlphabetSequencing(data: any): Promise<string> {
         await this.initialize();
@@ -1342,7 +1342,7 @@ export class ImageGenerator {
 
     /**
      * ���� Beginning Sounds ҳ��
-     * ƥ��ͼƬ������ĸ - �����ĸ��Ƭ���Ҳ�ͼƬ��Ƭ���м�����?
+     * ƥ��ͼƬ������ĸ - �����ĸ��Ƭ���Ҳ�ͼƬ��Ƭ���м�����?
      */
     async generateBeginningSounds(data: any): Promise<string> {
         await this.initialize();
@@ -1394,7 +1394,7 @@ export class ImageGenerator {
             </div>
         `).join('');
         
-        // �����Ҳ�ͼƬ��Ƭ HTML��ʹ�ô��Һ��˳��?
+        // �����Ҳ�ͼƬ��Ƭ HTML��ʹ�ô��Һ��˳��?
         const rightCardsHtml = shuffledItems.map((item: any, index: number) => `
             <div class="card image-card" style="background: ${cardColors[(index + 3) % cardColors.length]}; width: ${cardSize}px; height: ${cardSize}px;">
                 <img class="card-image" src="${getBaseUrl()}${item.image}" alt="${item.word}" style="width: ${imageSize}px; height: ${imageSize}px;" />
@@ -1561,7 +1561,7 @@ export class ImageGenerator {
             '#FEF3C7', // 浅黄
         ];
         
-        // 所有可用的 CVC 单词（bigpng 文件夹中有图片的�?
+        // 所有可用的 CVC 单词（bigpng 文件夹中有图片的�?
         const availableCvcWords = [
             'bag', 'bat', 'bed', 'bin', 'box', 'bug', 'bun',
             'cat', 'cup', 'dig', 'dog', 'fan', 'fin', 'fox',
@@ -1575,14 +1575,14 @@ export class ImageGenerator {
             return `/uploads/bigpng/${word.toLowerCase()}.png`;
         };
         
-        // 如果传入�?wordsWithImages，使用它；否则随机选择
+        // 如果传入�?wordsWithImages，使用它；否则随机选择
         const wordsWithImages = content.wordsWithImages || [];
         let displayWords: string[];
         
         if (wordsWithImages.length > 0) {
             displayWords = wordsWithImages.map((w: any) => w.word);
         } else {
-            // 随机选择 6 个单�?
+            // 随机选择 6 个单�?
             const shuffled = [...availableCvcWords].sort(() => Math.random() - 0.5);
             displayWords = shuffled.slice(0, 6);
         }
@@ -1748,7 +1748,7 @@ export class ImageGenerator {
 
     /**
      * ���� Match Uppercase & Lowercase ҳ��
-     * ��Сд��ĸ���?- ��ߴ�д˳���ұ�Сд����?
+     * ��Сд��ĸ���?- ��ߴ�д˳���ұ�Сд����?
      */
     async generateMatchUpperLower(data: any): Promise<string> {
         await this.initialize();
@@ -1934,7 +1934,7 @@ export class ImageGenerator {
 
     /**
      * ���� Which is More? ҳ��
-     * �Ƚ������������� - 3�У�ÿ����������ͼƬ��ÿ����ڷ�����?
+     * �Ƚ������������� - 3�У�ÿ����������ͼƬ��ÿ����ڷ�����?
      */
     async generateWhichIsMore(data: any): Promise<string> {
         await this.initialize();
@@ -1974,7 +1974,7 @@ export class ImageGenerator {
             ];
         }
         
-        // ���ѡ��?����ͬ��ͼƬ����3��
+        // ���ѡ��?����ͬ��ͼƬ����3��
         const shuffled = [...themeImages].sort(() => Math.random() - 0.5);
         const selectedImages = shuffled.slice(0, 3);
         while (selectedImages.length < 3) {
@@ -2365,7 +2365,7 @@ export class ImageGenerator {
             problems.push(count);
         }
         
-        // ����ʮ���?HTML - 5��2�У�ÿ�������б߿�
+        // ����ʮ���?HTML - 5��2�У�ÿ�������б߿�
         const generateTenFrameHtml = (count: number) => {
             let cells = '';
             for (let i = 0; i < 10; i++) {
@@ -2522,7 +2522,7 @@ export class ImageGenerator {
             themeImages = ['/uploads/assets/A_main_assets/dinosaur/color/dinosaur_000_color.png'];
         }
         
-        // ����6���ӷ��⣬ÿ�����?��
+        // ����6���ӷ��⣬ÿ�����?��
         const problems = [];
         for (let i = 0; i < 6; i++) {
             const a = Math.floor(Math.random() * 3) + 1; // 1-3
@@ -2683,7 +2683,7 @@ export class ImageGenerator {
             { name: 'heart', svg: '<path d="M20 35 C5 25 2 15 8 8 C14 2 20 8 20 12 C20 8 26 2 32 8 C38 15 35 25 20 35Z" fill="COLOR" stroke="#333" stroke-width="2"/>', color: '#F472B6' },
         ];
         
-        // Ϊÿ����״�����������?(5-9)
+        // Ϊÿ����״�����������?(5-9)
         const shapeCounts: { shape: typeof shapes[0], count: number }[] = shapes.map(s => ({
             shape: s,
             count: Math.floor(Math.random() * 5) + 5
@@ -2696,7 +2696,7 @@ export class ImageGenerator {
         const boxWidth = 600;
         const boxHeight = 410;
         
-        // �����λ���Ƿ���������״�ص�?
+        // �����λ���Ƿ���������״�ص�?
         const isOverlapping = (newX: number, newY: number) => {
             for (const existing of allShapes) {
                 const dx = newX - existing.x;
@@ -2884,7 +2884,7 @@ export class ImageGenerator {
                 : difficulty === 'medium'
                     ? 60
                     : 70; // default/easy
-        const rewardStars = Array.from({ length: 5 }).map(() => '<span class="reward-star">�?/span>').join('');
+        const rewardStars = Array.from({ length: 5 }).map(() => '<span class="reward-star">⭐</span>').join('');
         const pointingMap: Record<string, string> = {
             dinosaur: '/uploads/assets/B_character_ip/dinosaur/poses/color/dinosaur_pointing_pose.png',
             vehicles: '/uploads/assets/B_character_ip/vehicles/poses/color/vehicles_car_pointing_pose.png',
@@ -2908,12 +2908,12 @@ export class ImageGenerator {
         // ʹ�ñ���ͼ������?
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // ���ɻ����ĸ����?
+        // ���ɻ����ĸ����?
         let gridCells: string[] = [];
         if (Array.isArray(cells) && cells.length > 0) {
             gridCells = cells.slice(0, gridSize * gridSize);
         } else {
-            // �Զ����ɻ����ĸ����?
+            // �Զ����ɻ����ĸ����?
             const totalCells = gridSize * gridSize;
             // �����ѶȾ���Ŀ����ĸ������
             const targetCount = difficulty === 'hard' ? Math.floor(totalCells * 0.25) 
@@ -3089,8 +3089,8 @@ export class ImageGenerator {
             font-size: ${fontSize}px;     /* �Ѷȶ�̬�ֺţ�easy 70 / medium 60 / hard 50 */
             font-weight: 900;
             letter-spacing: 0.3px;
-            color: ${themeColors.primary};              /* ����ɫ���?*/
-            -webkit-text-stroke: 0;      /* ȡ�����?*/
+            color: ${themeColors.primary};              /* ����ɫ���?*/
+            -webkit-text-stroke: 0;      /* ȡ�����?*/
             line-height: 1;
         }
         .reward-row {
@@ -3579,12 +3579,12 @@ export class ImageGenerator {
             return `<img class="big-letter-img" src="${getBaseUrl()}${letterImagePath}" alt="${letter}" />`;
         }).join('');
 
-        // ��ȡ�����ɫͼ������?A_main_assets/{theme}/color/main/ ���ȡһ�ţ�?
+        // ��ȡ�����ɫͼ������?A_main_assets/{theme}/color/main/ ���ȡһ�ţ�?
         const colorAssets = getThemeMainColorAssets(themeKey, 1);
         const characterImage = colorAssets[0] || '';
 
         // �������ֳ��Ⱦ���ÿ����ʾ1����??����??
-        // ������ֳ���?����ĸ��ÿ��ֻ��??����??
+        // ������ֳ���?����ĸ��ÿ��ֻ��??����??
         const namesPerLine = nameLength > 5 ? 1 : 2;
         const tracingClass = namesPerLine === 1 ? 'tracing-text single' : 'tracing-text';
         const tracingContent = namesPerLine === 1 
@@ -3596,7 +3596,7 @@ export class ImageGenerator {
         // letter-spacing = (���ÿ��� - ��ĸ??* ��ĸ����) / (��ĸ??- 1)
         const getLetterSpacing = (len: number, perLine: number): number => {
             if (len <= 1) return 0;
-            const availableWidth = perLine === 1 ? 600 : 280; // ��������ʱ���ø����??
+            const availableWidth = perLine === 1 ? 600 : 280; // ��������ʱ���ø����??
             const charWidth = 55; // ÿ����ĸ??5px
             const totalCharWidth = len * charWidth;
             const spacing = Math.floor((availableWidth - totalCharWidth) / (len - 1));
@@ -3638,7 +3638,7 @@ export class ImageGenerator {
             object-fit: contain;
             flex-shrink: 1;
         }
-        /* �м��ɫͼƬ����?- ���� */
+        /* �м��ɫͼƬ����?- ���� */
         .character-section {
             flex: 1;
             display: flex;
@@ -3653,7 +3653,7 @@ export class ImageGenerator {
             height: auto;
             object-fit: contain;
         }
-        /* ��ϰ���� - �ο���д��ĸ�����??*/
+        /* ��ϰ���� - �ο���д��ĸ�����??*/
         .practice {
             margin-top: 10px;
             margin-left: -18px;
@@ -4335,7 +4335,7 @@ export class ImageGenerator {
                 ${iconPosition === 'right' ? titleIconHtml : ''}
                 ${subtitle ? `<div class="sub">${subtitle}</div>` : ''}
             </div>
-            <!-- ���հ�ȫ������������߼�����?-->
+            <!-- ���հ�ȫ������������߼�����?-->
         </div>
         ${stickerHtml}
     </div>
@@ -4576,10 +4576,10 @@ export class ImageGenerator {
         // ��ȡ�������ƣ�����ĸ��д??
         const themeName = themeKey.charAt(0).toUpperCase() + themeKey.slice(1);
 
-        // ��ȡ8�������ɫ�زģ�??color/main ���ļ���??
+        // ��ȡ8�������ɫ�زģ�??color/main ���ļ���??
         const themeAssets = getThemeMainColorAssets(themeKey, 8);
         
-        // �������??�Ŵ�ͼ��4��С??
+        // �������??�Ŵ�ͼ��4��С??
         const shuffledAssets = [...themeAssets].sort(() => Math.random() - 0.5);
         const bigItems = shuffledAssets.slice(0, 4);
         const smallItems = shuffledAssets.slice(4, 8);
@@ -4859,7 +4859,7 @@ export class ImageGenerator {
         // ʹ�ñ���ͼ������?
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // ѡȡ�����ɫ�ز�?
+        // ѡȡ�����ɫ�ز�?
         const colorPool = getThemeColorAssets(themeKey, 40);
         const shuffled = [...colorPool];
         for (let i = shuffled.length - 1; i > 0; i--) {
@@ -5318,7 +5318,7 @@ export class ImageGenerator {
         // ʹ��ͨ�÷���������ֽ
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // ��ȡ��Ե�ͼƬ�ͽ�ɫ����?
+        // ��ȡ��Ե�ͼƬ�ͽ�ɫ����?
         let dotsImageUrl = data.dotsImageUrl || '';
         const characterName = data.characterName || '';
 
@@ -6077,7 +6077,7 @@ export class ImageGenerator {
             const titleText = 'Counting Objects';
             const titleIcon = titleIconMap[themeKey] || titleIconMap['dinosaur'];
             const rowsHtml = items.map((item: any, idx: number) => {
-                // �Ҳ� 3 �����֣������Ѷȷ�Χ�������������?
+                // �Ҳ� 3 �����֣������Ѷȷ�Χ�������������?
                 const optionsSet = new Set<number>();
                 while (optionsSet.size < 3) {
                     optionsSet.add(Math.floor(Math.random() * (range.max - range.min + 1)) + range.min);
@@ -6108,7 +6108,7 @@ export class ImageGenerator {
                     return `<span class="icon" style="width:${size}px;height:${size}px;">${iconTag}</span>`;
                 });
                 
-                // �����Ҫ���ţ��ֳ���������?
+                // �����Ҫ���ţ��ֳ���������?
                 let iconsHtml: string;
                 if (needTwoRows) {
                     const halfCount = Math.ceil(count / 2);
@@ -6287,7 +6287,7 @@ export class ImageGenerator {
             align-items: center;
             gap: 8px;
             padding: 10px 4px 10px 12px; /* �Ҳ����� 4px��������ȫ�� */
-            border: none; /* ȥ�����??*/
+            border: none; /* ȥ�����??*/
             border-bottom: 1.5px solid #0f172a; /* �����ָ�??*/
             border-radius: 0;
             background: transparent;
@@ -7070,7 +7070,7 @@ export class ImageGenerator {
             throw new Error(`���� ${themeKey} ���زĲ��㣬��Ҫ��??��`);
         }
 
-        // �������ͼ��λ��?
+        // �������ͼ��λ��?
         const iconPosition = Math.random() > 0.5 ? 'left' : 'right';
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
 
@@ -7419,7 +7419,7 @@ export class ImageGenerator {
             }
         };
         
-        // �������� HTML - ʹ�ø���ĳߴ�?
+        // �������� HTML - ʹ�ø���ĳߴ�?
         const gridHtml = grid.map((row, rowIdx) => {
             const cellsHtml = row.map((cell, colIdx) => {
                 if (rowIdx === missingRow && colIdx === missingCol) {
@@ -7684,11 +7684,11 @@ export class ImageGenerator {
         const shuffled = [...colorAssets].sort(() => Math.random() - 0.5);
         const selected = shuffled.slice(0, 5);
         
-        // ���̶�˳���Ҳ����?
+        // ���̶�˳���Ҳ����?
         const leftItems = selected.map((item, idx) => ({ item, id: idx }));
         const rightItems = [...leftItems].sort(() => Math.random() - 0.5);
         
-        // �������?HTML����ʾͼƬ����벿�֣��������ұ߿����м�?
+        // �������?HTML����ʾͼƬ����벿�֣��������ұ߿����м�?
         const leftHtml = leftItems.map((item, idx) => `
             <div class="half-item left-item">
                 <div class="half-image">
@@ -7698,7 +7698,7 @@ export class ImageGenerator {
             </div>
         `).join('');
         
-        // �����Ҳ� HTML����ʾͼƬ���Ұ벿�֣���ĸ����߿����м�?
+        // �����Ҳ� HTML����ʾͼƬ���Ұ벿�֣���ĸ����߿����м�?
         const rightHtml = rightItems.map((item, idx) => `
             <div class="half-item right-item">
                 <div class="half-letter">${String.fromCharCode(65 + idx)}</div>
@@ -7771,7 +7771,7 @@ export class ImageGenerator {
             border-radius: 10px;
             border: 3px solid ${themeColors.secondary};
         }
-        /* 左半部分图片，只显示图片左边一�?*/
+        /* 左半部分图片，只显示图片左边一�?*/
         .left-half-img {
             height: 85px;
             max-height: 85px;
@@ -7780,7 +7780,7 @@ export class ImageGenerator {
             object-fit: contain;
             clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
         }
-        /* 右半部分图片，只显示图片右边一�?*/
+        /* 右半部分图片，只显示图片右边一�?*/
         .right-half-img {
             height: 85px;
             max-height: 85px;
@@ -7977,7 +7977,7 @@ export class ImageGenerator {
 
     /**
      * ���� Shape Path ҳ��
-     * ��״·����ϰ - ������״������ߵ��յ�?
+     * ��״·����ϰ - ������״������ߵ��յ�?
      */
     async generateShapePath(data: any): Promise<string> {
         await this.initialize();
@@ -7994,13 +7994,13 @@ export class ImageGenerator {
         // ��״����
         const shapes = ['circle', 'square', 'triangle'];
         
-        // ���� 5x5 ������5��5�У���ȷ��������״���ָ������?
-        // �ܹ� 25 �����ӣ�ÿ����״���� 8 ����ʣ�� 1 �����?
+        // ���� 5x5 ������5��5�У���ȷ��������״���ָ������?
+        // �ܹ� 25 �����ӣ�ÿ����״���� 8 ����ʣ�� 1 �����?
         const shapePool: string[] = [];
         for (let i = 0; i < 8; i++) {
             shapePool.push('circle', 'square', 'triangle');
         }
-        shapePool.push(shapes[Math.floor(Math.random() * shapes.length)]); // ��25�����?
+        shapePool.push(shapes[Math.floor(Math.random() * shapes.length)]); // ��25�����?
         // ϴ��
         for (let i = shapePool.length - 1; i > 0; i--) {
             const j = Math.floor(Math.random() * (i + 1));
@@ -8040,7 +8040,7 @@ export class ImageGenerator {
             if (currentRow >= 4 && currentCol === 4) break;
         }
         
-        // ������������Ƿ����ڣ���·����������?
+        // ������������Ƿ����ڣ���·����������?
         const getPathIndex = (row: number, col: number) => {
             return pathCoords.findIndex(p => p.row === row && p.col === col);
         };
@@ -8103,7 +8103,7 @@ export class ImageGenerator {
                 const current = pathCoords[i];
                 const next = pathCoords[i + 1];
                 
-                // ���������յ�λ�ã����������������?
+                // ���������յ�λ�ã����������������?
                 const x1 = current.col * cellSize + cellSize / 2;
                 const y1 = current.row * cellSize + cellSize / 2;
                 const x2 = next.col * cellSize + cellSize / 2;
@@ -8257,7 +8257,7 @@ export class ImageGenerator {
     }
 
     /**
-     * Trace and Draw - �Ϸ������״���·����ɻ�?
+     * Trace and Draw - �Ϸ������״���·����ɻ�?
      */
     async generateTraceAndDraw(data: any): Promise<string> {
         await this.initialize();
@@ -8508,9 +8508,9 @@ export class ImageGenerator {
     }
 
     /**
-     * �����������ҳ��?
+     * �����������ҳ��?
      * ÿ�У���������??+ �м����� + �Ҳ�����ͼ��
-     * 4??��������ֱ�ߡ������ߡ�����ߡ���??
+     * 4??��������ֱ�ߡ������ߡ�����ߡ���??
      */
     async generateTraceLines(data: any): Promise<string> {
         await this.initialize();
@@ -8523,7 +8523,7 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // ��ȡ�����ɫ�ز�??����4����??+ 4���Ҳࣩ
+        // ��ȡ�����ɫ�ز�??����4����??+ 4���Ҳࣩ
         const colorAssets = getThemeColorAssets(themeKey, 8);
         const shuffledAssets = [...colorAssets].sort(() => Math.random() - 0.5);
 
@@ -8531,7 +8531,7 @@ export class ImageGenerator {
         const lineTypes = [
             { path: 'M 0 40 L 300 40', name: 'straight' },  // ֱ��
             { path: 'M 0 40 Q 75 0 150 40 Q 225 80 300 40', name: 'wavy' },  // ����??
-            { path: 'M 0 70 L 50 10 L 100 70 L 150 10 L 200 70 L 250 10 L 300 70', name: 'zigzag' },  // ���??
+            { path: 'M 0 70 L 50 10 L 100 70 L 150 10 L 200 70 L 250 10 L 300 70', name: 'zigzag' },  // ���??
             { path: 'M 0 70 Q 100 70 150 30 Q 200 0 300 10', name: 'curved' }  // ����
         ];
 
@@ -8621,7 +8621,7 @@ export class ImageGenerator {
     }
 
     /**
-     * ������״���ҳ��?
+     * ������״���ҳ��?
      * 2x2����Բ�Ρ������Ρ������Ρ���??
      * ÿ�����򣺴���״ + �·�С��״���軭
      * �ײ������ɻ滭��??
@@ -8811,7 +8811,7 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // �����ȡ�����߸�ͼƬ����?line/main �ļ��У�
+        // �����ȡ�����߸�ͼƬ����?line/main �ļ��У�
         const mainAssets = getThemeMainLineAssets(themeKey, 1);
         const lineArtPath = mainAssets[0] || '';
 
@@ -8968,7 +8968,7 @@ export class ImageGenerator {
         const titleIconHtml = titleIcon ? `<img class="title-icon" src="${getBaseUrl()}${titleIcon}" />` : '';
         const stickerHtml = this.getStickersHtml(themeKey);
 
-        // ��ȡ�����ɫ�ز�?
+        // ��ȡ�����ɫ�ز�?
         const colorAssets = getThemeColorAssets(themeKey, 6);
 
         // ����6��������
@@ -9156,7 +9156,7 @@ export class ImageGenerator {
             } while (usedStarts.has(start));
             usedStarts.add(start);
             
-            // ÿ��5�����֣����?-2���հ�
+            // ÿ��5�����֣����?-2���հ�
             const numbers: (number | null)[] = [];
             const blankCount = Math.random() > 0.5 ? 2 : 1;
             const blankPositions = new Set<number>();

@@ -52,7 +52,8 @@
   },
   "uploads-letter-A-default": {
     "usedImages": [
-      "/uploads/bigpng/Ant.png"
+      "/uploads/bigpng/Ant.png",
+      "/uploads/bigpng/Apple.png"
     ],
     "allImages": [
       "/uploads/bigpng/Ant.png",
