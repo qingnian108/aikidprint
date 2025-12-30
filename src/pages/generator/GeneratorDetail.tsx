@@ -502,7 +502,7 @@ const GeneratorDetail: React.FC = () => {
                                         {generatedImages.map((img, idx) => (
                                             <div 
                                                 key={idx} 
-                                                className={`border-2 border-black rounded-lg overflow-hidden bg-white transition-opacity duration-700 ease-in-out ${showImages ? 'opacity-100' : 'opacity-0'}`}
+                                                className="border-2 border-black rounded-lg overflow-hidden bg-white"
                                             >
                                                 <img
                                                     src={img}
