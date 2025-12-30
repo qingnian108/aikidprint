@@ -1282,9 +1282,9 @@ export class ImageGenerator {
         }
         .cell.letter {
             font-size: 85px;
-            font-weight: 900;
+            font-weight: 700;
             color: ${themeColors.accent};
-            font-family: 'Arial Black', 'Quicksand', sans-serif;
+            font-family: 'Quicksand', sans-serif;
         }
         .cell.blank-box .box-inner {
             width: 80px;
@@ -1873,8 +1873,8 @@ export class ImageGenerator {
             background: #fff;
         }
         .letter {
-            font-weight: 900;
-            font-family: 'Arial Black', sans-serif;
+            font-weight: 700;
+            font-family: 'Quicksand', sans-serif;
             color: #1f2937;
             line-height: 1;
         }
