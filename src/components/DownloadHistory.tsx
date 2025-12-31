@@ -145,6 +145,23 @@ const DownloadHistory: React.FC = () => {
     fetchHistory();
   }, [currentUser]);
 
+  // 监听下载完成事件，自动刷新历史记录
+  useEffect(() => {
+    const handleDownloadComplete = () => {
+      console.log('📥 Download complete event received, refreshing history...');
+      // 延迟一点再获取，确保数据写入完成
+      setTimeout(() => {
+        fetchHistory();
+      }, 500);
+    };
+
+    window.addEventListener('downloadComplete', handleDownloadComplete);
+    
+    return () => {
+      window.removeEventListener('downloadComplete', handleDownloadComplete);
+    };
+  }, [currentUser]);
+
   // 下载 pack
   const handleDownloadPack = async (pack: WeeklyPack) => {
     setDownloading(pack.packId);

@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { WorksheetService } from '../services/worksheetService.js';
 import { imageGenerator } from '../services/imageGenerator.js';
 import { historyService } from '../services/historyService.js';
+import quotaService from '../services/quotaService.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -32,6 +33,23 @@ export const generateWorksheetImage = async (req: Request, res: Response) => {
 
         if (!categoryId || !pageTypeId) {
             return res.status(400).json({ error: 'Missing required fields: categoryId and pageTypeId' });
+        }
+
+        // 检查用户配额
+        const quotaCheck = await quotaService.checkQuota(userId);
+        console.log(`[Worksheet] Quota check for ${userId}:`, quotaCheck);
+
+        if (!quotaCheck.canGenerate) {
+            return res.status(403).json({
+                success: false,
+                error: 'quota_exceeded',
+                message: quotaCheck.message,
+                quota: {
+                    used: quotaCheck.used,
+                    limit: quotaCheck.limit,
+                    plan: quotaCheck.plan
+                }
+            });
         }
 
         const worksheetService = new WorksheetService();
@@ -113,6 +131,12 @@ export const generateWorksheetImage = async (req: Request, res: Response) => {
             config
         });
 
+        // 记录使用次数（生成成功后）
+        await quotaService.recordUsage(userId, pageTypeId);
+
+        // 获取更新后的配额信息
+        const updatedQuota = await quotaService.checkQuota(userId);
+
         res.json({
             success: true,
             data: {
@@ -121,6 +145,12 @@ export const generateWorksheetImage = async (req: Request, res: Response) => {
                 imageUrls,
                 count: imageUrls.length,
                 historyId: historyRecord.id
+            },
+            quota: {
+                used: updatedQuota.used,
+                limit: updatedQuota.limit,
+                plan: updatedQuota.plan,
+                remaining: updatedQuota.limit - updatedQuota.used
             }
         });
     } catch (error) {
@@ -155,5 +185,30 @@ export const deleteHistory = async (req: Request, res: Response) => {
     } catch (error) {
         console.error('Error deleting history:', error);
         res.status(500).json({ error: error instanceof Error ? error.message : 'Failed to delete history' });
+    }
+};
+
+
+/**
+ * 获取用户配额状态
+ */
+export const getQuotaStatus = async (req: Request, res: Response) => {
+    try {
+        const userId = req.query.userId as string || 'guest';
+        const quota = await quotaService.checkQuota(userId);
+
+        res.json({
+            success: true,
+            quota: {
+                canGenerate: quota.canGenerate,
+                used: quota.used,
+                limit: quota.limit,
+                plan: quota.plan,
+                remaining: quota.limit - quota.used
+            }
+        });
+    } catch (error) {
+        console.error('Error getting quota status:', error);
+        res.status(500).json({ error: error instanceof Error ? error.message : 'Failed to get quota status' });
     }
 };

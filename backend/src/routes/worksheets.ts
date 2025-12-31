@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { generateWorksheet, generateWorksheetImage, getUserHistory, deleteHistory } from '../controllers/worksheetController.js';
+import { generateWorksheet, generateWorksheetImage, getUserHistory, deleteHistory, getQuotaStatus } from '../controllers/worksheetController.js';
 
 const router = Router();
 
@@ -8,6 +8,9 @@ router.post('/generate', generateWorksheet);
 
 // Generate worksheet as image
 router.post('/generate-image', generateWorksheetImage);
+
+// Get user quota status
+router.get('/quota', getQuotaStatus);
 
 // Get user history
 router.get('/history', getUserHistory);

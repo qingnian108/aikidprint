@@ -9,6 +9,15 @@ export interface GenerateParams {
     category: string;
     type: string;
     config: Record<string, any>;
+    userId?: string;
+}
+
+export interface QuotaInfo {
+    used: number;
+    limit: number;
+    plan: 'Free' | 'Pro';
+    remaining: number;
+    canGenerate?: boolean;
 }
 
 export interface GenerateResult {
@@ -17,6 +26,8 @@ export interface GenerateResult {
     imageUrls?: string[];
     data?: any;
     error?: string;
+    errorCode?: string;
+    quota?: QuotaInfo;
 }
 
 export const generateWorksheet = async (params: GenerateParams): Promise<GenerateResult> => {
@@ -32,22 +43,33 @@ export const generateWorksheet = async (params: GenerateParams): Promise<Generat
             body: JSON.stringify({
                 categoryId: params.category,
                 pageTypeId: params.type,
-                config: params.config
+                config: params.config,
+                userId: params.userId || 'guest'
             }),
         });
 
+        const result = await response.json();
+
+        // 处理配额超限错误
         if (!response.ok) {
+            if (result.error === 'quota_exceeded') {
+                return {
+                    success: false,
+                    error: result.message,
+                    errorCode: 'quota_exceeded',
+                    quota: result.quota
+                };
+            }
             throw new Error(`HTTP error! status: ${response.status}`);
         }
-
-        const result = await response.json();
 
         if (result.success) {
             return {
                 success: true,
                 data: result.data,
                 imageUrl: result.data.imageUrl,
-                imageUrls: result.data.imageUrls || (result.data.imageUrl ? [result.data.imageUrl] : [])
+                imageUrls: result.data.imageUrls || (result.data.imageUrl ? [result.data.imageUrl] : []),
+                quota: result.quota
             };
         } else {
             return {
@@ -61,5 +83,23 @@ export const generateWorksheet = async (params: GenerateParams): Promise<Generat
             success: false,
             error: error instanceof Error ? error.message : 'Unknown error'
         };
+    }
+};
+
+/**
+ * 获取用户配额状态
+ */
+export const getQuotaStatus = async (userId: string): Promise<QuotaInfo | null> => {
+    try {
+        const response = await fetch(`${API_BASE_URL}/api/worksheets/quota?userId=${userId}`);
+        const result = await response.json();
+        
+        if (result.success) {
+            return result.quota;
+        }
+        return null;
+    } catch (error) {
+        console.error('❌ Failed to get quota status:', error);
+        return null;
     }
 };

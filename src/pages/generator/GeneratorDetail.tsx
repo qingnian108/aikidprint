@@ -50,7 +50,8 @@ const GeneratorDetail: React.FC = () => {
             const result = await generateWorksheet({
                 category: categoryId!,
                 type: typeId!,
-                config
+                config,
+                userId: currentUser?.uid
             });
 
             console.log('Full result:', result);
@@ -87,10 +88,18 @@ const GeneratorDetail: React.FC = () => {
                 // 显示图片（淡入效果）
                 setShowImages(true);
             } else {
-                setErrorModal({
-                    open: true,
-                    message: ''
-                });
+                // 处理配额超限错误
+                if (result.errorCode === 'quota_exceeded') {
+                    setErrorModal({
+                        open: true,
+                        message: `You've reached your daily limit (${result.quota?.used}/${result.quota?.limit}). Upgrade to Pro for unlimited worksheets!`
+                    });
+                } else {
+                    setErrorModal({
+                        open: true,
+                        message: result.error || 'Generation failed'
+                    });
+                }
             }
         } catch (error) {
             console.error('Generation failed', error);

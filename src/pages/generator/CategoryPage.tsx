@@ -1,8 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
 import { getCategory } from '../../constants/pageTypes';
-import { ArrowLeft, ArrowRight, Star } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Star, Loader2 } from 'lucide-react';
 import { getPreviewImageUrl } from '../../config/api';
+
+// 图片加载组件
+const PreviewImage: React.FC<{ src: string; alt: string }> = ({ src, alt }) => {
+    const [loaded, setLoaded] = useState(false);
+    const [error, setError] = useState(false);
+
+    return (
+        <div className="relative w-full h-full">
+            {/* 加载中状态 */}
+            {!loaded && !error && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                    <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
+                </div>
+            )}
+            {/* 加载失败状态 */}
+            {error && (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
+                    <span className="text-gray-400 text-sm">Preview unavailable</span>
+                </div>
+            )}
+            <img
+                src={src}
+                alt={alt}
+                loading="lazy"
+                className={`w-full h-full object-contain bg-white transition-opacity duration-300 ${loaded ? 'opacity-100' : 'opacity-0'}`}
+                onLoad={() => setLoaded(true)}
+                onError={() => setError(true)}
+            />
+        </div>
+    );
+};
 
 const CategoryPage: React.FC = () => {
     const { categoryId } = useParams<{ categoryId: string }>();
@@ -69,10 +100,9 @@ const CategoryPage: React.FC = () => {
 
                                     {/* Image Container (Paper Look) */}
                                     <div className="relative w-full h-full shadow-sm group-hover:shadow-xl group-hover:scale-105 transition-all duration-500 rounded-xl overflow-hidden bg-white border-2 border-gray-200 transform rotate-1 group-hover:rotate-0">
-                                        <img
+                                        <PreviewImage
                                             src={getPreviewImageUrl(pageType.previewImage)}
                                             alt={pageType.title}
-                                            className="w-full h-full object-contain bg-white"
                                         />
                                     </div>
 
