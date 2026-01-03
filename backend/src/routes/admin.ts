@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { adminAuthMiddleware } from '../middleware/adminAuth.js';
 import { adminLogin, adminLogout, adminVerify } from '../controllers/adminController.js';
+import { loginLimiter, adminLimiter } from '../middleware/rateLimiter.js';
 import {
   getStatsOverview,
   getUserGrowthStats,
@@ -26,8 +27,11 @@ import { exportUsers, exportSubscriptions, exportPayments, exportUsage } from '.
 
 const router = Router();
 
+// Admin API 全局限流
+router.use(adminLimiter);
+
 // ========== 认证相关 ==========
-router.post('/login', adminLogin);
+router.post('/login', loginLimiter, adminLogin); // 登录接口额外限流防暴力破解
 router.post('/logout', adminAuthMiddleware, adminLogout);
 router.get('/verify', adminAuthMiddleware, adminVerify);
 

@@ -5,6 +5,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import apiRoutes from './routes/index.js';
 import cronService from './services/cronService.js';
+import { generalLimiter } from './middleware/rateLimiter.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -36,6 +37,9 @@ app.use(cors({
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+// 全局 API 限流
+app.use('/api', generalLimiter);
 
 // 静态文件服务 - 提供生成的图片
 app.use('/generated', express.static(path.join(__dirname, '../public/generated')));

@@ -5,6 +5,7 @@ import { fileURLToPath } from 'url';
 import pdfGenerator from '../services/pdfGenerator.js';
 import { generateWeeklyPackConfig } from '../services/generators/weeklyPackService.js';
 import { ImageGenerator } from '../services/imageGenerator.js';
+import { weeklyPackLimiter } from '../middleware/rateLimiter.js';
 import { 
   literacyGenerators, 
   mathGenerators, 
@@ -244,8 +245,9 @@ router.post('/config', async (req, res) => {
 /**
  * POST /api/weekly-pack/generate-pages
  * Generate all pages as images for the weekly pack
+ * 限流：每分钟最多 3 次
  */
-router.post('/generate-pages', async (req, res) => {
+router.post('/generate-pages', weeklyPackLimiter, async (req, res) => {
   try {
     const { childName, age, theme } = req.body;
 

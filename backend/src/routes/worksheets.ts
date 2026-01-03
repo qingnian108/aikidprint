@@ -1,13 +1,14 @@
 import { Router } from 'express';
 import { generateWorksheet, generateWorksheetImage, getUserHistory, deleteHistory, getQuotaStatus } from '../controllers/worksheetController.js';
+import { generateLimiter } from '../middleware/rateLimiter.js';
 
 const router = Router();
 
-// Generate worksheet data
-router.post('/generate', generateWorksheet);
+// Generate worksheet data (限流：每分钟 10 次)
+router.post('/generate', generateLimiter, generateWorksheet);
 
-// Generate worksheet as image
-router.post('/generate-image', generateWorksheetImage);
+// Generate worksheet as image (限流：每分钟 10 次)
+router.post('/generate-image', generateLimiter, generateWorksheetImage);
 
 // Get user quota status
 router.get('/quota', getQuotaStatus);
