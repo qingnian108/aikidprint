@@ -84,6 +84,17 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
+// Sentry 测试端点（仅用于验证 Sentry 是否正常工作）
+app.get('/api/debug-sentry', (req, res) => {
+  const testError = new Error('Sentry test error - this is intentional!');
+  Sentry.captureException(testError);
+  res.json({ 
+    success: true, 
+    message: 'Test error sent to Sentry',
+    timestamp: new Date().toISOString()
+  });
+});
+
 // Error handling
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
   // 发送错误到 Sentry
