@@ -116,21 +116,24 @@ const NamePreview: React.FC = () => {
         format: isA4 ? 'a4' : 'letter'
       });
 
-      // Letter 图片适配不同纸张：
-      // - Letter 纸：以宽度为准，完美适配
-      // - A4 纸：以高度为准，左右均匀裁剪
-      const imgRatio = img.width / img.height;
+      // 后端生成的图片是 816x1056 像素（Letter 比例）
+      // 计算图片在 PDF 中的尺寸，保持原始比例
+      const imgRatio = img.width / img.height; // 约 0.773 (816/1056)
+      const pageRatio = pageWidth / pageHeight;
+      
       let imgWidth: number, imgHeight: number, x: number, y: number;
       
-      if (isA4) {
-        imgHeight = pageHeight;
-        imgWidth = pageHeight * imgRatio;
-        x = (pageWidth - imgWidth) / 2;
-        y = 0;
-      } else {
+      if (imgRatio > pageRatio) {
+        // 图片更宽，以宽度为准
         imgWidth = pageWidth;
         imgHeight = pageWidth / imgRatio;
         x = 0;
+        y = (pageHeight - imgHeight) / 2; // 垂直居中
+      } else {
+        // 图片更高，以高度为准
+        imgHeight = pageHeight;
+        imgWidth = pageHeight * imgRatio;
+        x = (pageWidth - imgWidth) / 2; // 水平居中
         y = 0;
       }
 
