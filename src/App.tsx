@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { lazy, Suspense } from 'react';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './contexts/AuthContext';
 import ErrorBoundary from './components/ErrorBoundary';
@@ -24,6 +24,27 @@ import MyWorksheets from './pages/MyWorksheets';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import TermsOfService from './pages/TermsOfService';
 
+// Admin imports (lazy loaded)
+import { AdminAuthProvider } from './admin/contexts/AdminAuthContext';
+import AdminProtectedRoute from './admin/components/AdminProtectedRoute';
+const AdminLayout = lazy(() => import('./admin/components/AdminLayout'));
+const AdminLogin = lazy(() => import('./admin/pages/AdminLogin'));
+const AdminDashboard = lazy(() => import('./admin/pages/AdminDashboard'));
+const UserManagement = lazy(() => import('./admin/pages/UserManagement'));
+const SubscriptionManagement = lazy(() => import('./admin/pages/SubscriptionManagement'));
+const PaymentHistory = lazy(() => import('./admin/pages/PaymentHistory'));
+const ContentStats = lazy(() => import('./admin/pages/ContentStats'));
+const WeeklyDeliveryAdmin = lazy(() => import('./admin/pages/WeeklyDeliveryAdmin'));
+const SystemConfig = lazy(() => import('./admin/pages/SystemConfig'));
+const DataExport = lazy(() => import('./admin/pages/DataExport'));
+
+// Admin loading fallback
+const AdminLoading = () => (
+  <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+  </div>
+);
+
 const App: React.FC = () => {
   return (
     <ErrorBoundary>
@@ -31,6 +52,37 @@ const App: React.FC = () => {
         <HashRouter>
           <SmoothScroll />
           <Routes>
+            {/* Admin Routes */}
+            <Route
+              path="/admin/*"
+              element={
+                <AdminAuthProvider>
+                  <Suspense fallback={<AdminLoading />}>
+                    <Routes>
+                      <Route path="login" element={<AdminLogin />} />
+                      <Route
+                        element={
+                          <AdminProtectedRoute>
+                            <AdminLayout />
+                          </AdminProtectedRoute>
+                        }
+                      >
+                        <Route index element={<AdminDashboard />} />
+                        <Route path="users" element={<UserManagement />} />
+                        <Route path="subscriptions" element={<SubscriptionManagement />} />
+                        <Route path="payments" element={<PaymentHistory />} />
+                        <Route path="content" element={<ContentStats />} />
+                        <Route path="delivery" element={<WeeklyDeliveryAdmin />} />
+                        <Route path="config" element={<SystemConfig />} />
+                        <Route path="export" element={<DataExport />} />
+                      </Route>
+                    </Routes>
+                  </Suspense>
+                </AdminAuthProvider>
+              }
+            />
+
+            {/* Main App Routes */}
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
 

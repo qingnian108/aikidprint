@@ -3,6 +3,7 @@ import worksheetRoutes from './worksheets.js';
 import weeklyPackRoutes from './weeklyPack.js';
 import weeklyDeliveryRoutes from './weeklyDelivery.js';
 import customPackRoutes from './customPack.js';
+import adminRoutes from './admin.js';
 
 const router = Router();
 
@@ -22,5 +23,8 @@ router.use('/custom-pack', customPackRoutes);
 
 // Weekly delivery routes (cron job management)
 router.use('/weekly-delivery', weeklyDeliveryRoutes);
+
+// Admin dashboard routes
+router.use('/admin', adminRoutes);
 
 export default router;
