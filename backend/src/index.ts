@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import * as Sentry from '@sentry/node';
 import apiRoutes from './routes/index.js';
 import cronService from './services/cronService.js';
 import { generalLimiter } from './middleware/rateLimiter.js';
@@ -11,6 +12,19 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 dotenv.config();
+
+// 初始化 Sentry 错误监控
+if (process.env.SENTRY_DSN) {
+  Sentry.init({
+    dsn: process.env.SENTRY_DSN,
+    environment: process.env.NODE_ENV || 'development',
+    tracesSampleRate: 0.1, // 10% 的请求会被追踪性能
+    integrations: [
+      Sentry.captureConsoleIntegration({ levels: ['error'] }),
+    ],
+  });
+  console.log('✅ Sentry error monitoring initialized');
+}
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -72,6 +86,8 @@ app.get('/health', (req, res) => {
 
 // Error handling
 app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
+  // 发送错误到 Sentry
+  Sentry.captureException(err);
   console.error(err.stack);
   res.status(500).json({ error: 'Something went wrong!' });
 });

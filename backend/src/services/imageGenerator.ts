@@ -2,6 +2,7 @@ import puppeteer from 'puppeteer';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
+import * as Sentry from '@sentry/node';
 import { getLetterImage, getRandomAnimalImages, getRandomDecorImages, getThemeBorders, getThemeCharacter, getThemeColorAssets, getThemeMainLineAssets, getThemeMainColorAssets, isImageFile, getRandomTitleIcon, getThemeColor, getRandomLineArt, getCreativePromptImage, getThemeBackground, removeWhiteBackground } from '../utils/imageHelper.js';
 import { saveFile, isCloudStorageEnabled } from './storageService.js';
 
@@ -91,17 +92,24 @@ export class ImageGenerator {
         
         if (needRestart) {
             await this.closeBrowser();
-            this.browser = await puppeteer.launch({
-                headless: true,
-                args: [
-                    '--no-sandbox',
-                    '--disable-setuid-sandbox',
-                    '--disable-dev-shm-usage',
-                    '--disable-gpu',
-                    '--no-first-run',
-                    '--no-zygote'
-                ]
-            });
+            try {
+                this.browser = await puppeteer.launch({
+                    headless: true,
+                    args: [
+                        '--no-sandbox',
+                        '--disable-setuid-sandbox',
+                        '--disable-dev-shm-usage',
+                        '--disable-gpu',
+                        '--no-first-run',
+                        '--no-zygote'
+                    ]
+                });
+            } catch (error) {
+                Sentry.captureException(error, {
+                    tags: { component: 'ImageGenerator', action: 'browser_launch' }
+                });
+                throw error;
+            }
             this.pageCount = 0;
         }
         
