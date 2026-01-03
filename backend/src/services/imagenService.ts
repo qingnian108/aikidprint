@@ -7,6 +7,7 @@ import * as fs from 'fs';
 import * as path from 'path';
 import { spawn } from 'child_process';
 import { generateGeminiImage } from './geminiImageService.js';
+import { saveFile, isCloudStorageEnabled } from './storageService.js';
 
 // 主题对应的 prompt
 const THEME_PROMPTS: Record<string, string> = {
@@ -118,10 +119,12 @@ export async function generateConnectDotsImage(
         // 步骤2: 处理成点对点图
         const dotsPath = await processDotToDot(originalPath, numPoints, angleThreshold);
         
-        // 返回相对路径（用于 HTML 引用）
-        const relativePath = `/generated/dots/${path.basename(dotsPath)}`;
+        // 步骤3: 保存到云存储或返回本地路径
+        const filename = path.basename(dotsPath);
+        const remotePath = `generated/dots/${filename}`;
+        const resultUrl = await saveFile(dotsPath, remotePath);
         
-        return relativePath;
+        return resultUrl;
     } catch (error) {
         console.error('[ConnectDots] 生成失败:', error);
         throw error;

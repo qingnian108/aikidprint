@@ -3,6 +3,7 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import { getLetterImage, getRandomAnimalImages, getRandomDecorImages, getThemeBorders, getThemeCharacter, getThemeColorAssets, getThemeMainLineAssets, getThemeMainColorAssets, isImageFile, getRandomTitleIcon, getThemeColor, getRandomLineArt, getCreativePromptImage, getThemeBackground, removeWhiteBackground } from '../utils/imageHelper.js';
+import { saveFile, isCloudStorageEnabled } from './storageService.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -49,6 +50,17 @@ const OUTPUT_DIR = path.join(__dirname, '../../public/generated/worksheets');
 if (!fs.existsSync(OUTPUT_DIR)) {
     fs.mkdirSync(OUTPUT_DIR, { recursive: true });
 }
+
+/**
+ * 保存生成的图片文件（支持本地和云存储�?
+ * @param filepath 本地文件路径
+ * @param filename 文件�?
+ * @returns 访问 URL
+ */
+const saveGeneratedFile = async (filepath: string, filename: string): Promise<string> => {
+    const remotePath = `generated/worksheets/${filename}`;
+    return await saveFile(filepath, remotePath);
+};
 
 export class ImageGenerator {
     private browser: any = null;
@@ -598,7 +610,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generatePatternCompletion(data: any): Promise<string> {
@@ -745,7 +757,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generateUppercaseTracing(data: any): Promise<string> {
@@ -1160,7 +1172,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -1339,8 +1351,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -1534,8 +1546,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -1745,8 +1757,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -1931,8 +1943,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -2160,8 +2172,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -2343,7 +2355,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -2497,7 +2509,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -2659,7 +2672,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -2860,7 +2874,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generateLetterRecognitionPage(data: any): Promise<string> {
@@ -2887,7 +2902,7 @@ export class ImageGenerator {
                 : difficulty === 'medium'
                     ? 60
                     : 70; // default/easy
-        const rewardStars = Array.from({ length: 5 }).map(() => '<span class="reward-star">⭐</span>').join('');
+        const rewardStars = Array.from({ length: 5 }).map(() => '<span class="reward-star">�?/span>').join('');
         const pointingMap: Record<string, string> = {
             dinosaur: '/uploads/assets/B_character_ip/dinosaur/poses/color/dinosaur_pointing_pose.png',
             vehicles: '/uploads/assets/B_character_ip/vehicles/poses/color/vehicles_car_pointing_pose.png',
@@ -3160,7 +3175,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generateLowercaseTracing(data: any): Promise<string> {
@@ -3555,7 +3570,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generateWriteMyName(data: any): Promise<string> {
@@ -3788,7 +3803,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generateNumberTracingPage(data: any): Promise<string> {
@@ -4173,7 +4189,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generateLogicBlank(data: any): Promise<string> {
@@ -4356,7 +4372,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generatePatternComparePage(data: any): Promise<string> {
@@ -4561,7 +4577,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generateSortingPage(data: any): Promise<string> {
@@ -4844,7 +4860,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generateShadowMatching(data: any): Promise<string> {
@@ -5084,7 +5100,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generateBigVsSmall(data: any): Promise<string> {
@@ -5285,7 +5301,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generateConnectDots(data: any): Promise<string> {
@@ -5563,7 +5579,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async close() {
@@ -5832,7 +5848,7 @@ export class ImageGenerator {
 
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generateCvcSimpleWords(data: any): Promise<string> {
@@ -6028,7 +6044,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generateCountAndWrite(data: any): Promise<string> {
@@ -6400,7 +6416,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
     async generateAlphabetOrder(data: any): Promise<string> {
         await this.initialize();
@@ -6568,7 +6584,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generateCustomName(data: any): Promise<string> {
@@ -6819,7 +6835,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generateLetterHunt(data: any): Promise<string> {
@@ -7050,7 +7066,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -7365,7 +7381,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -7518,7 +7534,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -7663,7 +7679,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -7830,7 +7846,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -7975,7 +7991,7 @@ export class ImageGenerator {
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
 
-        return `/generated/worksheets/${filename}`;
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -8255,8 +8271,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -8425,7 +8441,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     async generateWorksheet(type: string, data: any): Promise<string> {
@@ -8620,7 +8637,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -8797,7 +8815,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -8872,7 +8891,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -8953,7 +8973,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -9130,7 +9151,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 
     /**
@@ -9281,7 +9303,8 @@ export class ImageGenerator {
         await page.evaluate(() => new Promise(resolve => setTimeout(resolve, 500)));
         await page.screenshot({ path: filepath, fullPage: true });
         await page.close();
-        return `/generated/worksheets/${filename}`;
+
+        return await saveGeneratedFile(filepath, filename);
     }
 }
 
