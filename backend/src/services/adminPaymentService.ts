@@ -1,30 +1,5 @@
 import admin from 'firebase-admin';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-let db: admin.firestore.Firestore | null = null;
-
-const initializeFirebase = (): admin.firestore.Firestore | null => {
-  if (admin.apps.length === 0) {
-    const serviceAccountPath = path.join(__dirname, '../../firebase-service-account.json');
-    if (fs.existsSync(serviceAccountPath)) {
-      const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
-      admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-    } else {
-      return null;
-    }
-  }
-  return admin.firestore();
-};
-
-const getDb = (): admin.firestore.Firestore | null => {
-  if (!db) db = initializeFirebase();
-  return db;
-};
+import { getFirestore } from './firebaseAdmin.js';
 
 export interface PaymentListItem {
   paymentId: string;
@@ -51,7 +26,7 @@ export const getPayments = async (
   status?: 'pending' | 'completed' | 'failed',
   search?: string
 ): Promise<PaginatedResult<PaymentListItem>> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) throw new Error('Firebase not initialized');
 
   let query: admin.firestore.Query = firestore.collection('payments');

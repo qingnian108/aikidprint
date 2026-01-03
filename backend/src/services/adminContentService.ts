@@ -1,30 +1,5 @@
 import admin from 'firebase-admin';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-let db: admin.firestore.Firestore | null = null;
-
-const initializeFirebase = (): admin.firestore.Firestore | null => {
-  if (admin.apps.length === 0) {
-    const serviceAccountPath = path.join(__dirname, '../../firebase-service-account.json');
-    if (fs.existsSync(serviceAccountPath)) {
-      const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
-      admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-    } else {
-      return null;
-    }
-  }
-  return admin.firestore();
-};
-
-const getDb = (): admin.firestore.Firestore | null => {
-  if (!db) db = initializeFirebase();
-  return db;
-};
+import { getFirestore } from './firebaseAdmin.js';
 
 export interface WorksheetTypeStats {
   type: string;
@@ -46,7 +21,7 @@ export const getContentStats = async (
   startDate?: string,
   endDate?: string
 ): Promise<ContentStats> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) throw new Error('Firebase not initialized');
 
   const usageSnapshot = await firestore.collection('usage').get();
@@ -74,7 +49,7 @@ export const getContentStats = async (
     .map(([type, count]) => ({ type, count }))
     .sort((a, b) => b.count - a.count);
 
-  // 主题统计（从下载记录获取）
+  // 主题统计（从下载记录获取�?
   const downloadsSnapshot = await firestore.collection('downloads').get();
   const themeCounts = new Map<string, number>();
 

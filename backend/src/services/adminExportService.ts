@@ -1,30 +1,5 @@
 import admin from 'firebase-admin';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-let db: admin.firestore.Firestore | null = null;
-
-const initializeFirebase = (): admin.firestore.Firestore | null => {
-  if (admin.apps.length === 0) {
-    const serviceAccountPath = path.join(__dirname, '../../firebase-service-account.json');
-    if (fs.existsSync(serviceAccountPath)) {
-      const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
-      admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-    } else {
-      return null;
-    }
-  }
-  return admin.firestore();
-};
-
-const getDb = (): admin.firestore.Firestore | null => {
-  if (!db) db = initializeFirebase();
-  return db;
-};
+import { getFirestore } from './firebaseAdmin.js';
 
 // CSV 转义函数
 const escapeCSV = (value: any): string => {
@@ -36,7 +11,7 @@ const escapeCSV = (value: any): string => {
   return str;
 };
 
-// 生成 CSV 字符串
+// 生成 CSV 字符�?
 const generateCSV = (headers: string[], rows: any[][]): string => {
   const headerLine = headers.map(escapeCSV).join(',');
   const dataLines = rows.map(row => row.map(escapeCSV).join(','));
@@ -44,7 +19,7 @@ const generateCSV = (headers: string[], rows: any[][]): string => {
 };
 
 export const exportUsers = async (): Promise<string> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) throw new Error('Firebase not initialized');
 
   const usersSnapshot = await firestore.collection('users').get();
@@ -67,7 +42,7 @@ export const exportUsers = async (): Promise<string> => {
 };
 
 export const exportSubscriptions = async (): Promise<string> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) throw new Error('Firebase not initialized');
 
   const subscriptionsSnapshot = await firestore.collection('subscriptions').get();
@@ -92,7 +67,7 @@ export const exportSubscriptions = async (): Promise<string> => {
 };
 
 export const exportPayments = async (): Promise<string> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) throw new Error('Firebase not initialized');
 
   const paymentsSnapshot = await firestore.collection('payments').get();
@@ -117,7 +92,7 @@ export const exportPayments = async (): Promise<string> => {
 };
 
 export const exportUsage = async (): Promise<string> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) throw new Error('Firebase not initialized');
 
   const usageSnapshot = await firestore.collection('usage').get();

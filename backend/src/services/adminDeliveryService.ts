@@ -1,30 +1,5 @@
 import admin from 'firebase-admin';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-let db: admin.firestore.Firestore | null = null;
-
-const initializeFirebase = (): admin.firestore.Firestore | null => {
-  if (admin.apps.length === 0) {
-    const serviceAccountPath = path.join(__dirname, '../../firebase-service-account.json');
-    if (fs.existsSync(serviceAccountPath)) {
-      const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
-      admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-    } else {
-      return null;
-    }
-  }
-  return admin.firestore();
-};
-
-const getDb = (): admin.firestore.Firestore | null => {
-  if (!db) db = initializeFirebase();
-  return db;
-};
+import { getFirestore } from './firebaseAdmin.js';
 
 export interface DeliverySettings {
   userId: string;
@@ -49,7 +24,7 @@ export interface DeliveryHistory {
 }
 
 export const getDeliverySettings = async (): Promise<DeliverySettings[]> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) throw new Error('Firebase not initialized');
 
   const settingsSnapshot = await firestore.collection('weeklyDeliverySettings')
@@ -88,17 +63,17 @@ export const triggerDelivery = async (
   userId: string,
   adminEmail: string
 ): Promise<{ success: boolean; message?: string }> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) throw new Error('Firebase not initialized');
 
-  // 获取用户的推送设置
+  // 获取用户的推送设�?
   const settingsDoc = await firestore.collection('weeklyDeliverySettings').doc(userId).get();
   if (!settingsDoc.exists) {
     return { success: false, message: 'Delivery settings not found for this user' };
   }
 
   // 这里应该调用实际的推送逻辑
-  // 由于推送逻辑在 cronService 中，这里只记录触发
+  // 由于推送逻辑�?cronService 中，这里只记录触�?
   const logId = `log_${Date.now()}`;
   await firestore.collection('adminLogs').doc(logId).set({
     logId,
@@ -118,10 +93,10 @@ export const getDeliveryHistory = async (
   userId?: string,
   limit: number = 50
 ): Promise<DeliveryHistory[]> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) throw new Error('Firebase not initialized');
 
-  // 从 adminLogs 获取推送历史
+  // �?adminLogs 获取推送历�?
   let query: admin.firestore.Query = firestore.collection('adminLogs')
     .where('action', 'in', ['delivery_trigger', 'weekly_delivery_success', 'weekly_delivery_failed']);
   

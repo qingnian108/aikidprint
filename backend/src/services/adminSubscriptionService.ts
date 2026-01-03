@@ -1,30 +1,5 @@
 import admin from 'firebase-admin';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-let db: admin.firestore.Firestore | null = null;
-
-const initializeFirebase = (): admin.firestore.Firestore | null => {
-  if (admin.apps.length === 0) {
-    const serviceAccountPath = path.join(__dirname, '../../firebase-service-account.json');
-    if (fs.existsSync(serviceAccountPath)) {
-      const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
-      admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-    } else {
-      return null;
-    }
-  }
-  return admin.firestore();
-};
-
-const getDb = (): admin.firestore.Firestore | null => {
-  if (!db) db = initializeFirebase();
-  return db;
-};
+import { getFirestore } from './firebaseAdmin.js';
 
 // ========== 类型定义 ==========
 
@@ -55,7 +30,7 @@ export const getSubscriptions = async (
   search?: string,
   status: 'active' | 'all' = 'active'
 ): Promise<PaginatedResult<SubscriptionListItem>> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) throw new Error('Firebase not initialized');
 
   // 获取订阅
@@ -118,7 +93,7 @@ export const extendSubscription = async (
   adminEmail: string,
   additionalDays: number = 30
 ): Promise<{ success: boolean; newEndDate?: Date; message?: string }> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) throw new Error('Firebase not initialized');
 
   const subDoc = await firestore.collection('subscriptions').doc(subscriptionId).get();
@@ -158,7 +133,7 @@ export const cancelSubscription = async (
   subscriptionId: string,
   adminEmail: string
 ): Promise<{ success: boolean; message?: string }> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) throw new Error('Firebase not initialized');
 
   const subDoc = await firestore.collection('subscriptions').doc(subscriptionId).get();
@@ -177,7 +152,7 @@ export const cancelSubscription = async (
       cancelledBy: adminEmail
     });
 
-    // 更新用户计划为 Free
+    // 更新用户计划�?Free
     const userRef = firestore.collection('users').doc(userId);
     transaction.update(userRef, {
       plan: 'Free',

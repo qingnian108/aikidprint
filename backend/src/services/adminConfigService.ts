@@ -1,30 +1,5 @@
 import admin from 'firebase-admin';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-let db: admin.firestore.Firestore | null = null;
-
-const initializeFirebase = (): admin.firestore.Firestore | null => {
-  if (admin.apps.length === 0) {
-    const serviceAccountPath = path.join(__dirname, '../../firebase-service-account.json');
-    if (fs.existsSync(serviceAccountPath)) {
-      const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
-      admin.initializeApp({ credential: admin.credential.cert(serviceAccount) });
-    } else {
-      return null;
-    }
-  }
-  return admin.firestore();
-};
-
-const getDb = (): admin.firestore.Firestore | null => {
-  if (!db) db = initializeFirebase();
-  return db;
-};
+import { getFirestore } from './firebaseAdmin.js';
 
 export interface SystemConfig {
   freeDailyLimit: number;
@@ -45,7 +20,7 @@ const DEFAULT_CONFIG: SystemConfig = {
 };
 
 export const getConfig = async (): Promise<SystemConfig> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) throw new Error('Firebase not initialized');
 
   const configDoc = await firestore.collection('systemConfig').doc('main').get();
@@ -70,7 +45,7 @@ export const updateConfig = async (
   updates: Partial<SystemConfig>,
   adminEmail: string
 ): Promise<{ success: boolean; config?: SystemConfig }> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) throw new Error('Firebase not initialized');
 
   const configRef = firestore.collection('systemConfig').doc('main');
@@ -109,7 +84,7 @@ export interface AdminLog {
 }
 
 export const getLogs = async (limit: number = 100): Promise<AdminLog[]> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) throw new Error('Firebase not initialized');
 
   const logsSnapshot = await firestore.collection('adminLogs')
