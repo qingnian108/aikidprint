@@ -43,8 +43,8 @@ export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }
 
       try {
         const response = await adminApi.verify();
-        if (response.success && response.admin) {
-          setAdmin(response.admin);
+        if (response.success && response.data) {
+          setAdmin({ email: response.data.email, role: response.data.role });
         } else {
           localStorage.removeItem('adminToken');
         }
@@ -61,9 +61,9 @@ export const AdminAuthProvider: React.FC<AdminAuthProviderProps> = ({ children }
 
   const login = async (email: string, password: string) => {
     const response = await adminApi.login(email, password);
-    if (response.success && response.token && response.admin) {
-      localStorage.setItem('adminToken', response.token);
-      setAdmin(response.admin);
+    if (response.success && response.data) {
+      localStorage.setItem('adminToken', response.data.token);
+      setAdmin({ email: response.data.email, role: response.data.role });
     } else {
       throw new Error(response.message || '登录失败');
     }
