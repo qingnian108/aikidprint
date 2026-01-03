@@ -34,7 +34,8 @@ const SubscriptionManagement: React.FC = () => {
     try {
       const response = await adminApi.getSubscriptions(page, pageSize, search || undefined);
       if (response.success) {
-        setSubscriptions(response.data.subscriptions || []);
+        // 后端返回 items，兼容 subscriptions
+        setSubscriptions(response.data.items || response.data.subscriptions || []);
         setTotal(response.data.total || 0);
       }
     } catch (error) {

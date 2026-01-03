@@ -48,7 +48,8 @@ const UserManagement: React.FC = () => {
     try {
       const response = await adminApi.getUsers(page, pageSize, search || undefined);
       if (response.success) {
-        setUsers(response.data.users || []);
+        // 后端返回 items，兼容 users
+        setUsers(response.data.items || response.data.users || []);
         setTotal(response.data.total || 0);
       }
     } catch (error) {

@@ -31,7 +31,8 @@ const PaymentHistory: React.FC = () => {
     try {
       const response = await adminApi.getPayments(page, pageSize, statusFilter || undefined);
       if (response.success) {
-        setPayments(response.data.payments || []);
+        // 后端返回 items，兼容 payments
+        setPayments(response.data.items || response.data.payments || []);
         setTotal(response.data.total || 0);
       }
     } catch (error) {
