@@ -16,7 +16,8 @@
     "compress:bigpng": "tsx scripts/compress-png.ts ./public/uploads/bigpng",
     "compress:bigpng:aggressive": "tsx scripts/compress-png.ts ./public/uploads/bigpng aggressive",
     "report:letters-crop": "tsx scripts/crop-report.ts",
-    "cleanup:storage": "node dist/scripts/cleanupStorage.js"
+    "cleanup:storage": "node dist/scripts/cleanupStorage.js",
+    "set:cors": "node dist/scripts/setCors.js"
   },
   "keywords": [],
   "author": "",
