@@ -2902,7 +2902,7 @@ export class ImageGenerator {
                 : difficulty === 'medium'
                     ? 60
                     : 70; // default/easy
-        const rewardStars = Array.from({ length: 5 }).map(() => '<span class="reward-star">�?/span>').join('');
+        const rewardStars = Array.from({ length: 5 }).map(() => '<span class="reward-star">⭐</span>').join('');
         const pointingMap: Record<string, string> = {
             dinosaur: '/uploads/assets/B_character_ip/dinosaur/poses/color/dinosaur_pointing_pose.png',
             vehicles: '/uploads/assets/B_character_ip/vehicles/poses/color/vehicles_car_pointing_pose.png',
