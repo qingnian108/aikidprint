@@ -91,15 +91,23 @@ export const generateWorksheetImage = async (req: Request, res: Response) => {
 
         if (shouldAggregate && isBatch) {
             const imageUrl = await imageGenerator.generateWorksheet(result.type, result);
-            const imagePath = path.join(__dirname, '../../public', imageUrl);
-            imageUrls.push(`${baseUrl}${imageUrl}`);
+            // 如果是完整 URL（云存储），直接使用；否则拼接 baseUrl
+            const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${baseUrl}${imageUrl}`;
+            const imagePath = imageUrl.startsWith('http') 
+                ? '' // 云存储不需要本地路径
+                : path.join(__dirname, '../../public', imageUrl);
+            imageUrls.push(fullImageUrl);
             imagePaths.push(imagePath);
         } else {
             const concurrency = Math.min(6, contentArray.length);
             const generateOne = async (contentItem: any) => {
                 const imageUrl = await imageGenerator.generateWorksheet(result.type, contentItem);
-                const imagePath = path.join(__dirname, '../../public', imageUrl);
-                return { imageUrl: `${baseUrl}${imageUrl}`, imagePath };
+                // 如果是完整 URL（云存储），直接使用；否则拼接 baseUrl
+                const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${baseUrl}${imageUrl}`;
+                const imagePath = imageUrl.startsWith('http')
+                    ? ''
+                    : path.join(__dirname, '../../public', imageUrl);
+                return { imageUrl: fullImageUrl, imagePath };
             };
 
             let index = 0;
