@@ -1,37 +1,5 @@
 import admin from 'firebase-admin';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// 初始化 Firebase Admin
-let db: admin.firestore.Firestore | null = null;
-
-const initializeFirebase = (): admin.firestore.Firestore | null => {
-  if (admin.apps.length === 0) {
-    const serviceAccountPath = path.join(__dirname, '../../firebase-service-account.json');
-    
-    if (fs.existsSync(serviceAccountPath)) {
-      const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-      });
-    } else {
-      console.error('❌ [AdminUser] firebase-service-account.json not found');
-      return null;
-    }
-  }
-  return admin.firestore();
-};
-
-const getDb = (): admin.firestore.Firestore | null => {
-  if (!db) {
-    db = initializeFirebase();
-  }
-  return db;
-};
+import { getFirestore } from './firebaseAdmin.js';
 
 // ========== 类型定义 ==========
 
@@ -80,12 +48,12 @@ export const getUsers = async (
   pageSize: number = 20,
   search?: string
 ): Promise<PaginatedResult<UserListItem>> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) {
     throw new Error('Firebase not initialized');
   }
 
-  // 获取所有用户
+  // 获取所有用�?
   const usersSnapshot = await firestore.collection('users').get();
   
   let users: UserListItem[] = [];
@@ -133,7 +101,7 @@ export const getUsers = async (
  * 获取用户详情
  */
 export const getUserDetail = async (userId: string): Promise<UserDetail | null> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) {
     throw new Error('Firebase not initialized');
   }
@@ -180,7 +148,7 @@ export const getUserDetail = async (userId: string): Promise<UserDetail | null> 
     });
   });
 
-  // 获取最近 30 天的使用记录
+  // 获取最�?30 天的使用记录
   const now = new Date();
   const recentUsage: UserDetail['recentUsage'] = [];
   
@@ -211,19 +179,19 @@ export const getUserDetail = async (userId: string): Promise<UserDetail | null> 
 // ========== 更新用户计划 ==========
 
 /**
- * 升级用户到 Pro
+ * 升级用户�?Pro
  */
 export const upgradeUserToPro = async (
   userId: string,
   adminEmail: string,
   durationDays: number = 30
 ): Promise<{ success: boolean; subscriptionId?: string; message?: string }> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) {
     throw new Error('Firebase not initialized');
   }
 
-  // 检查用户是否存在
+  // 检查用户是否存�?
   const userDoc = await firestore.collection('users').doc(userId).get();
   if (!userDoc.exists) {
     return { success: false, message: 'User not found' };
@@ -233,7 +201,7 @@ export const upgradeUserToPro = async (
   const endDate = new Date(now.getTime() + durationDays * 24 * 60 * 60 * 1000);
   const subscriptionId = `sub_${userId}_${Date.now()}`;
 
-  // 使用事务确保一致性
+  // 使用事务确保一致�?
   await firestore.runTransaction(async (transaction) => {
     // 更新用户计划
     transaction.update(firestore.collection('users').doc(userId), {
@@ -254,7 +222,7 @@ export const upgradeUserToPro = async (
       createdAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    // 记录管理员操作日志
+    // 记录管理员操作日�?
     const logId = `log_${Date.now()}`;
     transaction.set(firestore.collection('adminLogs').doc(logId), {
       logId,
@@ -276,18 +244,18 @@ export const upgradeUserToPro = async (
 };
 
 /**
- * 降级用户到 Free
+ * 降级用户�?Free
  */
 export const downgradeUserToFree = async (
   userId: string,
   adminEmail: string
 ): Promise<{ success: boolean; message?: string }> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) {
     throw new Error('Firebase not initialized');
   }
 
-  // 检查用户是否存在
+  // 检查用户是否存�?
   const userDoc = await firestore.collection('users').doc(userId).get();
   if (!userDoc.exists) {
     return { success: false, message: 'User not found' };
@@ -299,7 +267,7 @@ export const downgradeUserToFree = async (
     .where('status', '==', 'active')
     .get();
 
-  // 使用事务确保一致性
+  // 使用事务确保一致�?
   await firestore.runTransaction(async (transaction) => {
     // 更新用户计划
     transaction.update(firestore.collection('users').doc(userId), {
@@ -307,7 +275,7 @@ export const downgradeUserToFree = async (
       updatedAt: admin.firestore.FieldValue.serverTimestamp()
     });
 
-    // 取消所有活跃订阅
+    // 取消所有活跃订�?
     subscriptionsSnapshot.forEach(doc => {
       transaction.update(doc.ref, {
         status: 'cancelled',
@@ -316,7 +284,7 @@ export const downgradeUserToFree = async (
       });
     });
 
-    // 记录管理员操作日志
+    // 记录管理员操作日�?
     const logId = `log_${Date.now()}`;
     transaction.set(firestore.collection('adminLogs').doc(logId), {
       logId,
@@ -345,7 +313,7 @@ export const getUserUsageHistory = async (
   userId: string,
   days: number = 30
 ): Promise<Array<{ date: string; count: number; worksheetType?: string }>> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) {
     throw new Error('Firebase not initialized');
   }

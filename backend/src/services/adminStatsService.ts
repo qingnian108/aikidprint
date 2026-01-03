@@ -1,38 +1,5 @@
 import admin from 'firebase-admin';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import fs from 'fs';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// 初始化 Firebase Admin（如果还没初始化）
-let db: admin.firestore.Firestore | null = null;
-
-const initializeFirebase = (): admin.firestore.Firestore | null => {
-  if (admin.apps.length === 0) {
-    const serviceAccountPath = path.join(__dirname, '../../firebase-service-account.json');
-    
-    if (fs.existsSync(serviceAccountPath)) {
-      const serviceAccount = JSON.parse(fs.readFileSync(serviceAccountPath, 'utf8'));
-      admin.initializeApp({
-        credential: admin.credential.cert(serviceAccount)
-      });
-      console.log('✅ [AdminStats] Firebase Admin initialized');
-    } else {
-      console.error('❌ [AdminStats] firebase-service-account.json not found');
-      return null;
-    }
-  }
-  return admin.firestore();
-};
-
-const getDb = (): admin.firestore.Firestore | null => {
-  if (!db) {
-    db = initializeFirebase();
-  }
-  return db;
-};
+import { getFirestore } from './firebaseAdmin.js';
 
 // ========== 概览统计 ==========
 
@@ -47,7 +14,7 @@ export interface OverviewStats {
  * 获取概览统计数据
  */
 export const getOverviewStats = async (): Promise<OverviewStats> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) {
     throw new Error('Firebase not initialized');
   }
@@ -129,7 +96,7 @@ export interface UserGrowthData {
  * 获取过去 N 天的用户增长数据
  */
 export const getUserGrowthStats = async (days: number = 30): Promise<UserGrowthData[]> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) {
     throw new Error('Firebase not initialized');
   }
@@ -195,7 +162,7 @@ export interface UsageData {
  * 获取过去 N 天的使用量统计
  */
 export const getUsageStats = async (days: number = 7): Promise<UsageData[]> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) {
     throw new Error('Firebase not initialized');
   }
@@ -255,7 +222,7 @@ export interface RevenueData {
  * 获取过去 N 个月的收入统计
  */
 export const getRevenueStats = async (months: number = 6): Promise<RevenueData[]> => {
-  const firestore = getDb();
+  const firestore = getFirestore();
   if (!firestore) {
     throw new Error('Firebase not initialized');
   }
