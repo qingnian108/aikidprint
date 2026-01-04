@@ -46,9 +46,8 @@ const Layout: React.FC = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between h-20 items-center">
             {/* Logo */}
-            <Link to="/" className="flex items-center gap-3 group hover-wiggle">
-              <img src="/logo/logo.png" alt="AI Kid Print" className="h-10 w-auto" />
-              <span className="font-display font-bold text-2xl text-black tracking-tight">AI Kid <span className="text-duck-blue drop-shadow-sm">Print</span></span>
+            <Link to="/" className="flex items-center gap-2 group hover-wiggle">
+              <img src="/logo/logo.png" alt="AI Kid Print" className="h-12 w-auto object-contain" />
             </Link>
 
             {/* Desktop Nav */}
@@ -166,8 +165,7 @@ const Layout: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
             <div className="col-span-1 md:col-span-1">
               <Link to="/" className="flex items-center gap-2 mb-6 hover:opacity-80 transition-opacity">
-                <img src="/logo/logo.png" alt="AI Kid Print" className="h-8 w-auto" />
-                <span className="font-display font-bold text-xl text-black">AI Kid Print</span>
+                <img src="/logo/logo.png" alt="AI Kid Print" className="h-10 w-auto object-contain" />
               </Link>
               <p className="text-slate-600 text-sm leading-relaxed font-medium">
                 Making personalized learning accessible, fun, and unlimited for everyone.
