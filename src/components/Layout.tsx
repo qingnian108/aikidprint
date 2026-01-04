@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { Menu, X, Sparkles, Printer, User, ArrowRight, LogOut } from 'lucide-react';
+import { Menu, X, Sparkles, User, ArrowRight, LogOut } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 const Layout: React.FC = () => {
@@ -47,12 +47,7 @@ const Layout: React.FC = () => {
           <div className="flex justify-between h-20 items-center">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-3 group hover-wiggle">
-              <div className="relative">
-                 <div className="absolute inset-0 bg-black translate-x-1 translate-y-1 rounded-xl transition-transform group-hover:translate-x-1.5 group-hover:translate-y-1.5"></div>
-                 <div className="relative bg-white border-2 border-black text-black p-1.5 rounded-xl group-hover:-translate-y-0.5 transition-transform">
-                   <Printer size={24} />
-                 </div>
-              </div>
+              <img src="/logo/logo.png" alt="AI Kid Print" className="h-10 w-auto" />
               <span className="font-display font-bold text-2xl text-black tracking-tight">AI Kid <span className="text-duck-blue drop-shadow-sm">Print</span></span>
             </Link>
 
@@ -171,9 +166,7 @@ const Layout: React.FC = () => {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
             <div className="col-span-1 md:col-span-1">
               <Link to="/" className="flex items-center gap-2 mb-6 hover:opacity-80 transition-opacity">
-                <div className="bg-black text-white p-1.5 rounded-lg rotate-3">
-                  <Printer size={18} />
-                </div>
+                <img src="/logo/logo.png" alt="AI Kid Print" className="h-8 w-auto" />
                 <span className="font-display font-bold text-xl text-black">AI Kid Print</span>
               </Link>
               <p className="text-slate-600 text-sm leading-relaxed font-medium">
