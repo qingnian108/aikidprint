@@ -48,6 +48,7 @@ const Layout: React.FC = () => {
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2 group hover-wiggle">
               <img src="/logo/logo.png" alt="AI Kid Print" className="h-12 w-auto object-contain" />
+              <span className="font-display font-bold text-2xl text-black tracking-tight">AI Kid <span className="text-duck-blue drop-shadow-sm">Print</span></span>
             </Link>
 
             {/* Desktop Nav */}
@@ -166,6 +167,7 @@ const Layout: React.FC = () => {
             <div className="col-span-1 md:col-span-1">
               <Link to="/" className="flex items-center gap-2 mb-6 hover:opacity-80 transition-opacity">
                 <img src="/logo/logo.png" alt="AI Kid Print" className="h-10 w-auto object-contain" />
+                <span className="font-display font-bold text-xl text-black">AI Kid Print</span>
               </Link>
               <p className="text-slate-600 text-sm leading-relaxed font-medium">
                 Making personalized learning accessible, fun, and unlimited for everyone.
